@@ -17,7 +17,6 @@
 		2A194D891F74991C0027EE24 /* CommonCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 044E02D61F7440F400849AA2 /* CommonCrypto.framework */; };
 		2A9200801F75E80100A21F01 /* CZNetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A92007F1F75E80100A21F01 /* CZNetError.swift */; };
 		2AEBF7C51F759298005A1DEF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEBF7C41F759298005A1DEF /* Extensions.swift */; };
-		C39983331F7744A400775B6C /* CZUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C39982FC1F773B6400775B6C /* CZUtils.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,23 +62,23 @@
 			remoteGlobalIDString = 444A78E81D881A1E003983A2;
 			remoteInfo = "CommonCrypto-iOS";
 		};
-		C39982FB1F773B6400775B6C /* PBXContainerItemProxy */ = {
+		2ACDACD81F96826900CD11CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C39982F31F773B6400775B6C /* CZUtils.xcodeproj */;
+			containerPortal = 2ACDACD31F96826900CD11CB /* CZUtils.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C39982CA1F7739EA00775B6C;
 			remoteInfo = CZUtils;
 		};
-		C39982FD1F773B6400775B6C /* PBXContainerItemProxy */ = {
+		2ACDACDA1F96826900CD11CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C39982F31F773B6400775B6C /* CZUtils.xcodeproj */;
+			containerPortal = 2ACDACD31F96826900CD11CB /* CZUtils.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C39982D31F7739EA00775B6C;
 			remoteInfo = CZUtilsTests;
 		};
-		C39982FF1F773B7200775B6C /* PBXContainerItemProxy */ = {
+		2ACDACDC1F96826D00CD11CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C39982F31F773B6400775B6C /* CZUtils.xcodeproj */;
+			containerPortal = 2ACDACD31F96826900CD11CB /* CZUtils.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C39982C91F7739EA00775B6C;
 			remoteInfo = CZUtils;
@@ -99,8 +98,8 @@
 		044E02741F74358600849AA2 /* CZHTTPRequester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPRequester.swift; sourceTree = "<group>"; };
 		044E02B81F743E1F00849AA2 /* CommonCrypto.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CommonCrypto.xcodeproj; path = CommonCrypto/CommonCrypto.xcodeproj; sourceTree = "<group>"; };
 		2A92007F1F75E80100A21F01 /* CZNetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZNetError.swift; sourceTree = "<group>"; };
+		2ACDACD31F96826900CD11CB /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = CZNetworking/CZUtils/CZUtils.xcodeproj; sourceTree = "<group>"; };
 		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		C39982F31F773B6400775B6C /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = ../CZUtils/CZUtils.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +107,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C39983331F7744A400775B6C /* CZUtils.framework in Frameworks */,
 				2A194D891F74991C0027EE24 /* CommonCrypto.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,7 +128,7 @@
 				044E024A1F74349B00849AA2 /* CZNetworking */,
 				044E02551F74349B00849AA2 /* CZNetworkingTests */,
 				044E02491F74349B00849AA2 /* Products */,
-				C39982F31F773B6400775B6C /* CZUtils.xcodeproj */,
+				2ACDACD31F96826900CD11CB /* CZUtils.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -195,11 +193,11 @@
 			name = Utils;
 			sourceTree = "<group>";
 		};
-		C39982F41F773B6400775B6C /* Products */ = {
+		2ACDACD41F96826900CD11CB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C39982FC1F773B6400775B6C /* CZUtils.framework */,
-				C39982FE1F773B6400775B6C /* CZUtilsTests.xctest */,
+				2ACDACD91F96826900CD11CB /* CZUtils.framework */,
+				2ACDACDB1F96826900CD11CB /* CZUtilsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -230,7 +228,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				C39983001F773B7200775B6C /* PBXTargetDependency */,
+				2ACDACDD1F96826D00CD11CB /* PBXTargetDependency */,
 				044E030E1F7441E800849AA2 /* PBXTargetDependency */,
 			);
 			name = CZNetworking;
@@ -296,8 +294,8 @@
 					ProjectRef = 044E02B81F743E1F00849AA2 /* CommonCrypto.xcodeproj */;
 				},
 				{
-					ProductGroup = C39982F41F773B6400775B6C /* Products */;
-					ProjectRef = C39982F31F773B6400775B6C /* CZUtils.xcodeproj */;
+					ProductGroup = 2ACDACD41F96826900CD11CB /* Products */;
+					ProjectRef = 2ACDACD31F96826900CD11CB /* CZUtils.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -337,18 +335,18 @@
 			remoteRef = 044E02D91F7440F400849AA2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C39982FC1F773B6400775B6C /* CZUtils.framework */ = {
+		2ACDACD91F96826900CD11CB /* CZUtils.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = CZUtils.framework;
-			remoteRef = C39982FB1F773B6400775B6C /* PBXContainerItemProxy */;
+			remoteRef = 2ACDACD81F96826900CD11CB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C39982FE1F773B6400775B6C /* CZUtilsTests.xctest */ = {
+		2ACDACDB1F96826900CD11CB /* CZUtilsTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = CZUtilsTests.xctest;
-			remoteRef = C39982FD1F773B6400775B6C /* PBXContainerItemProxy */;
+			remoteRef = 2ACDACDA1F96826900CD11CB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -405,10 +403,10 @@
 			name = "CommonCrypto-iOS";
 			targetProxy = 044E030D1F7441E800849AA2 /* PBXContainerItemProxy */;
 		};
-		C39983001F773B7200775B6C /* PBXTargetDependency */ = {
+		2ACDACDD1F96826D00CD11CB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = CZUtils;
-			targetProxy = C39982FF1F773B7200775B6C /* PBXContainerItemProxy */;
+			targetProxy = 2ACDACDC1F96826D00CD11CB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
