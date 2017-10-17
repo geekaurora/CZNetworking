@@ -11,7 +11,7 @@ import CZUtils
 
 /// Convenience class to accomplish JSON serializing/deserializing
 open class CZHTTPJsonSerializer {
-    static func url(_ baseURL: URL, append parameters: [AnyHashable: Any]?) -> URL {
+    public static func url(_ baseURL: URL, append parameters: [AnyHashable: Any]?) -> URL {
         guard let paramsString = CZHTTPJsonSerializer.string(with: parameters),
             paramsString.characters.count > 0 else {
                 return baseURL
@@ -22,14 +22,14 @@ open class CZHTTPJsonSerializer {
     }
 
     /// Return serilizedString from parameters
-    static func string(with parameters: [AnyHashable: Any]?) -> String? {
+    public static func string(with parameters: [AnyHashable: Any]?) -> String? {
         guard let parameters = parameters as? [String: String] else {return nil}
         let res = parameters.keys.flatMap{"\($0)=\(parameters[$0]!)"}.joined(separator: "&")
         return res
     }
 
     /// Return JSONData with input Diciontary/Array
-    static func jsonData(with object: Any?) -> Data? {
+    public static func jsonData(with object: Any?) -> Data? {
         guard let object = object else {return nil}
         assert(JSONSerialization.isValidJSONObject(object), "Invalid JSON object.")
         do {
@@ -42,13 +42,13 @@ open class CZHTTPJsonSerializer {
         }
     }
 
-    /// Return nested composition composed with various class types with input jsonData
+    /// Return nested deserialized object composed with various class types with input jsonData
     ///
     /// - Parameters:
     ///   - jsonData        : Input JSON data
     ///   - removeNull      : Remove any NSNull if exist
     /// - Returns           : Nested combination of NSDictionary, NSArray, NSSet, NSString, NSNumber
-    static func deserializedObject(with jsonData: Data?, removeNull: Bool = true) -> Any? {
+    public static func deserializedObject(with jsonData: Data?, removeNull: Bool = true) -> Any? {
         guard let jsonData = jsonData else {return nil}
         do {
             var deserializedData: Any? = try JSONSerialization.jsonObject(with: jsonData, options:JSONSerialization.ReadingOptions(rawValue:0))
