@@ -1,0 +1,34 @@
+{
+  "name": "CZNetworking",
+  "version": "1.1.2",
+  "summary": "Elegant progressive asynchronous HTTP request flow management framework, supports GET/PUT/POST/DELETE",
+  "description": "Elegant progressive asynchronous HTTP request flow management framework.\n\n- Supports GET/PUT/POST/DELETE\n- Supports success/failure/pregress callback closure",
+  "homepage": "https://github.com/geekaurora/CZNetworking",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "geekaurora": "showt2me@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/geekaurora/CZNetworking.git",
+    "tag": "1.1.2"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "CZNetworking/**/*",
+  "pod_target_xcconfig": {
+    "SWIFT_VERSION": "3"
+  },
+  "frameworks": [
+    "UIKit",
+    "CommonCrypto"
+  ],
+  "dependencies": {
+    "CZUtils": [
+
+    ]
+  }
+}
