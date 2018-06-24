@@ -34,6 +34,7 @@ open class CZHTTPManager: NSObject {
             .GET,
             urlStr: urlStr,
             parameters: parameters,
+            headers: headers,
             success: success,
             failure: failure,
             cached: cached,
@@ -50,6 +51,7 @@ open class CZHTTPManager: NSObject {
             .POST,
             urlStr: urlStr,
             parameters: parameters,
+            headers: headers,
             success: success,
             failure: failure,
             progress: progress)
@@ -64,6 +66,7 @@ open class CZHTTPManager: NSObject {
             .DELETE,
             urlStr: urlStr,
             parameters: parameters,
+            headers: headers,
             success: success,
             failure: failure)
     }

@@ -98,6 +98,7 @@ import CZUtils
         let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: parameters) : self.url
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = requestType.rawValue
+        
         if let headers = headers {
             for (key, value) in headers {
                 request.addValue(value, forHTTPHeaderField: key)
