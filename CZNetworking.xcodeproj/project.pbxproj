@@ -75,13 +75,6 @@
 			remoteGlobalIDString = 444A78E81D881A1E003983A2;
 			remoteInfo = "CommonCrypto-iOS";
 		};
-		2AA1AFC71FF0DA0A002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFAD1FF0D9FE002928A8 /* CZUtils.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = C39982C91F7739EA00775B6C;
-			remoteInfo = CZUtils;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -226,7 +219,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				2AA1AFC81FF0DA0A002928A8 /* PBXTargetDependency */,
 				2AA1AFC61FF0DA07002928A8 /* PBXTargetDependency */,
 			);
 			name = CZNetworking;
@@ -400,11 +392,6 @@
 			isa = PBXTargetDependency;
 			name = "CommonCrypto-iOS";
 			targetProxy = 2AA1AFC51FF0DA07002928A8 /* PBXContainerItemProxy */;
-		};
-		2AA1AFC81FF0DA0A002928A8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = CZUtils;
-			targetProxy = 2AA1AFC71FF0DA0A002928A8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
