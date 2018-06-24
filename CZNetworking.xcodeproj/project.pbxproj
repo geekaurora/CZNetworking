@@ -16,6 +16,7 @@
 		044E027B1F74358600849AA2 /* CZHTTPRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02741F74358600849AA2 /* CZHTTPRequester.swift */; };
 		2A9200801F75E80100A21F01 /* CZNetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A92007F1F75E80100A21F01 /* CZNetError.swift */; };
 		2AEBF7C51F759298005A1DEF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEBF7C41F759298005A1DEF /* Extensions.swift */; };
+		DF2A861120E0267C00BED02D /* CZUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2A861020E0267C00BED02D /* CZUtils.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 		2AA1AFAD1FF0D9FE002928A8 /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = "Supported Files/CZUtils/CZUtils.xcodeproj"; sourceTree = "<group>"; };
 		2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CommonCrypto.xcodeproj; path = "Supported Files/CommonCrypto/CommonCrypto.xcodeproj"; sourceTree = "<group>"; };
 		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		DF2A861020E0267C00BED02D /* CZUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CZUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF2A861120E0267C00BED02D /* CZUtils.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +122,7 @@
 				044E024A1F74349B00849AA2 /* CZNetworking */,
 				044E02551F74349B00849AA2 /* CZNetworkingTests */,
 				044E02491F74349B00849AA2 /* Products */,
+				DF2A860F20E0267C00BED02D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -191,6 +195,14 @@
 				2AA1AFC41FF0DA01002928A8 /* CommonCrypto.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		DF2A860F20E0267C00BED02D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DF2A861020E0267C00BED02D /* CZUtils.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -11,9 +11,9 @@ import CZUtils
 
 /// Convenience class to accomplish JSON serializing/deserializing
 open class CZHTTPJsonSerializer {
-    public static func url(_ baseURL: URL, append parameters: [AnyHashable: Any]?) -> URL {
+    public static func url(baseURL: URL, params parameters: [AnyHashable: Any]?) -> URL {
         guard let paramsString = CZHTTPJsonSerializer.string(with: parameters),
-            paramsString.characters.count > 0 else {
+            !paramsString.isEmpty else {
                 return baseURL
         }
         let jointer = baseURL.absoluteString.hasSuffix("?") ? "&" : "?"

@@ -11,6 +11,9 @@ import CZUtils
 
 /// Essential class accomplishes HTTP request
 @objc open class CZHTTPRequester: NSObject {
+    public typealias Parameters = [AnyHashable: Any]
+    public typealias Headers = [String: String]
+
     public enum RequestType: String {
         case GET = "GET"
         case POST = "POST"
@@ -22,6 +25,10 @@ import CZUtils
         case TRACE = "TRACE"
         case CONNECT = "CONNECT"
         case UNKNOWN = "UNKNOWN"
+
+        var hasSerializableUrl: Bool {
+            return !(self == .POST || self == .DELETE)
+        }
     }
     /// Progress closure: (currSize, expectedSize, downloadURL)
     public typealias Progress = (Int64, Int64, URL) -> Void
@@ -35,7 +42,8 @@ import CZUtils
     fileprivate var cached: Cached?
     fileprivate let shouldSerializeJson: Bool
     fileprivate let requestType: RequestType
-    fileprivate let parameters: [AnyHashable: Any]?
+    fileprivate let parameters: Parameters?
+    fileprivate let headers: Headers?
 
     fileprivate var urlSession: URLSession?
     fileprivate var dataTask: URLSessionDataTask?
@@ -49,17 +57,19 @@ import CZUtils
     }
 
     required public init(_ requestType: RequestType,
-                  url: URL,
-                  parameters: [AnyHashable: Any]? = nil,
-                  shouldSerializeJson: Bool = true,
-                  httpCache: CZHTTPCache? = nil,
-                  success: @escaping Success,
-                  failure: @escaping Failure,
-                  cached: Cached? = nil,
-                  progress: Progress? = nil) {
+                         url: URL,
+                         parameters: Parameters? = nil,
+                         headers: Headers? = nil,
+                         shouldSerializeJson: Bool = true,
+                         httpCache: CZHTTPCache? = nil,
+                         success: @escaping Success,
+                         failure: @escaping Failure,
+                         cached: Cached? = nil,
+                         progress: Progress? = nil) {
         self.requestType = requestType
         self.url = url
         self.parameters = parameters
+        self.headers = headers
         self.httpCache = httpCache
         self.shouldSerializeJson = shouldSerializeJson
         self.progress = progress
@@ -71,7 +81,7 @@ import CZUtils
 
     @discardableResult
     open func start() -> CZHTTPRequester {
-        // Read cache
+        // Fetch from cache
         if  requestType == .GET,
             let cached = cached,
             let cachedData = httpCache?.readData(forKey: httpCacheKey)  {
@@ -80,21 +90,27 @@ import CZUtils
             }
         }
 
+        // Fetch from network
         urlSession = URLSession(configuration: .default,
                                 delegate: self,
                                 delegateQueue: nil)
         let paramsString: String? = CZHTTPJsonSerializer.string(with: parameters)
+        let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: parameters) : self.url
+        let request = NSMutableURLRequest(url: url)
+        request.httpMethod = requestType.rawValue
+        if let headers = headers {
+            for (key, value) in headers {
+                request.addValue(value, forHTTPHeaderField: key)
+            }
+        }
+
         switch requestType {
-        case .DELETE:
-            let request = NSMutableURLRequest(url: CZHTTPJsonSerializer.url(url, append: parameters))
-            request.httpMethod = requestType.rawValue
+        case .GET, .PUT, .HEAD, .PATCH, .OPTIONS, .TRACE, .CONNECT, .UNKNOWN:
             dataTask = urlSession?.dataTask(with: request as URLRequest)
 
         case .POST:
-            let request = NSMutableURLRequest(url: url)
-            request.httpMethod = requestType.rawValue
             let postData = paramsString?.data(using: .utf8)
-            // Side note: "application/json" doesn't Work
+            // Note: "application/json" doesn't Work
             request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
             request.addValue("application/json", forHTTPHeaderField: "Accept")
             let contentLength = postData?.count ?? 0
@@ -102,9 +118,8 @@ import CZUtils
             request.httpBody = postData
             dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
 
-        default:
-            let serializedUrl = CZHTTPJsonSerializer.url(url, append: parameters)
-            dataTask = urlSession?.dataTask(with: serializedUrl)
+        case .DELETE:
+            dataTask = urlSession?.dataTask(with: request as URLRequest)
         }
         dataTask?.resume()
         return self
@@ -142,10 +157,10 @@ extension CZHTTPRequester: URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard self.response == task.response else {return}
         if error == nil,
-           let httpResponse = response as? HTTPURLResponse,
-           httpResponse.statusCode == 200 {
+            let httpResponse = response as? HTTPURLResponse,
+            httpResponse.statusCode == 200 {
             if shouldSerializeJson,
-               let serializedObject = CZHTTPJsonSerializer.deserializedObject(with: receivedData) {
+                let serializedObject = CZHTTPJsonSerializer.deserializedObject(with: receivedData) {
                 // Return [AnyHashable: Any] if available
                 if requestType == .GET {
                     httpCache?.saveData(serializedObject, forKey: httpCacheKey)

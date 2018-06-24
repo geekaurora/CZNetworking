@@ -32,7 +32,7 @@ open class CZHTTPCache: NSObject {
         return cacheFolder
     }()
     static func cacheKey(url: URL, parameters: [AnyHashable: Any]?) -> String {
-        return CZHTTPJsonSerializer.url(url, append: parameters).absoluteString
+        return CZHTTPJsonSerializer.url(baseURL: url, params: parameters).absoluteString
     }
 
     func saveData<T>(_ data: T, forKey key: String) {
