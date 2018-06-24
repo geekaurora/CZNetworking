@@ -27,20 +27,6 @@
 			remoteGlobalIDString = 044E02471F74349B00849AA2;
 			remoteInfo = CZNetworking;
 		};
-		2AA1AFB21FF0D9FE002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFAD1FF0D9FE002928A8 /* CZUtils.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C39982CA1F7739EA00775B6C;
-			remoteInfo = CZUtils;
-		};
-		2AA1AFB41FF0D9FE002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFAD1FF0D9FE002928A8 /* CZUtils.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C39982D31F7739EA00775B6C;
-			remoteInfo = CZUtilsTests;
-		};
 		2AA1AFBD1FF0DA01002928A8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
@@ -90,7 +76,6 @@
 		044E02731F74358600849AA2 /* CZHTTPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPManager.swift; sourceTree = "<group>"; };
 		044E02741F74358600849AA2 /* CZHTTPRequester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPRequester.swift; sourceTree = "<group>"; };
 		2A92007F1F75E80100A21F01 /* CZNetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZNetError.swift; sourceTree = "<group>"; };
-		2AA1AFAD1FF0D9FE002928A8 /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = "Supported Files/CZUtils/CZUtils.xcodeproj"; sourceTree = "<group>"; };
 		2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CommonCrypto.xcodeproj; path = "Supported Files/CommonCrypto/CommonCrypto.xcodeproj"; sourceTree = "<group>"; };
 		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		DF2A861020E0267C00BED02D /* CZUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CZUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -163,7 +148,6 @@
 				044E024B1F74349B00849AA2 /* CZNetworking.h */,
 				044E024C1F74349B00849AA2 /* Info.plist */,
 				2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */,
-				2AA1AFAD1FF0D9FE002928A8 /* CZUtils.xcodeproj */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -175,15 +159,6 @@
 				2A92007F1F75E80100A21F01 /* CZNetError.swift */,
 			);
 			name = Utils;
-			sourceTree = "<group>";
-		};
-		2AA1AFAE1FF0D9FE002928A8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2AA1AFB31FF0D9FE002928A8 /* CZUtils.framework */,
-				2AA1AFB51FF0D9FE002928A8 /* CZUtilsTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		2AA1AFB71FF0DA01002928A8 /* Products */ = {
@@ -295,10 +270,6 @@
 					ProductGroup = 2AA1AFB71FF0DA01002928A8 /* Products */;
 					ProjectRef = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
 				},
-				{
-					ProductGroup = 2AA1AFAE1FF0D9FE002928A8 /* Products */;
-					ProjectRef = 2AA1AFAD1FF0D9FE002928A8 /* CZUtils.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -309,20 +280,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		2AA1AFB31FF0D9FE002928A8 /* CZUtils.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CZUtils.framework;
-			remoteRef = 2AA1AFB21FF0D9FE002928A8 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2AA1AFB51FF0D9FE002928A8 /* CZUtilsTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = CZUtilsTests.xctest;
-			remoteRef = 2AA1AFB41FF0D9FE002928A8 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		2AA1AFBE1FF0DA01002928A8 /* CommonCrypto.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;

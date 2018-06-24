@@ -111,7 +111,6 @@ import CZUtils
 
         case .POST:
             let postData = paramsString?.data(using: .utf8)
-            // Note: "application/json" doesn't Work
             request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
             request.addValue("application/json", forHTTPHeaderField: "Accept")
             let contentLength = postData?.count ?? 0
