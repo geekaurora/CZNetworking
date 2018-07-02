@@ -11,7 +11,7 @@ import CZUtils
 
 /// Convenience class to accomplish JSON serializing/deserializing
 open class CZHTTPJsonSerializer {
-    public static func url(baseURL: URL, params params: [AnyHashable: Any]?) -> URL {
+    public static func url(baseURL: URL, params: [AnyHashable: Any]?) -> URL {
         guard let paramsString = CZHTTPJsonSerializer.string(with: params),
             !paramsString.isEmpty else {
                 return baseURL

@@ -43,8 +43,8 @@ open class CZHTTPManager: NSObject {
 
     public func POST(_ urlStr: String,
                      contentType: HTTPRequestWorker.ContentType = .formUrlencoded,
-                     data: Data? = nil,
                      params: HTTPRequestWorker.Params? = nil,
+                     data: Data? = nil,
                      headers: HTTPRequestWorker.Headers? = nil,
                      success: @escaping HTTPRequestWorker.Success,
                      failure: @escaping HTTPRequestWorker.Failure,
