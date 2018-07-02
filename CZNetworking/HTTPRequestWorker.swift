@@ -11,6 +11,7 @@ import CZUtils
 
 @objc open class HTTPRequestWorker: NSObject {
     public typealias Params = [AnyHashable: Any]
+    public typealias ParamList = [AnyHashable]
     public typealias Headers = [String: String]
 
     public enum RequestType: String {
