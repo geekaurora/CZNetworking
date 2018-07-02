@@ -14,22 +14,59 @@ import CZUtils
     public typealias ParamList = [AnyHashable]
     public typealias Headers = [String: String]
 
-    public enum RequestType: String {
-        case GET = "GET"
-        case POST = "POST"
-        case PUT = "PUT"
-        case HEAD = "HEAD"
-        case DELETE = "DELETE"
-        case PATCH = "PATCH"
-        case OPTIONS = "OPTIONS"
-        case TRACE = "TRACE"
-        case CONNECT = "CONNECT"
-        case UNKNOWN = "UNKNOWN"
+    public enum RequestType: Equatable {
+        case GET
+        case POST(ContentType, Data?)
+        case PUT
+        case DELETE
+        /**
+        case HEAD
+        case PATCH
+        case OPTIONS
+        case TRACE
+        case CONNECT
+        case UNKNOWN
+         */
+
+        var stringValue: String {
+            switch self {
+            case .GET: return "GET"
+            case .POST: return "POST"
+            case .PUT: return "PUT"
+            case .DELETE: return "DELETE"
+            }
+        }
 
         var hasSerializableUrl: Bool {
-            return !(self == .POST || self == .DELETE)
+            switch self {
+            case .DELETE, .POST:
+                return false
+            default:
+                return true
+            }
+        }
+
+        public static func ==(lhs: RequestType, rhs: RequestType) -> Bool {
+            switch (lhs, rhs) {
+            case (.GET, .GET):
+                return true
+            case (.POST, .POST):
+                return true
+            case (.PUT, .PUT):
+                return true
+            case (.DELETE, .DELETE):
+                return true
+            default:
+                return false
+            }
         }
     }
+
+    public enum ContentType {
+        case textPlain
+        case formUrlencoded
+    }
+
     /// Progress closure: (currSize, expectedSize, downloadURL)
     public typealias Progress = (Int64, Int64, URL) -> Void
     public typealias Success = (URLSessionDataTask?, Any?) -> Void
@@ -77,6 +114,9 @@ import CZUtils
         self.success = success
         self.failure = failure
         super.init()
+
+        // Build urlSessionTask
+        dataTask = buildUrlSessionTask()
     }
 
     @discardableResult
@@ -91,7 +131,6 @@ import CZUtils
         }
 
         // Fetch from network
-        dataTask = buildUrlSessionTask()
         dataTask?.resume()
         return self
     }
@@ -102,6 +141,9 @@ import CZUtils
         return self
     }
 
+    /**
+     Build urlSessionTask based on settings
+     */
     private func buildUrlSessionTask() -> URLSessionDataTask? {
         urlSession = URLSession(configuration: .default,
                                 delegate: self,
@@ -109,7 +151,7 @@ import CZUtils
         let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
         let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
         let request = NSMutableURLRequest(url: url)
-        request.httpMethod = requestType.rawValue
+        request.httpMethod = requestType.stringValue
 
         if let headers = headers {
             for (key, value) in headers {
@@ -119,12 +161,21 @@ import CZUtils
 
         var dataTask: URLSessionDataTask? = nil
         switch requestType {
-        case .GET, .PUT, .HEAD, .PATCH, .OPTIONS, .TRACE, .CONNECT, .UNKNOWN:
+        case .GET, .PUT:
             dataTask = urlSession?.dataTask(with: request as URLRequest)
 
-        case .POST:
-            let postData = paramsString?.data(using: .utf8)
-            request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        case let .POST(contentType, data):
+            // Set postData as input data if non-nil
+            let postData = data ?? paramsString?.data(using: .utf8)
+            let contentTypeValue: String = {
+                switch contentType {
+                case .formUrlencoded:
+                    return "application/x-www-form-urlencoded"
+                case .textPlain:
+                    return "text/plain"
+                }
+            }()
+            request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
             request.addValue("application/json", forHTTPHeaderField: "Accept")
             let contentLength = postData?.count ?? 0
             request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
