@@ -91,6 +91,18 @@ import CZUtils
         }
 
         // Fetch from network
+        dataTask = buildUrlSessionTask()
+        dataTask?.resume()
+        return self
+    }
+
+    @discardableResult
+    open func cancel()-> HTTPRequestWorker {
+        dataTask?.cancel()
+        return self
+    }
+
+    private func buildUrlSessionTask() -> URLSessionDataTask? {
         urlSession = URLSession(configuration: .default,
                                 delegate: self,
                                 delegateQueue: nil)
@@ -98,13 +110,14 @@ import CZUtils
         let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = requestType.rawValue
-        
+
         if let headers = headers {
             for (key, value) in headers {
                 request.addValue(value, forHTTPHeaderField: key)
             }
         }
 
+        var dataTask: URLSessionDataTask? = nil
         switch requestType {
         case .GET, .PUT, .HEAD, .PATCH, .OPTIONS, .TRACE, .CONNECT, .UNKNOWN:
             dataTask = urlSession?.dataTask(with: request as URLRequest)
@@ -121,14 +134,7 @@ import CZUtils
         case .DELETE:
             dataTask = urlSession?.dataTask(with: request as URLRequest)
         }
-        dataTask?.resume()
-        return self
-    }
-
-    @discardableResult
-    open func cancel()-> HTTPRequestWorker {
-        dataTask?.cancel()
-        return self
+        return dataTask
     }
 }
 
