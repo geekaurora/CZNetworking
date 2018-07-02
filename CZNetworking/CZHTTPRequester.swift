@@ -1,5 +1,5 @@
 //
-//  CZHTTPRequester.swift
+//  HTTPRequestWorker.swift
 //  CZNetworking
 //
 //  Created by Cheng Zhang on 1/3/16.
@@ -10,7 +10,7 @@ import Foundation
 import CZUtils
 
 /// Essential class accomplishes HTTP request
-@objc open class CZHTTPRequester: NSObject {
+@objc open class HTTPRequestWorker: NSObject {
     public typealias Parameters = [AnyHashable: Any]
     public typealias Headers = [String: String]
 
@@ -80,7 +80,7 @@ import CZUtils
     }
 
     @discardableResult
-    open func start() -> CZHTTPRequester {
+    open func start() -> HTTPRequestWorker {
         // Fetch from cache
         if  requestType == .GET,
             let cached = cached,
@@ -126,13 +126,13 @@ import CZUtils
     }
 
     @discardableResult
-    open func cancel()-> CZHTTPRequester {
+    open func cancel()-> HTTPRequestWorker {
         dataTask?.cancel()
         return self
     }
 }
 
-extension CZHTTPRequester: URLSessionDataDelegate {
+extension HTTPRequestWorker: URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Swift.Void) {
         defer {
             self.response = response
@@ -191,7 +191,7 @@ extension CZHTTPRequester: URLSessionDataDelegate {
     }
 }
 
-extension CZHTTPRequester: URLSessionDelegate {}
+extension HTTPRequestWorker: URLSessionDelegate {}
 
 fileprivate enum config {
     static let timeOutInterval: TimeInterval = 60

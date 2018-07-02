@@ -16,14 +16,14 @@ open class CZHTTPJsonSerializer {
             !paramsString.isEmpty else {
                 return baseURL
         }
-        let jointer = baseURL.absoluteString.hasSuffix("?") ? "&" : "?"
+        let jointer = baseURL.absoluteString.contains("?") ? "&" : "?"
         let urlString = baseURL.absoluteString + jointer + paramsString
         return URL(string: urlString)!
     }
 
     /// Return serilized string from parameters
     public static func string(with parameters: [AnyHashable: Any]?) -> String? {
-        guard let parameters = parameters as? [String: String] else { return nil }
+        guard let parameters = parameters as? [AnyHashable: CustomStringConvertible] else { return nil }
         let res = parameters.keys.flatMap{"\($0)=\(parameters[$0]!)"}.joined(separator: "&")
         return res
     }
