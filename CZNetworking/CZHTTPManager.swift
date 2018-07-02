@@ -24,7 +24,7 @@ open class CZHTTPManager: NSObject {
     }
 
     public func GET(_ urlStr: String,
-                    parameters: HTTPRequestWorker.Parameters? = nil,
+                    params: HTTPRequestWorker.Params? = nil,
                     headers: HTTPRequestWorker.Headers? = nil,
                     success: @escaping HTTPRequestWorker.Success,
                     failure: @escaping HTTPRequestWorker.Failure,
@@ -33,7 +33,7 @@ open class CZHTTPManager: NSObject {
         startRequester(
             .GET,
             urlStr: urlStr,
-            parameters: parameters,
+            params: params,
             headers: headers,
             success: success,
             failure: failure,
@@ -42,7 +42,7 @@ open class CZHTTPManager: NSObject {
     }
 
     public func POST(_ urlStr: String,
-                     parameters: HTTPRequestWorker.Parameters? = nil,
+                     params: HTTPRequestWorker.Params? = nil,
                      headers: HTTPRequestWorker.Headers? = nil,
                      success: @escaping HTTPRequestWorker.Success,
                      failure: @escaping HTTPRequestWorker.Failure,
@@ -50,7 +50,7 @@ open class CZHTTPManager: NSObject {
         startRequester(
             .POST,
             urlStr: urlStr,
-            parameters: parameters,
+            params: params,
             headers: headers,
             success: success,
             failure: failure,
@@ -58,14 +58,14 @@ open class CZHTTPManager: NSObject {
     }
 
     public func DELETE(_ urlStr: String,
-                       parameters: HTTPRequestWorker.Parameters? = nil,
+                       params: HTTPRequestWorker.Params? = nil,
                        headers: HTTPRequestWorker.Headers? = nil,
                        success: @escaping HTTPRequestWorker.Success,
                        failure: @escaping HTTPRequestWorker.Failure) {
         startRequester(
             .DELETE,
             urlStr: urlStr,
-            parameters: parameters,
+            params: params,
             headers: headers,
             success: success,
             failure: failure)
@@ -75,7 +75,7 @@ open class CZHTTPManager: NSObject {
 fileprivate extension CZHTTPManager {
     func startRequester(_ requestType: HTTPRequestWorker.RequestType,
                         urlStr: String,
-                        parameters: HTTPRequestWorker.Parameters? = nil,
+                        params: HTTPRequestWorker.Params? = nil,
                         headers: HTTPRequestWorker.Headers? = nil,
                         success: @escaping HTTPRequestWorker.Success,
                         failure: @escaping HTTPRequestWorker.Failure,
@@ -85,7 +85,7 @@ fileprivate extension CZHTTPManager {
             HTTPRequestWorker(
                 requestType,
                 url: URL(string: urlStr)!,
-                parameters: parameters,
+                params: params,
                 headers: headers,
                 httpCache: self.httpCache,
                 success: success,

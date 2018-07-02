@@ -11,7 +11,7 @@ import CZUtils
 
 /// Essential class accomplishes HTTP request
 @objc open class HTTPRequestWorker: NSObject {
-    public typealias Parameters = [AnyHashable: Any]
+    public typealias Params = [AnyHashable: Any]
     public typealias Headers = [String: String]
 
     public enum RequestType: String {
@@ -42,7 +42,7 @@ import CZUtils
     fileprivate var cached: Cached?
     fileprivate let shouldSerializeJson: Bool
     fileprivate let requestType: RequestType
-    fileprivate let parameters: Parameters?
+    fileprivate let params: Params?
     fileprivate let headers: Headers?
 
     fileprivate var urlSession: URLSession?
@@ -53,12 +53,12 @@ import CZUtils
     fileprivate lazy var receivedData = Data()
     fileprivate var httpCache: CZHTTPCache?
     fileprivate var httpCacheKey: String {
-        return CZHTTPCache.cacheKey(url: url, parameters: parameters)
+        return CZHTTPCache.cacheKey(url: url, params: params)
     }
 
     required public init(_ requestType: RequestType,
                          url: URL,
-                         parameters: Parameters? = nil,
+                         params: Params? = nil,
                          headers: Headers? = nil,
                          shouldSerializeJson: Bool = true,
                          httpCache: CZHTTPCache? = nil,
@@ -68,7 +68,7 @@ import CZUtils
                          progress: Progress? = nil) {
         self.requestType = requestType
         self.url = url
-        self.parameters = parameters
+        self.params = params
         self.headers = headers
         self.httpCache = httpCache
         self.shouldSerializeJson = shouldSerializeJson
@@ -94,8 +94,8 @@ import CZUtils
         urlSession = URLSession(configuration: .default,
                                 delegate: self,
                                 delegateQueue: nil)
-        let paramsString: String? = CZHTTPJsonSerializer.string(with: parameters)
-        let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: parameters) : self.url
+        let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
+        let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = requestType.rawValue
         
