@@ -9,7 +9,6 @@
 import Foundation
 import CZUtils
 
-/// Essential class accomplishes HTTP request
 @objc open class HTTPRequestWorker: NSObject {
     public typealias Params = [AnyHashable: Any]
     public typealias Headers = [String: String]

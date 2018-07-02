@@ -13,7 +13,7 @@
 		044E02781F74358600849AA2 /* CZHTTPCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02711F74358600849AA2 /* CZHTTPCache.swift */; };
 		044E02791F74358600849AA2 /* CZHTTPJsonSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */; };
 		044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02731F74358600849AA2 /* CZHTTPManager.swift */; };
-		044E027B1F74358600849AA2 /* CZHTTPRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02741F74358600849AA2 /* CZHTTPRequester.swift */; };
+		044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02741F74358600849AA2 /* HTTPRequestWorker.swift */; };
 		2A9200801F75E80100A21F01 /* CZNetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A92007F1F75E80100A21F01 /* CZNetError.swift */; };
 		2AEBF7C51F759298005A1DEF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEBF7C41F759298005A1DEF /* Extensions.swift */; };
 		DF2A861120E0267C00BED02D /* CZUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2A861020E0267C00BED02D /* CZUtils.framework */; };
@@ -74,7 +74,7 @@
 		044E02711F74358600849AA2 /* CZHTTPCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPCache.swift; sourceTree = "<group>"; };
 		044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPJsonSerializer.swift; sourceTree = "<group>"; };
 		044E02731F74358600849AA2 /* CZHTTPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPManager.swift; sourceTree = "<group>"; };
-		044E02741F74358600849AA2 /* CZHTTPRequester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPRequester.swift; sourceTree = "<group>"; };
+		044E02741F74358600849AA2 /* HTTPRequestWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestWorker.swift; sourceTree = "<group>"; };
 		2A92007F1F75E80100A21F01 /* CZNetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZNetError.swift; sourceTree = "<group>"; };
 		2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CommonCrypto.xcodeproj; path = "Supported Files/CommonCrypto/CommonCrypto.xcodeproj"; sourceTree = "<group>"; };
 		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -124,7 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				044E02731F74358600849AA2 /* CZHTTPManager.swift */,
-				044E02741F74358600849AA2 /* CZHTTPRequester.swift */,
+				044E02741F74358600849AA2 /* HTTPRequestWorker.swift */,
 				044E02711F74358600849AA2 /* CZHTTPCache.swift */,
 				044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */,
 				2A9200881F75E9BA00A21F01 /* Utils */,
@@ -333,7 +333,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				044E02791F74358600849AA2 /* CZHTTPJsonSerializer.swift in Sources */,
-				044E027B1F74358600849AA2 /* CZHTTPRequester.swift in Sources */,
+				044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */,
 				044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */,
 				2AEBF7C51F759298005A1DEF /* Extensions.swift in Sources */,
 				044E02781F74358600849AA2 /* CZHTTPCache.swift in Sources */,
