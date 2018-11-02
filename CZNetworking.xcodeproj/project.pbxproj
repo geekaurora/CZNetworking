@@ -62,6 +62,20 @@
 			remoteGlobalIDString = 444A78E81D881A1E003983A2;
 			remoteInfo = "CommonCrypto-iOS";
 		};
+		DF9C89C6218BCBAE00D55406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DF9C89BE218BCBAE00D55406 /* CZUtils.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C39982CA1F7739EA00775B6C;
+			remoteInfo = CZUtils;
+		};
+		DF9C89C8218BCBAE00D55406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DF9C89BE218BCBAE00D55406 /* CZUtils.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C39982D31F7739EA00775B6C;
+			remoteInfo = CZUtilsTests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -79,6 +93,7 @@
 		2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CommonCrypto.xcodeproj; path = "Supported Files/CommonCrypto/CommonCrypto.xcodeproj"; sourceTree = "<group>"; };
 		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		DF2A861020E0267C00BED02D /* CZUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CZUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF9C89BE218BCBAE00D55406 /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = "Supported Files/CZUtils/CZUtils.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +160,7 @@
 		044E02DB1F7440FD00849AA2 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
+				DF9C89BE218BCBAE00D55406 /* CZUtils.xcodeproj */,
 				044E024B1F74349B00849AA2 /* CZNetworking.h */,
 				044E024C1F74349B00849AA2 /* Info.plist */,
 				2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */,
@@ -178,6 +194,15 @@
 				DF2A861020E0267C00BED02D /* CZUtils.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DF9C89BF218BCBAE00D55406 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DF9C89C7218BCBAE00D55406 /* CZUtils.framework */,
+				DF9C89C9218BCBAE00D55406 /* CZUtilsTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,6 +295,10 @@
 					ProductGroup = 2AA1AFB71FF0DA01002928A8 /* Products */;
 					ProjectRef = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
 				},
+				{
+					ProductGroup = DF9C89BF218BCBAE00D55406 /* Products */;
+					ProjectRef = DF9C89BE218BCBAE00D55406 /* CZUtils.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -306,6 +335,20 @@
 			fileType = wrapper.framework;
 			path = CommonCrypto.framework;
 			remoteRef = 2AA1AFC31FF0DA01002928A8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DF9C89C7218BCBAE00D55406 /* CZUtils.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CZUtils.framework;
+			remoteRef = DF9C89C6218BCBAE00D55406 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DF9C89C9218BCBAE00D55406 /* CZUtilsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = CZUtilsTests.xctest;
+			remoteRef = DF9C89C8218BCBAE00D55406 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
