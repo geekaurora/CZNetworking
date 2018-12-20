@@ -12,13 +12,16 @@ import UIKit
  Asynchronous HTTP requests manager based on NSOperationQueue
  */
 open class CZHTTPManager: NSObject {
-    private var queue: OperationQueue
-    public static var shared = CZHTTPManager()
-    private(set) var httpCache: CZHTTPCache
-
+    public static let shared = CZHTTPManager()
+    private let queue: OperationQueue
+    private let httpCache: CZHTTPCache
+    enum Constant {
+        static let maxConcurrentOperationCount = 5
+    }
+    
     public override init() {
         queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 5
+        queue.maxConcurrentOperationCount = Constant.maxConcurrentOperationCount
         httpCache = CZHTTPCache()
         super.init()
     }

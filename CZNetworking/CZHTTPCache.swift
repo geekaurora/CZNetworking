@@ -8,16 +8,17 @@
 
 import UIKit
 
-/// Local cache class for HTTP response
+/// Local Cache class for HTTP response
 open class CZHTTPCache: NSObject {
     private var ioQueue: DispatchQueue
-
+    
     override init() {
-        ioQueue = DispatchQueue(label: "com.tony.httpCache.ioQueue",
-                                qos: .default,
-                                attributes: .concurrent,
-                                autoreleaseFrequency: .inherit,
-                                target: nil)
+        ioQueue = DispatchQueue(
+            label: "com.tony.httpCache.ioQueue",
+            qos: .default,
+            attributes: .concurrent,
+            autoreleaseFrequency: .inherit,
+            target: nil)
         super.init()
     }
 
@@ -35,14 +36,16 @@ open class CZHTTPCache: NSObject {
         return CZHTTPJsonSerializer.url(baseURL: url, params: params).absoluteString
     }
 
-    func saveData<T>(_ data: T, forKey key: String) {
+    func saveData(_ data: Any, forKey key: String) {
         ioQueue.async(flags: .barrier) {[weak self] in
             guard let `self` = self else {return}
             switch data {
             case let data as NSDictionary:
-                let _ = data.write(to: self.fileURL(forKey: key), atomically: false)
-                return
+                data.write(to: self.fileURL(forKey: key), atomically: false)
+            case let data as NSArray:
+                data.write(to: self.fileURL(forKey: key), atomically: false)
             default:
+                assertionFailure("Unsupported data type.")
                 return
             }
         }
