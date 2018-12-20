@@ -13,20 +13,21 @@ import CZUtils
     public typealias Params = [AnyHashable: Any]
     public typealias ParamList = [AnyHashable]
     public typealias Headers = [String: String]
+    private enum config {
+        static let timeOutInterval: TimeInterval = 60
+    }
 
     public enum RequestType: Equatable {
         case GET
         case POST(ContentType, Data?)
         case PUT
         case DELETE
-        /**
         case HEAD
         case PATCH
         case OPTIONS
         case TRACE
         case CONNECT
         case UNKNOWN
-         */
 
         var stringValue: String {
             switch self {
@@ -34,6 +35,9 @@ import CZUtils
             case .POST: return "POST"
             case .PUT: return "PUT"
             case .DELETE: return "DELETE"
+            default:
+                assertionFailure("Unsupported type")
+                return ""
             }
         }
 
@@ -184,19 +188,23 @@ import CZUtils
 
         case .DELETE:
             dataTask = urlSession?.dataTask(with: request as URLRequest)
+        default:
+            assertionFailure("Unsupported request type.")
         }
         return dataTask
     }
 }
 
 extension HTTPRequestWorker: URLSessionDataDelegate {
-    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Swift.Void) {
+    public func urlSession(_ session: URLSession,
+                           dataTask: URLSessionDataTask,
+                           didReceive response: URLResponse,
+                           completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         defer {
             self.response = response
             completionHandler(.allow)
         }
-        guard let response = response as? HTTPURLResponse else {
-            assertionFailure("response isn't HTTPURLResponse.")
+        guard let response = (response as? HTTPURLResponse).assertIfNil else {
             return
         }
         expectedSize = response.expectedContentLength
@@ -217,13 +225,13 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
             let httpResponse = response as? HTTPURLResponse,
             httpResponse.statusCode == 200 {
             if shouldSerializeJson,
-                let serializedObject = CZHTTPJsonSerializer.deserializedObject(with: receivedData) {
+                let deserializedObject = CZHTTPJsonSerializer.deserializedObject(with: receivedData) {
                 // Return [AnyHashable: Any] if available
                 if requestType == .GET {
-                    httpCache?.saveData(serializedObject, forKey: httpCacheKey)
+                    httpCache?.saveData(deserializedObject, forKey: httpCacheKey)
                 }
                 CZMainQueueScheduler.async { [weak self] in
-                    self?.success?(task as? URLSessionDataTask, serializedObject)
+                    self?.success?(task as? URLSessionDataTask, deserializedObject)
                 }
             } else {
                 // Otherwise return `Data`
@@ -241,7 +249,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
             errorDescription += "\nReceivedData: \(receivedDict)"
         }
         let errorRes = CZNetError(errorDescription)
-        print("Failure of dataTask, error - \(errorRes)")
+        dbgPrint("Failure of dataTask, error - \(errorRes)")
         CZMainQueueScheduler.async { [weak self] in
             self?.failure?(nil, errorRes)
         }
@@ -249,9 +257,3 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
 }
 
 extension HTTPRequestWorker: URLSessionDelegate {}
-
-private enum config {
-    static let timeOutInterval: TimeInterval = 60
-}
-
-
