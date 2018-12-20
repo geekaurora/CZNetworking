@@ -12,9 +12,9 @@ import UIKit
  Asynchronous HTTP requests manager based on NSOperationQueue
  */
 open class CZHTTPManager: NSObject {
-    fileprivate var queue: OperationQueue
+    private var queue: OperationQueue
     public static var shared = CZHTTPManager()
-    fileprivate(set) var httpCache: CZHTTPCache
+    private(set) var httpCache: CZHTTPCache
 
     public override init() {
         queue = OperationQueue()
@@ -74,7 +74,7 @@ open class CZHTTPManager: NSObject {
     }
 }
 
-fileprivate extension CZHTTPManager {
+private extension CZHTTPManager {
     func startRequester(_ requestType: HTTPRequestWorker.RequestType,
                         urlStr: String,
                         params: HTTPRequestWorker.Params? = nil,
