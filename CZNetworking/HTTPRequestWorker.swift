@@ -73,23 +73,23 @@ import CZUtils
     public typealias Failure = (URLSessionDataTask?, Error) -> Void
     public typealias Cached = (URLSessionDataTask?, Any?) -> Void
     let url: URL
-    fileprivate var success: Success?
-    fileprivate var failure: Failure?
-    fileprivate var progress: Progress?
-    fileprivate var cached: Cached?
-    fileprivate let shouldSerializeJson: Bool
-    fileprivate let requestType: RequestType
-    fileprivate let params: Params?
-    fileprivate let headers: Headers?
+    private var success: Success?
+    private var failure: Failure?
+    private var progress: Progress?
+    private var cached: Cached?
+    private let shouldSerializeJson: Bool
+    private let requestType: RequestType
+    private let params: Params?
+    private let headers: Headers?
 
-    fileprivate var urlSession: URLSession?
-    fileprivate var dataTask: URLSessionDataTask?
-    fileprivate var response: URLResponse?
-    fileprivate lazy var expectedSize: Int64 = 0
-    fileprivate lazy var receivedSize: Int64 = 0
-    fileprivate lazy var receivedData = Data()
-    fileprivate var httpCache: CZHTTPCache?
-    fileprivate var httpCacheKey: String {
+    private var urlSession: URLSession?
+    private var dataTask: URLSessionDataTask?
+    private var response: URLResponse?
+    private lazy var expectedSize: Int64 = 0
+    private lazy var receivedSize: Int64 = 0
+    private lazy var receivedData = Data()
+    private var httpCache: CZHTTPCache?
+    private var httpCacheKey: String {
         return CZHTTPCache.cacheKey(url: url, params: params)
     }
 
@@ -250,7 +250,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
 
 extension HTTPRequestWorker: URLSessionDelegate {}
 
-fileprivate enum config {
+private enum config {
     static let timeOutInterval: TimeInterval = 60
 }
 
