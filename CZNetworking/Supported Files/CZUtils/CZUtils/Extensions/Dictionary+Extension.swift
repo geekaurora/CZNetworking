@@ -6,17 +6,24 @@
 //  Copyright © 2017 Cheng Zhang. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public extension Dictionary {
-    /// Retrieve value from `externalRepresentation` dictionary, dealing with "." in keyPath
-    func value(forDotedKey dotedKey: String) -> Value? {
+    /// Retrieve value from `dotedKey`, compatible with multi-dot in keyPath. e.g. "user.profile.fullName"
+    public func value(forDotedKey dotedKey: String) -> Value? {
+        return value(forSegmentedKey: dotedKey)
+    }
+
+    /// Retrieve value from `segmentedKey`, compatible with multi-segments separated by `splitter`. e.g. "user.profile.fullName", "user/profile/fullName"
+    public func value(forSegmentedKey segmentedKey: String, splitter: String = ".") -> Value? {
         var value: Any? = nil
         var dict: Dictionary? = self
-        for subKey in dotedKey.components(separatedBy: ".") {
-            if dict == nil { return nil }
-            guard let subKey = subKey as? Key else { return nil }
-            value = dict?[subKey]
+
+        for subkey in segmentedKey.components(separatedBy: splitter) {
+            guard dict != nil, let subkey = subkey as? Key else {
+                return nil
+            }
+            value = dict?[subkey]
             dict = value as? Dictionary
         }
         return (value is NSNull) ? nil : (value as? Value)

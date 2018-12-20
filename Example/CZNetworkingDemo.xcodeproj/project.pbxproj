@@ -30,6 +30,13 @@
 			remoteGlobalIDString = 044E02511F74349B00849AA2;
 			remoteInfo = CZNetworkingTests;
 		};
+		2A9CB9BB21CB17F100FE99EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A86C2B61FF0D96A00D61B47 /* CZNetworking.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 044E02471F74349B00849AA2;
+			remoteInfo = CZNetworking;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -135,6 +142,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				2A9CB9BC21CB17F100FE99EC /* PBXTargetDependency */,
 			);
 			name = CZNetworkingDemo;
 			productName = CZNetworkingDemo;
@@ -279,6 +287,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2A9CB9BC21CB17F100FE99EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CZNetworking;
+			targetProxy = 2A9CB9BB21CB17F100FE99EC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		2AB659D91FF02BA5001A8835 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -418,7 +434,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tony.CZNetworkingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CZNetworkingDemo/CZNetworkingDemo-bridging-header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -435,7 +451,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tony.CZNetworkingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CZNetworkingDemo/CZNetworkingDemo-bridging-header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

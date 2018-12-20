@@ -235,7 +235,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
             return
         }
         var errorDescription = error?.localizedDescription ?? ""
-        let responseString = "Response: \(response)"
+        let responseString = "Response: \(String(describing: response))"
         errorDescription = responseString + "\n"
         if let receivedDict = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
             errorDescription += "\nReceivedData: \(receivedDict)"

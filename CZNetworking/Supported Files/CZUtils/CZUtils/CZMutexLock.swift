@@ -5,23 +5,18 @@
 //  Copyright © 2016 Cheng Zhang. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
-/// Multiple thread protector for specified object `item` on top of serial queue sync/barrier methods, `item` can only be read/written inside the protector
-///
-/// NOTE: Ensure no nested lock operations, which can lead to deadlock crash. e.g. read lock is invoked in write lock
-///
+/// Generic multi-thread mutex lock on top of DispatchQueue sync/barrier
 public class CZMutexLock<Item>: NSObject {
-    fileprivate lazy var lock = CZDispatchReadWriteLock()
-    //fileprivate lazy var lock = CZSemaphoreReadWriteLock()
-
-    fileprivate var item: Item
-
+    private lazy var lock = CZDispatchReadWriteLock()
+    private var item: Item
+    
     public init(_ item: Item) {
         self.item = item
     }
-
-    // give read access to "item" to the given block, returning whatever that block returns
+    
+    /// Execute `block` with read lock that protects `item`
     @discardableResult
     public func readLock<Result>(_ block: @escaping (_ item: Item) -> Result?) -> Result? {
         return lock.readLock { [weak self] in
@@ -32,8 +27,8 @@ public class CZMutexLock<Item>: NSObject {
             return block(self.item)
         }
     }
-
-    // give write access to "item" to the given block, returning whatever that block returns
+    
+    /// Execute `block` with write lock that protects `item`
     @discardableResult
     public func writeLock<Result>(_ block: @escaping (_ item: inout Item) -> Result?) -> Result? {
         return lock.writeLock { [weak self] in
@@ -47,9 +42,9 @@ public class CZMutexLock<Item>: NSObject {
 }
 
 public class CZDispatchReadWriteLock {
-    fileprivate let syncQueue = DispatchQueue(label: "com.tony.mutexLock", attributes: .concurrent)
+    private let syncQueue = DispatchQueue(label: "com.tony.mutexLock", attributes: .concurrent)
     public init () {}
-
+    
     @discardableResult
     public func readLock<T>(_ block: @escaping () -> T?) -> T?  {
         return syncQueue.sync { () -> T? in
@@ -71,22 +66,22 @@ public class CZDispatchReadWriteLock {
 }
 
 // MARK: - Bridging class for Objective-C
+
 @objc public class CZMutexLockOC: NSObject {
-    fileprivate var lock: CZMutexLock<Any>
+    private var lock: CZMutexLock<Any>
     init(_ item: Any) {
         lock = CZMutexLock<Any>(item)
     }
-
+    
     @discardableResult
-    public func read (_ block: @escaping (_ item: Any) -> Any?) -> Any? { // U
+    public func read (_ block: @escaping (_ item: Any) -> Any?) -> Any? {
         return lock.readLock {(item: Any) -> Any?  in
-            // `item` is actually the input of callback block of `lock`
             return block(item)
         }
     }
-
+    
     @discardableResult
-    public func write(_ block: @escaping (_ item: Any) -> Any?) -> Any? {// U
+    public func write(_ block: @escaping (_ item: Any) -> Any?) -> Any? {
         return lock.writeLock { (item: inout Any) -> Any? in
             return block(item)
         }

@@ -50,13 +50,13 @@ public protocol CZNibLoadable: class {
 @objc open class CZNibLoadableTableViewCell: UITableViewCell, CZNibLoadable {
     open var xibName: String? { return nil }
     open var nibContentView: UIView!
-    fileprivate var nibIsLoaded: Bool = false
+    private var nibIsLoaded: Bool = false
     
     // MARK: - Lifecycle
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
     }
-    override public init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
     }
@@ -73,11 +73,11 @@ public protocol CZNibLoadable: class {
     }
 }
 
-// MARK: - CZNibLoadableCollectionViewCells
+// MARK: - CZNibLoadableCollectionViewCell
 @objc open class CZNibLoadableCollectionViewCell: UICollectionViewCell, CZNibLoadable {
     open var nibContentView: UIView!
     open var xibName: String? { return nil }
-    fileprivate var nibIsLoaded: Bool = false
+    private var nibIsLoaded: Bool = false
     
     // MARK: - Lifecycle
     public override init(frame: CGRect) {
@@ -104,7 +104,7 @@ public protocol CZNibLoadable: class {
 // MARK: - Private Methods
 
 /// extension of UIView conforms to CZNibLoadable
-fileprivate extension CZNibLoadable where Self: UIView {
+private extension CZNibLoadable where Self: UIView {
     /// Load form nib file and overlay the contentView on superView
     func _loadAndOverlay(on superView: UIView) {
         nibContentView = loadAndOverlay(on: superView, xibName: xibName)
@@ -132,7 +132,7 @@ extension UIView {
     
     /// Unarchive and own properties of nibFile
     ///
-    /// - Parameters:
+    /// - Params:
     ///   - xibName : xib filename. `nil` by default
     ///   - bundle  : bundle to load nib file.
     /// - Returns   : views array unarchived from nib file
@@ -155,7 +155,7 @@ extension UIView {
         return views
     }
     
-    /// Overlap on superView, being added as subview of `superviewIn` if receiver has no superview
+    /// Overlap on `superviewIn`, added to `superviewIn` if invoker has no superview
     public func overlayOnSuperview(_ superviewIn: UIView? = nil, inset: UIEdgeInsets = .zero) {
         if superview == nil {
             superviewIn?.addSubview(self)
@@ -170,8 +170,8 @@ extension UIView {
             ]
         )
     }
-
-    public func overlayOnSuperViewController(_ controller: UIViewController) {
+    
+    public func overlayOnSuperViewController(_ controller: UIViewController, insets: UIEdgeInsets = .zero) {
         guard let containerView = controller.view else {
             assertionFailure("\(#function): superview is nil.")
             return
@@ -181,11 +181,10 @@ extension UIView {
         }
         translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            //topAnchor.constraint(equalTo: controller.topLayoutGuide.bottomAnchor),
-            topAnchor.constraint(equalTo: controller.view.topAnchor, constant: 64),
-            bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+            leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: insets.left),
+            trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -insets.right),
+            topAnchor.constraint(equalTo: controller.topLayoutGuide.bottomAnchor, constant: insets.top),
+            bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -insets.bottom)
             ]
         )
     }

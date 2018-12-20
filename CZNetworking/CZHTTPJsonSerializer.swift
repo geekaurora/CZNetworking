@@ -24,7 +24,7 @@ open class CZHTTPJsonSerializer {
     /// Return serilized string from params
     public static func string(with params: [AnyHashable: Any]?) -> String? {
         guard let params = params as? [AnyHashable: CustomStringConvertible] else { return nil }
-        let res = params.keys.flatMap{"\($0)=\(params[$0]!)"}.joined(separator: "&")
+        let res = params.keys.compactMap{"\($0)=\(params[$0]!)"}.joined(separator: "&")
         return res
     }
 
@@ -50,14 +50,15 @@ open class CZHTTPJsonSerializer {
     public static func deserializedObject(with jsonData: Data?, removeNull: Bool = true) -> Any? {
         guard let jsonData = jsonData else { return nil }
         do {
-            var deserializedData: Any? = try JSONSerialization.jsonObject(with: jsonData, options:[])
-            switch deserializedData {
-            case let nullRemovable as NSNullRemovable:
-                deserializedData = nullRemovable.removedNulls()
-                break
-            default:
-                break
-            }
+            let deserializedData: Any? = try JSONSerialization.jsonObject(with: jsonData, options:[])
+            // TODO: fix swizzling for nullRemovable on Swift4.2
+//            switch deserializedData {
+//            case let nullRemovable as NSNullRemovable:
+//                deserializedData = nullRemovable.removedNulls()
+//                break
+//            default:
+//                break
+//            }
             return deserializedData
         } catch let error as NSError {
             print("Parsing error: \(error.localizedDescription)")
