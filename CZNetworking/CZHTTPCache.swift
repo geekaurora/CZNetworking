@@ -40,7 +40,7 @@ open class CZHTTPCache: NSObject {
             guard let `self` = self else {return}
             switch data {
             case let data as NSDictionary:
-                let success = data.write(to: self.fileURL(forKey: key), atomically: false)
+                let _ = data.write(to: self.fileURL(forKey: key), atomically: false)
                 return
             default:
                 return
