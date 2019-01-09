@@ -15,17 +15,17 @@ open class CZHTTPManager: NSObject {
     public static let shared = CZHTTPManager()
     private let queue: OperationQueue
     private let httpCache: CZHTTPCache
-    enum Constant {
-        static let maxConcurrentOperationCount = 5
+    public enum Constant {
+        public static let maxConcurrentOperationCount = 5
     }
     
-    public override init() {
+    public init(maxConcurrentOperationCount: Int = Constant.maxConcurrentOperationCount) {
         queue = OperationQueue()
-        queue.maxConcurrentOperationCount = Constant.maxConcurrentOperationCount
+        queue.maxConcurrentOperationCount = maxConcurrentOperationCount
         httpCache = CZHTTPCache()
         super.init()
     }
-
+    
     public func GET(_ urlStr: String,
                     params: HTTPRequestWorker.Params? = nil,
                     headers: HTTPRequestWorker.Headers? = nil,
@@ -43,7 +43,7 @@ open class CZHTTPManager: NSObject {
             cached: cached,
             progress: progress)
     }
-
+    
     public func POST(_ urlStr: String,
                      contentType: HTTPRequestWorker.ContentType = .formUrlencoded,
                      params: HTTPRequestWorker.Params? = nil,
@@ -61,7 +61,7 @@ open class CZHTTPManager: NSObject {
             failure: failure,
             progress: progress)
     }
-
+    
     public func DELETE(_ urlStr: String,
                        params: HTTPRequestWorker.Params? = nil,
                        headers: HTTPRequestWorker.Headers? = nil,
@@ -86,18 +86,16 @@ private extension CZHTTPManager {
                         failure: @escaping HTTPRequestWorker.Failure,
                         cached: HTTPRequestWorker.Cached? = nil,
                         progress: HTTPRequestWorker.Progress? = nil) {
-        let op = BlockOperation {
-            HTTPRequestWorker(
-                requestType,
-                url: URL(string: urlStr)!,
-                params: params,
-                headers: headers,
-                httpCache: self.httpCache,
-                success: success,
-                failure: failure,
-                cached: cached,
-                progress: progress).start()
-        }
+        let op = HTTPRequestWorker(
+            requestType,
+            url: URL(string: urlStr)!,
+            params: params,
+            headers: headers,
+            httpCache: self.httpCache,
+            success: success,
+            failure: failure,
+            cached: cached,
+            progress: progress)
         queue.addOperation(op)
     }
 }
