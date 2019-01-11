@@ -10,7 +10,7 @@ import UIKit
 
 /// Local Cache class for HTTP response
 open class CZHTTPCache: NSObject {
-    private var ioQueue: DispatchQueue
+    private let ioQueue: DispatchQueue
     
     override init() {
         ioQueue = DispatchQueue(
