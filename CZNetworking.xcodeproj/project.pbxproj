@@ -48,41 +48,6 @@
 			remoteGlobalIDString = C39982C91F7739EA00775B6C;
 			remoteInfo = CZUtils;
 		};
-		2AA1AFBD1FF0DA01002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 444A78DC1D8819F8003983A2;
-			remoteInfo = "CommonCrypto-watchOS";
-		};
-		2AA1AFBF1FF0DA01002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 444A78E91D881A1E003983A2;
-			remoteInfo = "CommonCrypto-iOS";
-		};
-		2AA1AFC11FF0DA01002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 444A78F61D881A2D003983A2;
-			remoteInfo = "CommonCrypto-tvOS";
-		};
-		2AA1AFC31FF0DA01002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 444A79031D881A39003983A2;
-			remoteInfo = "CommonCrypto-macOS";
-		};
-		2AA1AFC51FF0DA07002928A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 444A78E81D881A1E003983A2;
-			remoteInfo = "CommonCrypto-iOS";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -98,7 +63,6 @@
 		044E02741F74358600849AA2 /* HTTPRequestWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestWorker.swift; sourceTree = "<group>"; };
 		2A92007F1F75E80100A21F01 /* CZNetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZNetError.swift; sourceTree = "<group>"; };
 		2A9CB9D421CB19DD00FE99EC /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = "Supported Files/CZUtils/CZUtils.xcodeproj"; sourceTree = "<group>"; };
-		2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CommonCrypto.xcodeproj; path = "Supported Files/CommonCrypto/CommonCrypto.xcodeproj"; sourceTree = "<group>"; };
 		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		DF2A861020E0267C00BED02D /* CZUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CZUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -170,7 +134,6 @@
 				044E024B1F74349B00849AA2 /* CZNetworking.h */,
 				044E024C1F74349B00849AA2 /* Info.plist */,
 				2A9CB9D421CB19DD00FE99EC /* CZUtils.xcodeproj */,
-				2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -189,17 +152,6 @@
 			children = (
 				2A9CB9DA21CB19DE00FE99EC /* CZUtils.framework */,
 				2A9CB9DC21CB19DE00FE99EC /* CZUtilsTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		2AA1AFB71FF0DA01002928A8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2AA1AFBE1FF0DA01002928A8 /* CommonCrypto.framework */,
-				2AA1AFC01FF0DA01002928A8 /* CommonCrypto.framework */,
-				2AA1AFC21FF0DA01002928A8 /* CommonCrypto.framework */,
-				2AA1AFC41FF0DA01002928A8 /* CommonCrypto.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -239,7 +191,6 @@
 			);
 			dependencies = (
 				2A9CB9DE21CB19E500FE99EC /* PBXTargetDependency */,
-				2AA1AFC61FF0DA07002928A8 /* PBXTargetDependency */,
 			);
 			name = CZNetworking;
 			productName = CZNetworking;
@@ -301,10 +252,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 2AA1AFB71FF0DA01002928A8 /* Products */;
-					ProjectRef = 2AA1AFB61FF0DA01002928A8 /* CommonCrypto.xcodeproj */;
-				},
-				{
 					ProductGroup = 2A9CB9D521CB19DD00FE99EC /* Products */;
 					ProjectRef = 2A9CB9D421CB19DD00FE99EC /* CZUtils.xcodeproj */;
 				},
@@ -330,34 +277,6 @@
 			fileType = wrapper.cfbundle;
 			path = CZUtilsTests.xctest;
 			remoteRef = 2A9CB9DB21CB19DE00FE99EC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2AA1AFBE1FF0DA01002928A8 /* CommonCrypto.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CommonCrypto.framework;
-			remoteRef = 2AA1AFBD1FF0DA01002928A8 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2AA1AFC01FF0DA01002928A8 /* CommonCrypto.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CommonCrypto.framework;
-			remoteRef = 2AA1AFBF1FF0DA01002928A8 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2AA1AFC21FF0DA01002928A8 /* CommonCrypto.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CommonCrypto.framework;
-			remoteRef = 2AA1AFC11FF0DA01002928A8 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2AA1AFC41FF0DA01002928A8 /* CommonCrypto.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CommonCrypto.framework;
-			remoteRef = 2AA1AFC31FF0DA01002928A8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -413,11 +332,6 @@
 			isa = PBXTargetDependency;
 			name = CZUtils;
 			targetProxy = 2A9CB9DD21CB19E500FE99EC /* PBXContainerItemProxy */;
-		};
-		2AA1AFC61FF0DA07002928A8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "CommonCrypto-iOS";
-			targetProxy = 2AA1AFC51FF0DA07002928A8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
