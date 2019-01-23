@@ -128,7 +128,7 @@ import CZUtils
         if  requestType == .GET,
             let cached = cached,
             let cachedData = httpCache?.readData(forKey: httpCacheKey) as? Data {
-            CZMainQueueScheduler.async {[weak self] in
+            CZMainQueueScheduler.async { [weak self] in
                 cached(self?.dataTask, cachedData)
             }
         }
