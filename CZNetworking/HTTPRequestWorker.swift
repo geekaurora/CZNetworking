@@ -73,9 +73,9 @@ import CZUtils
     
     /// Progress closure: (currSize, expectedSize, downloadURL)
     public typealias Progress = (Int64, Int64, URL) -> Void
-    public typealias Success = (URLSessionDataTask?, Any?) -> Void
+    public typealias Success = (URLSessionDataTask?, Data?) -> Void
     public typealias Failure = (URLSessionDataTask?, Error) -> Void
-    public typealias Cached = (URLSessionDataTask?, Any?) -> Void
+    public typealias Cached = (URLSessionDataTask?, Data?) -> Void
     let url: URL
     private var success: Success?
     private var failure: Failure?
@@ -127,8 +127,8 @@ import CZUtils
         // Fetch from cache
         if  requestType == .GET,
             let cached = cached,
-            let cachedData = httpCache?.readData(forKey: httpCacheKey)  {
-            CZMainQueueScheduler.async {[weak self] in
+            let cachedData = httpCache?.readData(forKey: httpCacheKey) as? Data {
+            CZMainQueueScheduler.async { [weak self] in
                 cached(self?.dataTask, cachedData)
             }
         }
@@ -219,39 +219,36 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         defer { finish() }
-        guard self.response == task.response else {return}
-        if error == nil,
-            let httpResponse = response as? HTTPURLResponse,
-            httpResponse.statusCode == 200 {
-            if shouldSerializeJson,
-                let deserializedObject = CZHTTPJsonSerializer.deserializedObject(with: receivedData) {
-                // Return [AnyHashable: Any] if available
-                if requestType == .GET {
-                    httpCache?.saveData(deserializedObject, forKey: httpCacheKey)
+        
+        guard self.response == task.response else { return }
+        
+        guard error == nil,
+              let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+                // Failure completion
+                var errorDescription = error?.localizedDescription ?? ""
+                let responseString = "Response: \(String(describing: response))"
+                errorDescription = responseString + "\n"
+                if let receivedDict = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
+                    errorDescription += "\nReceivedData: \(receivedDict)"
                 }
+                let errorRes = CZNetError(errorDescription)
+                dbgPrint("Failure of dataTask, error - \(errorRes)")
                 CZMainQueueScheduler.async { [weak self] in
-                    self?.success?(task as? URLSessionDataTask, deserializedObject)
+                    self?.failure?(nil, errorRes)
                 }
-            } else {
-                // Otherwise return `Data`
-                CZMainQueueScheduler.sync { [weak self] in
-                    guard let `self` = self else {return}
-                    self.success?(task as? URLSessionDataTask, self.receivedData)
-                }
-            }
-            return
+                return
         }
-        var errorDescription = error?.localizedDescription ?? ""
-        let responseString = "Response: \(String(describing: response))"
-        errorDescription = responseString + "\n"
-        if let receivedDict = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
-            errorDescription += "\nReceivedData: \(receivedDict)"
+        
+        // Success completion
+        if cached != nil {
+            httpCache?.saveData(receivedData, forKey: httpCacheKey)
         }
-        let errorRes = CZNetError(errorDescription)
-        dbgPrint("Failure of dataTask, error - \(errorRes)")
-        CZMainQueueScheduler.async { [weak self] in
-            self?.failure?(nil, errorRes)
+        CZMainQueueScheduler.sync { [weak self] in
+            guard let `self` = self else {return}
+            self.success?(task as? URLSessionDataTask, self.receivedData)
         }
+        
     }
 }
 
