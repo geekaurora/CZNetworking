@@ -225,7 +225,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
         guard error == nil,
               let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
-                // Failure handler
+                // Failure completion
                 var errorDescription = error?.localizedDescription ?? ""
                 let responseString = "Response: \(String(describing: response))"
                 errorDescription = responseString + "\n"
@@ -240,11 +240,10 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
                 return
         }
         
-        // Success handler
+        // Success completion
         if cached != nil {
             httpCache?.saveData(receivedData, forKey: httpCacheKey)
         }
-        
         CZMainQueueScheduler.sync { [weak self] in
             guard let `self` = self else {return}
             self.success?(task as? URLSessionDataTask, self.receivedData)
