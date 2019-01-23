@@ -6,7 +6,7 @@
 //  Copyright © 2016 Cheng Zhang. All rights reserved.
 //
 
-import UIKit
+import CZUtils
 
 /// Local Cache class for HTTP response
 open class CZHTTPCache: NSObject {
@@ -44,6 +44,12 @@ open class CZHTTPCache: NSObject {
                 data.write(to: self.fileURL(forKey: key), atomically: false)
             case let data as NSArray:
                 data.write(to: self.fileURL(forKey: key), atomically: false)
+            case let data as Data:
+                do {
+                    try data.write(to: self.fileURL(forKey: key), options: .atomic)
+                } catch {
+                    dbgPrint("Failed to write data. Error - \(error.localizedDescription)")
+                }
             default:
                 assertionFailure("Unsupported data type.")
                 return
@@ -60,8 +66,16 @@ open class CZHTTPCache: NSObject {
             if let array = NSArray(contentsOf: self.fileURL(forKey: key)) {
                 return array
             }
+            if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
+                return dict
+            }
+            do {
+                let data = try Data(contentsOf: self.fileURL(forKey: key))
+                return data
+            } catch {
+                dbgPrint("Failed to read data. Error - \(error.localizedDescription)")
+            }
             return nil
-
         }
     }
 }
