@@ -33,7 +33,7 @@ open class CZHTTPManager: NSObject {
                     failure: @escaping HTTPRequestWorker.Failure,
                     cached: HTTPRequestWorker.Cached? = nil,
                     progress: HTTPRequestWorker.Progress? = nil) {
-        startRequester(
+        startOperation(
             .GET,
             urlStr: urlStr,
             params: params,
@@ -52,7 +52,7 @@ open class CZHTTPManager: NSObject {
                      success: @escaping HTTPRequestWorker.Success,
                      failure: @escaping HTTPRequestWorker.Failure,
                      progress: HTTPRequestWorker.Progress? = nil) {
-        startRequester(
+        startOperation(
             .POST(contentType, data),
             urlStr: urlStr,
             params: params,
@@ -67,7 +67,7 @@ open class CZHTTPManager: NSObject {
                        headers: HTTPRequestWorker.Headers? = nil,
                        success: @escaping HTTPRequestWorker.Success,
                        failure: @escaping HTTPRequestWorker.Failure) {
-        startRequester(
+        startOperation(
             .DELETE,
             urlStr: urlStr,
             params: params,
@@ -78,7 +78,8 @@ open class CZHTTPManager: NSObject {
 }
 
 private extension CZHTTPManager {
-    func startRequester(_ requestType: HTTPRequestWorker.RequestType,
+    
+    func startOperation(_ requestType: HTTPRequestWorker.RequestType,
                         urlStr: String,
                         params: HTTPRequestWorker.Params? = nil,
                         headers: HTTPRequestWorker.Headers? = nil,
