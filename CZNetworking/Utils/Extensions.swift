@@ -26,3 +26,9 @@ public extension String {
         }
     }
 }
+
+public extension UUID {
+    public static func generate() -> String {
+        return UUID().uuidString
+    }
+}

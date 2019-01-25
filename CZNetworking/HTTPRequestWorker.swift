@@ -20,6 +20,7 @@ import CZUtils
     public enum RequestType: Equatable {
         case GET
         case POST(ContentType, Data?)
+        case UPLOAD(fileName: String, data: Data?)
         case PUT
         case DELETE
         case HEAD
@@ -59,6 +60,8 @@ import CZUtils
             case (.PUT, .PUT):
                 return true
             case (.DELETE, .DELETE):
+                return true
+            case (.UPLOAD, .UPLOAD):
                 return true
             default:
                 return false

@@ -96,7 +96,7 @@ private extension Upload {
     }
     
     static func generateBoundaryString() -> String {
-        return "Boundary-\(UUID().uuidString)"
+        return "Boundary-\(UUID.generate())"
     }
     
     static func mimeType(for path: String) -> String {
