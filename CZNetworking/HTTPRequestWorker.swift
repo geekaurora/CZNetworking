@@ -20,9 +20,9 @@ import CZUtils
     public enum RequestType: Equatable {
         case GET
         case POST(ContentType, Data?)
-        case UPLOAD(fileName: String, data: Data?)
         case PUT
         case DELETE
+        case UPLOAD(String, Data)
         case HEAD
         case PATCH
         case OPTIONS
@@ -188,6 +188,14 @@ import CZUtils
             
         case .DELETE:
             dataTask = urlSession?.dataTask(with: request as URLRequest)
+            
+        case let .UPLOAD(fileName, data):
+            do {
+                let request = try Upload.buildRequest(url, fileName: fileName, data: data)
+                dataTask = urlSession?.dataTask(with: request)
+            } catch {
+                dbgPrint("Failed to build upload request. Error - \(error.localizedDescription)")
+            }
         default:
             assertionFailure("Unsupported request type.")
         }
