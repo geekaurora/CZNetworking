@@ -36,6 +36,7 @@ import CZUtils
             case .POST: return "POST"
             case .PUT: return "PUT"
             case .DELETE: return "DELETE"
+            case .UPLOAD: return "UPLOAD"
             default:
                 assertionFailure("Unsupported type")
                 return ""
