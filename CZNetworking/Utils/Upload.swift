@@ -14,22 +14,22 @@ public class Upload {
     
     // MARK: - Upload File
     
-    public static func createRequest(_ url: URL,
-                              params: HTTPRequestWorker.Params = HTTPRequestWorker.Params(),
-                              filePath: String) throws -> URLRequest {
-        return try createRequest(url, params: params, filePaths: [filePath])
+    public static func buildRequest(_ url: URL,
+                                    params: HTTPRequestWorker.Params = HTTPRequestWorker.Params(),
+                                    filePath: String) throws -> URLRequest {
+        return try buildRequest(url, params: params, filePaths: [filePath])
     }
     
     // MARK: - Upload Data
     
-    public static func createRequest(_ url: URL,
-                              params: HTTPRequestWorker.Params = HTTPRequestWorker.Params(),
-                              fileName: String,
-                              data: Data) throws -> URLRequest {
+    public static func buildRequest(_ url: URL,
+                                    params: HTTPRequestWorker.Params = HTTPRequestWorker.Params(),
+                                    fileName: String,
+                                    data: Data) throws -> URLRequest {
         let boundary = generateBoundaryString()
-        var request = createBaseRequest(url, boundary: boundary)
+        var request = buildBaseRequest(url, boundary: boundary)
         let file = FileInfo(name: fileName, data: data)
-        request.httpBody = try createBody(
+        request.httpBody = try buildBody(
             with: params,
             files: [file],
             boundary: boundary)
@@ -43,18 +43,18 @@ private extension Upload {
         let data: Data
     }
     
-    static func createBaseRequest(_ url: URL, boundary: String) -> URLRequest {
+    static func buildBaseRequest(_ url: URL, boundary: String) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         return request
     }
     
-    static func createRequest(_ url: URL,
-                       params: HTTPRequestWorker.Params = HTTPRequestWorker.Params(),
-                       filePaths: [String]) throws -> URLRequest {
+    static func buildRequest(_ url: URL,
+                             params: HTTPRequestWorker.Params = HTTPRequestWorker.Params(),
+                             filePaths: [String]) throws -> URLRequest {
         let boundary = generateBoundaryString()
-        var request = createBaseRequest(url, boundary: boundary)
+        var request = buildBaseRequest(url, boundary: boundary)
         
         let files: [FileInfo] = try filePaths.map { filePath in
             let url = URL(fileURLWithPath: filePath)
@@ -63,17 +63,17 @@ private extension Upload {
             return FileInfo(name: name, data: data)
         }
         
-        request.httpBody = try createBody(
+        request.httpBody = try buildBody(
             with: params,
             files: files,
             boundary: boundary)
         return request
     }
     
-    static func createBody(with params: HTTPRequestWorker.Params?,
-                    filePathKey: String = kFilePath,
-                    files: [FileInfo],
-                    boundary: String) throws -> Data {
+    static func buildBody(with params: HTTPRequestWorker.Params?,
+                          filePathKey: String = kFilePath,
+                          files: [FileInfo],
+                          boundary: String) throws -> Data {
         var body = Data()
         if let params = params {
             for (key, value) in params {
