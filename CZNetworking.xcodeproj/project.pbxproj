@@ -15,6 +15,7 @@
 		044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02731F74358600849AA2 /* CZHTTPManager.swift */; };
 		044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02741F74358600849AA2 /* HTTPRequestWorker.swift */; };
 		2A9200801F75E80100A21F01 /* CZNetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A92007F1F75E80100A21F01 /* CZNetError.swift */; };
+		2AE2966B21FAE0FF00C3FD51 /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE2966A21FAE0FF00C3FD51 /* Upload.swift */; };
 		2AEBF7C51F759298005A1DEF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEBF7C41F759298005A1DEF /* Extensions.swift */; };
 		DF2A861120E0267C00BED02D /* CZUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2A861020E0267C00BED02D /* CZUtils.framework */; };
 /* End PBXBuildFile section */
@@ -41,6 +42,7 @@
 		044E02731F74358600849AA2 /* CZHTTPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPManager.swift; sourceTree = "<group>"; };
 		044E02741F74358600849AA2 /* HTTPRequestWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestWorker.swift; sourceTree = "<group>"; };
 		2A92007F1F75E80100A21F01 /* CZNetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZNetError.swift; sourceTree = "<group>"; };
+		2AE2966A21FAE0FF00C3FD51 /* Upload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Upload.swift; path = "../../CZInterviewQuestions/_OK/LinkedIn/FeedList/_OK/FeedListDemoWithMyBackend/FeedListDemo/Net Layer/Upload.swift"; sourceTree = "<group>"; };
 		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		DF2A861020E0267C00BED02D /* CZUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CZUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -120,6 +122,7 @@
 			children = (
 				2AEBF7C41F759298005A1DEF /* Extensions.swift */,
 				2A92007F1F75E80100A21F01 /* CZNetError.swift */,
+				2AE2966A21FAE0FF00C3FD51 /* Upload.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -247,6 +250,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AE2966B21FAE0FF00C3FD51 /* Upload.swift in Sources */,
 				044E02791F74358600849AA2 /* CZHTTPJsonSerializer.swift in Sources */,
 				044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */,
 				044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */,
