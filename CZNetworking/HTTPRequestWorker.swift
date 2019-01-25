@@ -22,6 +22,7 @@ import CZUtils
         case POST(ContentType, Data?)
         case PUT
         case DELETE
+        case UPLOAD(String, Data)
         case HEAD
         case PATCH
         case OPTIONS
@@ -35,6 +36,7 @@ import CZUtils
             case .POST: return "POST"
             case .PUT: return "PUT"
             case .DELETE: return "DELETE"
+            case .UPLOAD: return "UPLOAD"
             default:
                 assertionFailure("Unsupported type")
                 return ""
@@ -59,6 +61,8 @@ import CZUtils
             case (.PUT, .PUT):
                 return true
             case (.DELETE, .DELETE):
+                return true
+            case (.UPLOAD, .UPLOAD):
                 return true
             default:
                 return false
@@ -103,8 +107,8 @@ import CZUtils
                          headers: Headers? = nil,
                          shouldSerializeJson: Bool = true,
                          httpCache: CZHTTPCache? = nil,
-                         success: @escaping Success,
-                         failure: @escaping Failure,
+                         success: Success? = nil,
+                         failure: Failure? = nil,
                          cached: Cached? = nil,
                          progress: Progress? = nil) {
         self.requestType = requestType
@@ -185,6 +189,14 @@ import CZUtils
             
         case .DELETE:
             dataTask = urlSession?.dataTask(with: request as URLRequest)
+            
+        case let .UPLOAD(fileName, data):
+            do {
+                let request = try Upload.buildRequest(url, fileName: fileName, data: data)
+                dataTask = urlSession?.dataTask(with: request)
+            } catch {
+                dbgPrint("Failed to build upload request. Error - \(error.localizedDescription)")
+            }
         default:
             assertionFailure("Unsupported request type.")
         }

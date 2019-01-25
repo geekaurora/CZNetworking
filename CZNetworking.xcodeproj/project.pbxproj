@@ -14,8 +14,9 @@
 		044E02791F74358600849AA2 /* CZHTTPJsonSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */; };
 		044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02731F74358600849AA2 /* CZHTTPManager.swift */; };
 		044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02741F74358600849AA2 /* HTTPRequestWorker.swift */; };
-		2A9200801F75E80100A21F01 /* CZNetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A92007F1F75E80100A21F01 /* CZNetError.swift */; };
-		2AEBF7C51F759298005A1DEF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AEBF7C41F759298005A1DEF /* Extensions.swift */; };
+		2AE2967121FAE2A400C3FD51 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE2966E21FAE2A400C3FD51 /* Extensions.swift */; };
+		2AE2967221FAE2A400C3FD51 /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE2966F21FAE2A400C3FD51 /* Upload.swift */; };
+		2AE2967321FAE2A400C3FD51 /* CZNetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE2967021FAE2A400C3FD51 /* CZNetError.swift */; };
 		DF2A861120E0267C00BED02D /* CZUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2A861020E0267C00BED02D /* CZUtils.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,23 +28,23 @@
 			remoteGlobalIDString = 044E02471F74349B00849AA2;
 			remoteInfo = CZNetworking;
 		};
-		2A964AEB21F8E883007DCF9B /* PBXContainerItemProxy */ = {
+		2AE2967E21FAEA8A00C3FD51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2A964AE621F8E883007DCF9B /* CZUtils.xcodeproj */;
+			containerPortal = 2AE2967921FAEA8A00C3FD51 /* CZUtils.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C39982CA1F7739EA00775B6C;
 			remoteInfo = CZUtils;
 		};
-		2A964AED21F8E883007DCF9B /* PBXContainerItemProxy */ = {
+		2AE2968021FAEA8A00C3FD51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2A964AE621F8E883007DCF9B /* CZUtils.xcodeproj */;
+			containerPortal = 2AE2967921FAEA8A00C3FD51 /* CZUtils.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C39982D31F7739EA00775B6C;
 			remoteInfo = CZUtilsTests;
 		};
-		2A964AEF21F8E889007DCF9B /* PBXContainerItemProxy */ = {
+		2AE2968221FAEA8F00C3FD51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2A964AE621F8E883007DCF9B /* CZUtils.xcodeproj */;
+			containerPortal = 2AE2967921FAEA8A00C3FD51 /* CZUtils.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C39982C91F7739EA00775B6C;
 			remoteInfo = CZUtils;
@@ -61,9 +62,10 @@
 		044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPJsonSerializer.swift; sourceTree = "<group>"; };
 		044E02731F74358600849AA2 /* CZHTTPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPManager.swift; sourceTree = "<group>"; };
 		044E02741F74358600849AA2 /* HTTPRequestWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestWorker.swift; sourceTree = "<group>"; };
-		2A92007F1F75E80100A21F01 /* CZNetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZNetError.swift; sourceTree = "<group>"; };
-		2A964AE621F8E883007DCF9B /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = "Supported Files/CZUtils/CZUtils.xcodeproj"; sourceTree = "<group>"; };
-		2AEBF7C41F759298005A1DEF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		2AE2966E21FAE2A400C3FD51 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Extensions.swift; path = Utils/Extensions.swift; sourceTree = "<group>"; };
+		2AE2966F21FAE2A400C3FD51 /* Upload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Upload.swift; path = Utils/Upload.swift; sourceTree = "<group>"; };
+		2AE2967021FAE2A400C3FD51 /* CZNetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CZNetError.swift; path = Utils/CZNetError.swift; sourceTree = "<group>"; };
+		2AE2967921FAEA8A00C3FD51 /* CZUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZUtils.xcodeproj; path = "Supported Files/CZUtils/CZUtils.xcodeproj"; sourceTree = "<group>"; };
 		DF2A861020E0267C00BED02D /* CZUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CZUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -131,7 +133,7 @@
 		044E02DB1F7440FD00849AA2 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				2A964AE621F8E883007DCF9B /* CZUtils.xcodeproj */,
+				2AE2967921FAEA8A00C3FD51 /* CZUtils.xcodeproj */,
 				044E024B1F74349B00849AA2 /* CZNetworking.h */,
 				044E024C1F74349B00849AA2 /* Info.plist */,
 			);
@@ -141,17 +143,18 @@
 		2A9200881F75E9BA00A21F01 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				2AEBF7C41F759298005A1DEF /* Extensions.swift */,
-				2A92007F1F75E80100A21F01 /* CZNetError.swift */,
+				2AE2966E21FAE2A400C3FD51 /* Extensions.swift */,
+				2AE2967021FAE2A400C3FD51 /* CZNetError.swift */,
+				2AE2966F21FAE2A400C3FD51 /* Upload.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
 		};
-		2A964AE721F8E883007DCF9B /* Products */ = {
+		2AE2967A21FAEA8A00C3FD51 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2A964AEC21F8E883007DCF9B /* CZUtils.framework */,
-				2A964AEE21F8E883007DCF9B /* CZUtilsTests.xctest */,
+				2AE2967F21FAEA8A00C3FD51 /* CZUtils.framework */,
+				2AE2968121FAEA8A00C3FD51 /* CZUtilsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -190,7 +193,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				2A964AF021F8E889007DCF9B /* PBXTargetDependency */,
+				2AE2968321FAEA8F00C3FD51 /* PBXTargetDependency */,
 			);
 			name = CZNetworking;
 			productName = CZNetworking;
@@ -252,8 +255,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 2A964AE721F8E883007DCF9B /* Products */;
-					ProjectRef = 2A964AE621F8E883007DCF9B /* CZUtils.xcodeproj */;
+					ProductGroup = 2AE2967A21FAEA8A00C3FD51 /* Products */;
+					ProjectRef = 2AE2967921FAEA8A00C3FD51 /* CZUtils.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -265,18 +268,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		2A964AEC21F8E883007DCF9B /* CZUtils.framework */ = {
+		2AE2967F21FAEA8A00C3FD51 /* CZUtils.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = CZUtils.framework;
-			remoteRef = 2A964AEB21F8E883007DCF9B /* PBXContainerItemProxy */;
+			remoteRef = 2AE2967E21FAEA8A00C3FD51 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2A964AEE21F8E883007DCF9B /* CZUtilsTests.xctest */ = {
+		2AE2968121FAEA8A00C3FD51 /* CZUtilsTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = CZUtilsTests.xctest;
-			remoteRef = 2A964AED21F8E883007DCF9B /* PBXContainerItemProxy */;
+			remoteRef = 2AE2968021FAEA8A00C3FD51 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -303,12 +306,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AE2967221FAE2A400C3FD51 /* Upload.swift in Sources */,
+				2AE2967121FAE2A400C3FD51 /* Extensions.swift in Sources */,
 				044E02791F74358600849AA2 /* CZHTTPJsonSerializer.swift in Sources */,
+				2AE2967321FAE2A400C3FD51 /* CZNetError.swift in Sources */,
 				044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */,
 				044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */,
-				2AEBF7C51F759298005A1DEF /* Extensions.swift in Sources */,
 				044E02781F74358600849AA2 /* CZHTTPCache.swift in Sources */,
-				2A9200801F75E80100A21F01 /* CZNetError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,10 +332,10 @@
 			target = 044E02471F74349B00849AA2 /* CZNetworking */;
 			targetProxy = 044E02531F74349B00849AA2 /* PBXContainerItemProxy */;
 		};
-		2A964AF021F8E889007DCF9B /* PBXTargetDependency */ = {
+		2AE2968321FAEA8F00C3FD51 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = CZUtils;
-			targetProxy = 2A964AEF21F8E889007DCF9B /* PBXContainerItemProxy */;
+			targetProxy = 2AE2968221FAEA8F00C3FD51 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
