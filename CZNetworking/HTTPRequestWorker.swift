@@ -192,7 +192,11 @@ import CZUtils
             
         case let .UPLOAD(fileName, data):
             do {
-                let request = try Upload.buildRequest(url, fileName: fileName, data: data)
+                let request = try Upload.buildRequest(
+                    url,
+                    params: params,
+                    fileName: fileName,
+                    data: data)
                 dataTask = urlSession?.dataTask(with: request)
             } catch {
                 dbgPrint("Failed to build upload request. Error - \(error.localizedDescription)")

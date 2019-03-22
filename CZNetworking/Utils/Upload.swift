@@ -23,7 +23,7 @@ public class Upload {
     // MARK: - Upload Data
     
     public static func buildRequest(_ url: URL,
-                                    params: HTTPRequestWorker.Params = [:],
+                                    params: HTTPRequestWorker.Params? = [:],
                                     fileName: String,
                                     data: Data) throws -> URLRequest {
         let boundary = generateBoundaryString()
