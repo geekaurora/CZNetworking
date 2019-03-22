@@ -45,10 +45,10 @@ import CZUtils
         
         var hasSerializableUrl: Bool {
             switch self {
-            case .DELETE, .POST:
-                return false
-            default:
+            case .GET, .PUT:
                 return true
+            default:
+                return false
             }
         }
         
