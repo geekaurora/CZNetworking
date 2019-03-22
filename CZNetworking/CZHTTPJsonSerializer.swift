@@ -24,7 +24,15 @@ open class CZHTTPJsonSerializer {
     /// Return serilized string from params
     public static func string(with params: [AnyHashable: Any]?) -> String? {
         guard let params = params as? [AnyHashable: CustomStringConvertible] else { return nil }
-        let res = params.keys.map{"\($0)=\(params[$0]!)"}.joined(separator: "&")
+        let res = params.keys.map{ key in
+            let value: String = {
+                guard let value = params[key] else {
+                    return "unsupported"
+                }
+                return String(describing: value).urlEncoded()
+            }()
+            return"\(key)=\(value)"
+        }.joined(separator: "&")
         return res
     }
 
