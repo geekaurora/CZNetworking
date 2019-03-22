@@ -95,6 +95,7 @@ private extension Upload {
                           filePathKey: String = kFilePath,
                           files: [FileInfo],
                           boundary: String) throws -> Data {
+        // Build multipart/form-data
         var body = Data()
         if let params = params {
             for (key, value) in params {
