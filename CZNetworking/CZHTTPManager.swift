@@ -26,6 +26,8 @@ open class CZHTTPManager: NSObject {
         super.init()
     }
     
+    // MAKR: - GET
+    
     public func GET(_ urlStr: String,
                     headers: HTTPRequestWorker.Headers? = nil,
                     params: HTTPRequestWorker.Params? = nil,
@@ -53,7 +55,8 @@ open class CZHTTPManager: NSObject {
                                                 cached: ((Model) -> Void)? = nil,
                                                 progress: HTTPRequestWorker.Progress? = nil) {
         
-        let modelingHandler = { (completion: ((Model) -> Void)?, task: URLSessionDataTask?, data: Data?) in
+        typealias Completion = (Model) -> Void
+        let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
             let retrievedData: Data? = {
                 // With given dataKey, retrieve corresponding field from dictionary
                 if let dataKey = dataKey,
@@ -85,6 +88,88 @@ open class CZHTTPManager: NSObject {
            progress: progress)
     }
     
+    // MARK: CZDictionaryable
+    
+    public func GetOneModel<Model: CZDictionaryable>(_ urlStr: String,
+                                                     params: HTTPRequestWorker.Params? = nil,
+                                                     headers: HTTPRequestWorker.Headers? = nil,
+                                                     dataKey: String? = nil,
+                                                     success: @escaping (Model) -> Void,
+                                                     failure: HTTPRequestWorker.Failure? = nil,
+                                                     cached: ((Model) -> Void)? = nil,
+                                                     progress: HTTPRequestWorker.Progress? = nil) {
+        
+        typealias Completion = (Model) -> Void
+        let modelingHandler = {(completion: Completion?, task: URLSessionDataTask?, data: Any?) in
+            var retrivedData: CZDictionary?
+            if let dataKey = dataKey {
+                retrivedData = (data as? CZDictionary)?[dataKey] as? CZDictionary
+            } else {
+                retrivedData = data as? CZDictionary
+            }
+            
+            guard let retrivedDataNonNil = retrivedData else {
+                failure?(nil, CZNetError.returnType)
+                return
+            }
+            let res = Model(dictionary: retrivedDataNonNil)
+            completion?(res)
+        }
+        
+        GET(urlStr,
+            headers: headers,
+            params: params,
+            success: { (task, data) in
+                modelingHandler(success, task, data)
+            },
+            failure: failure,
+            cached: { (task, data) in
+                modelingHandler(cached, task, data)
+            },
+            progress: progress)
+    }
+    
+    public func GetManyModels<Model: CZDictionaryable>(_ urlStr: String,
+                                                       params: HTTPRequestWorker.Params? = nil,
+                                                       headers: HTTPRequestWorker.Headers? = nil,
+                                                       dataKey: String? = nil,
+                                                       success: @escaping ([Model]) -> Void,
+                                                       failure: HTTPRequestWorker.Failure? = nil,
+                                                       cached: (([Model]) -> Void)? = nil,
+                                                       progress: HTTPRequestWorker.Progress? = nil) {
+        
+        typealias Completion = ([Model]) -> Void
+        let modelingHandler = {(completion: Completion?, task: URLSessionDataTask?, data: Any?) in
+            var retrivedData: [CZDictionary]?
+            if let dataKey = dataKey {
+                retrivedData = (data as? CZDictionary)?[dataKey] as? [CZDictionary]
+            } else {
+                retrivedData = data as? [CZDictionary]
+            }
+            
+            guard let retrivedDataNonNil = retrivedData else {
+                failure?(nil, CZNetError.returnType)
+                return
+            }
+            let res = retrivedDataNonNil.compactMap {Model(dictionary: $0)}
+            completion?(res)
+        }
+        
+        GET(urlStr,
+            headers: headers,
+            params: params,
+            success: { (task, data) in
+                modelingHandler(success, task, data)
+            },
+            failure: failure,
+            cached: { (task, data) in
+                modelingHandler(cached, task, data)
+            },
+            progress: progress)
+    }
+    
+    // MARK: - POST
+    
     public func POST(_ urlStr: String,
                      contentType: HTTPRequestWorker.ContentType = .formUrlencoded,
                      headers: HTTPRequestWorker.Headers? = nil,
@@ -103,6 +188,8 @@ open class CZHTTPManager: NSObject {
             progress: progress)
     }
     
+    // MARK: - DELETE
+    
     public func DELETE(_ urlStr: String,
                        headers: HTTPRequestWorker.Headers? = nil,
                        params: HTTPRequestWorker.Params? = nil,
@@ -116,6 +203,8 @@ open class CZHTTPManager: NSObject {
             success: success,
             failure: failure)
     }
+    
+    // MARK: - UPLOAD
     
     public func UPLOAD(_ urlStr: String,
                        headers: HTTPRequestWorker.Headers? = nil,
@@ -160,3 +249,12 @@ private extension CZHTTPManager {
         queue.addOperation(op)
     }
 }
+
+// MARK: - CZDictionary
+
+public protocol CZDictionaryable: NSObjectProtocol {
+    init(dictionary: CZDictionary)
+}
+
+public typealias CZDictionary = [AnyHashable : Any]
+
