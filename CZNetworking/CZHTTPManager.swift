@@ -6,7 +6,7 @@
 //  Copyright © 2016 Cheng Zhang. All rights reserved.
 //
 
-import UIKit
+import CZUtils
 
 /**
  Asynchronous HTTP requests manager based on NSOperationQueue
@@ -42,6 +42,47 @@ open class CZHTTPManager: NSObject {
             failure: failure,
             cached: cached,
             progress: progress)
+    }
+    
+    public func GETCodableModel<Model: Codable>(_ urlStr: String,
+                                                headers: HTTPRequestWorker.Headers? = nil,
+                                                params: HTTPRequestWorker.Params? = nil,
+                                                dataKey: String? = nil,
+                                                success: @escaping (Model) -> Void,
+                                                failure: HTTPRequestWorker.Failure? = nil,
+                                                cached: ((Model) -> Void)? = nil,
+                                                progress: HTTPRequestWorker.Progress? = nil) {
+        
+        let modelingHandler = { (completion: ((Model) -> Void)?, task: URLSessionDataTask?, data: Data?) in
+            let retrievedData: Data? = {
+                // With given dataKey, retrieve corresponding field from dictionary
+                if let dataKey = dataKey,
+                    let dict = CZHTTPJsonSerializer.deserializedObject(with: data) as? [AnyHashable : Any],
+                    let dataDict = dict[dataKey]  {
+                    return CZHTTPJsonSerializer.jsonData(with: dataDict)
+                }
+                // Othewise, return directly as data should be decodable
+                return data
+            }()
+            
+            guard let model: Model = CodableHelper.decode(retrievedData).assertIfNil else {
+                failure?(task, CZNetError.parse)
+                return
+            }
+            completion?(model)
+        }
+        
+        GET(urlStr,
+            headers: headers,
+            params: params,
+            success: { (task, data) in
+                modelingHandler(success, task, data)
+            },
+            failure: failure,
+            cached: { (task, data) in
+                modelingHandler(cached, task, data)
+            },
+           progress: progress)
     }
     
     public func POST(_ urlStr: String,

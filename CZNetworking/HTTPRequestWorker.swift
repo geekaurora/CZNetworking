@@ -6,7 +6,6 @@
 //  Copyright © 2016 Cheng Zhang. All rights reserved.
 //
 
-import Foundation
 import CZUtils
 
 @objc open class HTTPRequestWorker: CZConcurrentOperation {
