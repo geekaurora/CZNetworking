@@ -11,7 +11,6 @@
 		044E02571F74349B00849AA2 /* CZNetworkingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02561F74349B00849AA2 /* CZNetworkingTests.swift */; };
 		044E02591F74349B00849AA2 /* CZNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 044E024B1F74349B00849AA2 /* CZNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		044E02781F74358600849AA2 /* CZHTTPCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02711F74358600849AA2 /* CZHTTPCache.swift */; };
-		044E02791F74358600849AA2 /* CZHTTPJsonSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */; };
 		044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02731F74358600849AA2 /* CZHTTPManager.swift */; };
 		044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044E02741F74358600849AA2 /* HTTPRequestWorker.swift */; };
 		2AE2967121FAE2A400C3FD51 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE2966E21FAE2A400C3FD51 /* Extensions.swift */; };
@@ -59,7 +58,6 @@
 		044E02561F74349B00849AA2 /* CZNetworkingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CZNetworkingTests.swift; sourceTree = "<group>"; };
 		044E02581F74349B00849AA2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		044E02711F74358600849AA2 /* CZHTTPCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPCache.swift; sourceTree = "<group>"; };
-		044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPJsonSerializer.swift; sourceTree = "<group>"; };
 		044E02731F74358600849AA2 /* CZHTTPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CZHTTPManager.swift; sourceTree = "<group>"; };
 		044E02741F74358600849AA2 /* HTTPRequestWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestWorker.swift; sourceTree = "<group>"; };
 		2AE2966E21FAE2A400C3FD51 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Extensions.swift; path = Utils/Extensions.swift; sourceTree = "<group>"; };
@@ -114,7 +112,6 @@
 				044E02731F74358600849AA2 /* CZHTTPManager.swift */,
 				044E02741F74358600849AA2 /* HTTPRequestWorker.swift */,
 				044E02711F74358600849AA2 /* CZHTTPCache.swift */,
-				044E02721F74358600849AA2 /* CZHTTPJsonSerializer.swift */,
 				2A9200881F75E9BA00A21F01 /* Utils */,
 				044E02DB1F7440FD00849AA2 /* Support Files */,
 			);
@@ -308,7 +305,6 @@
 			files = (
 				2AE2967221FAE2A400C3FD51 /* Upload.swift in Sources */,
 				2AE2967121FAE2A400C3FD51 /* Extensions.swift in Sources */,
-				044E02791F74358600849AA2 /* CZHTTPJsonSerializer.swift in Sources */,
 				2AE2967321FAE2A400C3FD51 /* CZNetError.swift in Sources */,
 				044E027B1F74358600849AA2 /* HTTPRequestWorker.swift in Sources */,
 				044E027A1F74358600849AA2 /* CZHTTPManager.swift in Sources */,
