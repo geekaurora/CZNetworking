@@ -27,7 +27,7 @@ open class CZHTTPManager: NSObject {
     }
     
     // MAKR: - GET
-    
+
     public func GET(_ urlStr: String,
                     headers: HTTPRequestWorker.Headers? = nil,
                     params: HTTPRequestWorker.Params? = nil,
@@ -100,20 +100,17 @@ open class CZHTTPManager: NSObject {
                                                      progress: HTTPRequestWorker.Progress? = nil) {
         
         typealias Completion = (Model) -> Void
-        let modelingHandler = {(completion: Completion?, task: URLSessionDataTask?, data: Any?) in
-            var retrivedData: CZDictionary?
-            if let dataKey = dataKey {
-                retrivedData = (data as? CZDictionary)?[dataKey] as? CZDictionary
-            } else {
-                retrivedData = data as? CZDictionary
+        let modelingHandler = { (completion: (Completion)?, task: URLSessionDataTask?, data: Any?) in
+            guard let data = data as? Data,
+                let receivedObject = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+                    assertionFailure("Failed to deserialize data to object.")
+                    return
             }
-            
-            guard let retrivedDataNonNil = retrivedData else {
+            guard let model: Model = self.model(with: receivedObject, dataKey: dataKey).assertIfNil else {
                 failure?(nil, CZNetError.returnType)
                 return
             }
-            let res = Model(dictionary: retrivedDataNonNil)
-            completion?(res)
+            completion?(model)
         }
         
         GET(urlStr,
@@ -128,7 +125,7 @@ open class CZHTTPManager: NSObject {
             },
             progress: progress)
     }
-    
+
     public func GetManyModels<Model: CZDictionaryable>(_ urlStr: String,
                                                        params: HTTPRequestWorker.Params? = nil,
                                                        headers: HTTPRequestWorker.Headers? = nil,
@@ -139,20 +136,17 @@ open class CZHTTPManager: NSObject {
                                                        progress: HTTPRequestWorker.Progress? = nil) {
         
         typealias Completion = ([Model]) -> Void
-        let modelingHandler = {(completion: Completion?, task: URLSessionDataTask?, data: Any?) in
-            var retrivedData: [CZDictionary]?
-            if let dataKey = dataKey {
-                retrivedData = (data as? CZDictionary)?[dataKey] as? [CZDictionary]
-            } else {
-                retrivedData = data as? [CZDictionary]
+        let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Any?) in
+            guard let data = data as? Data,
+                let receivedObject = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+                assertionFailure("Failed to deserialize data to object.")
+                    return
             }
-            
-            guard let retrivedDataNonNil = retrivedData else {
+            guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
                 failure?(nil, CZNetError.returnType)
                 return
             }
-            let res = retrivedDataNonNil.compactMap {Model(dictionary: $0)}
-            completion?(res)
+            completion?(models)
         }
         
         GET(urlStr,
@@ -248,6 +242,31 @@ private extension CZHTTPManager {
             progress: progress)
         queue.addOperation(op)
     }
+
+    func model<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> Model? {
+        guard let dict: CZDictionary = {
+            if let dataKey = dataKey {
+                return (object as? CZDictionary)?[dataKey] as? CZDictionary
+            } else {
+                return object as? CZDictionary
+            }
+            }() else {
+                return nil
+        }
+        return Model(dictionary: dict)
+    }
+
+    func models<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> [Model]? {
+        let dicts: [CZDictionary]? = {
+            if let dataKey = dataKey {
+                return (object as? CZDictionary)?[dataKey] as? [CZDictionary]
+            } else {
+                return object as? [CZDictionary]
+            }
+        }()
+        return dicts?.compactMap { Model(dictionary: $0) }
+    }
+
 }
 
 // MARK: - CZDictionary

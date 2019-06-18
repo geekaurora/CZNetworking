@@ -35,7 +35,7 @@ public class CodableHelper {
             let model = try JSONDecoder().decode(T.self, from: data)
             return model
         } catch {
-            dbgPrint("Failed to decode data of \(T.self). Error - \(error.localizedDescription)")
+            assertionFailure("Failed to decode data of \(T.self). Error - \(error.localizedDescription)")
             return nil
         }
     }
@@ -50,7 +50,7 @@ public class CodableHelper {
             let data = try JSONEncoder().encode(model)
             return data
         } catch {
-            dbgPrint("Failed to encode model. Error - \(error.localizedDescription)")
+            assertionFailure("Failed to encode model. Error - \(error.localizedDescription)")
             return nil
         }
     }
@@ -82,6 +82,15 @@ public extension Encodable {
         }
         return (dictionaryVersion as NSDictionary).isEqual(to: other.dictionaryVersion)
     }
+
+    /// Description of model, needs to mark `CustomStringConvertible` conformance explicitly
+    public var description: String {
+        return prettyDescription
+    }
+
+    public var prettyDescription: String {
+        return dictionaryVersion.prettyDescription
+    }
 }
 
 // MARK: - NSCopying
@@ -101,8 +110,4 @@ public extension Encodable where Self: Decodable {
     
 // MARK: - CustomStringConvertible
 
-public extension CustomStringConvertible where Self: Encodable {
-    public var description: String {
-        return dictionaryVersion.description
-    }
-}
+public extension CustomStringConvertible where Self: Encodable {}
