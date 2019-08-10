@@ -238,8 +238,8 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
         guard self.response == task.response else { return }
         
         guard error == nil,
-              let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+            let httpResponse = response as? HTTPURLResponse,
+            httpResponse.statusCode == 200 else {
                 // Failure completion
                 var errorDescription = error?.localizedDescription ?? ""
                 let responseString = "Response: \(String(describing: response))"
@@ -247,10 +247,10 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
                 if let receivedDict = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
                     errorDescription += "\nReceivedData: \(receivedDict)"
                 }
-                let errorRes = CZNetError(errorDescription)
-                dbgPrint("Failure of dataTask, error - \(errorRes)")
-                CZMainQueueScheduler.async { [weak self] in
-                    self?.failure?(nil, errorRes)
+                if error?.retrievedCode != NSURLErrorCancelled {
+                    let errorRes = error ?? CZNetError(errorDescription)
+                    dbgPrint("Failure of dataTask, error - \(errorRes)")
+                    failure?(nil, errorRes)
                 }
                 return
         }
