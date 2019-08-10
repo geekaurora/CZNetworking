@@ -240,14 +240,14 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
         guard error == nil,
             let httpResponse = response as? HTTPURLResponse,
             httpResponse.statusCode == 200 else {
-                // Failure completion
-                var errorDescription = error?.localizedDescription ?? ""
-                let responseString = "Response: \(String(describing: response))"
-                errorDescription = responseString + "\n"
-                if let receivedDict = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
-                    errorDescription += "\nReceivedData: \(receivedDict)"
-                }
                 if error?.retrievedCode != NSURLErrorCancelled {
+                    // Failure completion
+                    var errorDescription = error?.localizedDescription ?? ""
+                    let responseString = "Response: \(String(describing: response))"
+                    errorDescription = responseString + "\n"
+                    if let receivedDict = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
+                        errorDescription += "\nReceivedData: \(receivedDict)"
+                    }
                     let errorRes = error ?? CZNetError(errorDescription)
                     dbgPrint("Failure of dataTask, error - \(errorRes)")
                     failure?(nil, errorRes)
