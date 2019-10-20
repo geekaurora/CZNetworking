@@ -7,5 +7,7 @@ Elegant progressive asynchronous HTTP request flow management framework.
 
 ### Instagram Demo - [Github](https://github.com/showt1me/CZInstagram)
 Implemented on top of **CZNetworking**
+ 
+<img src="https://media.giphy.com/media/jSWYS99p1rXe9nSCtp/giphy.gif"> 
 
-<img src="./Docs/CZInstagram.gif">
+
