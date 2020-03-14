@@ -17,18 +17,18 @@ open class CZHTTPManager: NSObject {
     private let queue: OperationQueue
     private let httpCache: CZHTTPCache
     public enum Constant {
-        public static let maxConcurrentOperationCount = 5
+        public static let maxConcurrencies = 5
     }
     
-    public init(maxConcurrentOperationCount: Int = Constant.maxConcurrentOperationCount) {
+    public init(maxConcurrencies: Int = Constant.maxConcurrencies) {
         queue = OperationQueue()
-        queue.maxConcurrentOperationCount = maxConcurrentOperationCount
+        queue.maxConcurrentOperationCount = maxConcurrencies
         httpCache = CZHTTPCache()
         super.init()
     }
       
-    public func maxConcurrentOperationCount(_ maxConcurrentOperationCount: Int) -> Self {
-      queue.maxConcurrentOperationCount = maxConcurrentOperationCount
+    public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
+      queue.maxConcurrentOperationCount = maxConcurrencies
       return self
     }
   

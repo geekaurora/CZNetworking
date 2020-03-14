@@ -5,7 +5,7 @@ import CZNetworking
 class ViewController: UIViewController {
   
   static let endpoint = "https://jsonplaceholder.typicode.com/posts"
-  private let httManager: CZHTTPManager = CZHTTPManager.shared.maxConcurrentOperationCount(1)
+  private let httManager: CZHTTPManager = CZHTTPManager.shared.maxConcurrencies(1)
   
   override func viewDidLoad() {
     super.viewDidLoad()
