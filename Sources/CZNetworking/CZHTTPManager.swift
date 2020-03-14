@@ -26,7 +26,12 @@ open class CZHTTPManager: NSObject {
         httpCache = CZHTTPCache()
         super.init()
     }
-    
+      
+    public func maxConcurrentOperationCount(_ maxConcurrentOperationCount: Int) -> Self {
+      queue.maxConcurrentOperationCount = maxConcurrentOperationCount
+      return self
+    }
+  
     // MAKR: - GET
 
     public func GET(_ urlStr: String,

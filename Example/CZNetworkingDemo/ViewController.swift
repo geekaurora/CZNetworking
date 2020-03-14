@@ -1,25 +1,33 @@
-//
-//  ViewController.swift
-//  CZNetworkingDemo
-//
-//  Created by Cheng Zhang on 12/24/17.
-//  Copyright © 2017 Cheng Zhang. All rights reserved.
-//
-
 import UIKit
+import CZUtils
 import CZNetworking
 
 class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let _ = CZHTTPManager.shared
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
+  
+  static let endpoint = "https://jsonplaceholder.typicode.com/posts"
+  private let httManager: CZHTTPManager = CZHTTPManager.shared.maxConcurrentOperationCount(1)
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    fetchFeeds()
+  }
+  
+  /// Fetch codable Feed array with json data.
+  func fetchFeeds() {
+    httManager.GETCodableModel(
+      Self.endpoint,
+      success: { (feeds: [Feed]) in
+        dbgPrint("Succeed to fetch feeds: \n\(feeds.map { $0.id })")
+    }, failure: { (task, error) in
+      assertionFailure("Failed to fetch feeds. Error - \(error)")
+    })
+  }
+  
 }
 
+struct Feed: Codable {
+  let userId: Int
+  let id: Int
+  let title: String
+  let body: String
+}
