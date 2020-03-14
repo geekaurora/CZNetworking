@@ -61,7 +61,7 @@ open class CZHTTPManager: NSObject {
             let retrievedData: Data? = {
                 // With given dataKey, retrieve corresponding field from dictionary
                 if let dataKey = dataKey,
-                    let dict = CZHTTPJsonSerializer.deserializedObject(with: data) as? [AnyHashable : Any],
+                  let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
                     let dataDict = dict[dataKey]  {
                     return CZHTTPJsonSerializer.jsonData(with: dataDict)
                 }
@@ -103,7 +103,7 @@ open class CZHTTPManager: NSObject {
         typealias Completion = (Model) -> Void
         let modelingHandler = { (completion: (Completion)?, task: URLSessionDataTask?, data: Any?) in
             guard let data = data as? Data,
-                let receivedObject = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+              let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
                     assertionFailure("Failed to deserialize data to object.")
                     return
             }
@@ -139,7 +139,7 @@ open class CZHTTPManager: NSObject {
         typealias Completion = ([Model]) -> Void
         let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Any?) in
             guard let data = data as? Data,
-                let receivedObject = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+              let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
                 assertionFailure("Failed to deserialize data to object.")
                     return
             }
