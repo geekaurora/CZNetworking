@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,39 +12,8 @@
 		2AB659DB1FF02BA5001A8835 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2AB659D91FF02BA5001A8835 /* Main.storyboard */; };
 		2AB659DD1FF02BA5001A8835 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AB659DC1FF02BA5001A8835 /* Assets.xcassets */; };
 		2AB659E01FF02BA5001A8835 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2AB659DE1FF02BA5001A8835 /* LaunchScreen.storyboard */; };
-		C37B65DA241CD6AE00A6F449 /* CZNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C37B65C8241CD63C00A6F449 /* CZNetworking.framework */; };
+		C319475D24449216003F5E81 /* CZNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = C319475C24449216003F5E81 /* CZNetworking */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		C37B65C7241CD63C00A6F449 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C37B65BE241CD63C00A6F449 /* CZNetworking.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = "CZNetworking::CZNetworking::Product";
-			remoteInfo = CZNetworking;
-		};
-		C37B65C9241CD63C00A6F449 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C37B65BE241CD63C00A6F449 /* CZNetworking.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = "CZNetworking::CZNetworkingTests::Product";
-			remoteInfo = CZNetworkingTests;
-		};
-		C37B65CB241CD63C00A6F449 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C37B65BE241CD63C00A6F449 /* CZNetworking.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = "CZUtils::CZUtils::Product";
-			remoteInfo = CZUtils;
-		};
-		C37B65D8241CD65600A6F449 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C37B65BE241CD63C00A6F449 /* CZNetworking.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = "CZNetworking::CZNetworking";
-			remoteInfo = CZNetworking;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2AB659D21FF02BA5001A8835 /* CZNetworkingDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CZNetworkingDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,7 +25,7 @@
 		2AB659E11FF02BA5001A8835 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2AB659F01FF03F49001A8835 /* CZNetworkingDemo-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CZNetworkingDemo-bridging-header.h"; sourceTree = "<group>"; };
 		8254FC640A9956CA723CA547 /* Pods_CZNetworkingDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CZNetworkingDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C37B65BE241CD63C00A6F449 /* CZNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CZNetworking.xcodeproj; path = ../CZNetworking.xcodeproj; sourceTree = "<group>"; };
+		C3194759244491FC003F5E81 /* CZNetworking */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CZNetworking; path = ../..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C37B65DA241CD6AE00A6F449 /* CZNetworking.framework in Frameworks */,
+				C319475D24449216003F5E81 /* CZNetworking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,7 +51,6 @@
 		2AB659C91FF02BA5001A8835 = {
 			isa = PBXGroup;
 			children = (
-				C37B65BE241CD63C00A6F449 /* CZNetworking.xcodeproj */,
 				2AB659D41FF02BA5001A8835 /* CZNetworkingDemo */,
 				2AB659D31FF02BA5001A8835 /* Products */,
 				1896B2A5188D5DFDB9280706 /* Frameworks */,
@@ -100,6 +68,7 @@
 		2AB659D41FF02BA5001A8835 /* CZNetworkingDemo */ = {
 			isa = PBXGroup;
 			children = (
+				C3194759244491FC003F5E81 /* CZNetworking */,
 				2AB659D51FF02BA5001A8835 /* AppDelegate.swift */,
 				2AB659D71FF02BA5001A8835 /* ViewController.swift */,
 				2AB659D91FF02BA5001A8835 /* Main.storyboard */,
@@ -109,16 +78,6 @@
 				2AB659F01FF03F49001A8835 /* CZNetworkingDemo-bridging-header.h */,
 			);
 			path = CZNetworkingDemo;
-			sourceTree = "<group>";
-		};
-		C37B65BF241CD63C00A6F449 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C37B65C8241CD63C00A6F449 /* CZNetworking.framework */,
-				C37B65CA241CD63C00A6F449 /* CZNetworkingTests.xctest */,
-				C37B65CC241CD63C00A6F449 /* CZUtils.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,10 +94,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				C37B65D9241CD65600A6F449 /* PBXTargetDependency */,
+				C319475B24449213003F5E81 /* PBXTargetDependency */,
 			);
 			name = CZNetworkingDemo;
 			packageProductDependencies = (
+				C319475C24449216003F5E81 /* CZNetworking */,
 			);
 			productName = CZNetworkingDemo;
 			productReference = 2AB659D21FF02BA5001A8835 /* CZNetworkingDemo.app */;
@@ -173,42 +133,12 @@
 			);
 			productRefGroup = 2AB659D31FF02BA5001A8835 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = C37B65BF241CD63C00A6F449 /* Products */;
-					ProjectRef = C37B65BE241CD63C00A6F449 /* CZNetworking.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				2AB659D11FF02BA5001A8835 /* CZNetworkingDemo */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		C37B65C8241CD63C00A6F449 /* CZNetworking.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CZNetworking.framework;
-			remoteRef = C37B65C7241CD63C00A6F449 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		C37B65CA241CD63C00A6F449 /* CZNetworkingTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = file;
-			path = CZNetworkingTests.xctest;
-			remoteRef = C37B65C9241CD63C00A6F449 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		C37B65CC241CD63C00A6F449 /* CZUtils.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CZUtils.framework;
-			remoteRef = C37B65CB241CD63C00A6F449 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2AB659D01FF02BA5001A8835 /* Resources */ = {
@@ -236,10 +166,9 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C37B65D9241CD65600A6F449 /* PBXTargetDependency */ = {
+		C319475B24449213003F5E81 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = CZNetworking;
-			targetProxy = C37B65D8241CD65600A6F449 /* PBXContainerItemProxy */;
+			productRef = C319475A24449213003F5E81 /* CZNetworking */;
 		};
 /* End PBXTargetDependency section */
 
@@ -365,7 +294,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -377,7 +307,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55RDUQ8X48;
 				INFOPLIST_FILE = CZNetworkingDemo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tony.CZNetworkingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CZNetworkingDemo/CZNetworkingDemo-bridging-header.h";
@@ -393,7 +326,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55RDUQ8X48;
 				INFOPLIST_FILE = CZNetworkingDemo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tony.CZNetworkingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CZNetworkingDemo/CZNetworkingDemo-bridging-header.h";
@@ -424,6 +360,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C319475A24449213003F5E81 /* CZNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CZNetworking;
+		};
+		C319475C24449216003F5E81 /* CZNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CZNetworking;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2AB659CA1FF02BA5001A8835 /* Project object */;
 }

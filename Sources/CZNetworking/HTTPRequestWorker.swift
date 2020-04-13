@@ -132,7 +132,7 @@ import CZUtils
         if  requestType == .GET,
             let cached = cached,
             let cachedData = httpCache?.readData(forKey: httpCacheKey) as? Data {
-            CZMainQueueScheduler.async { [weak self] in
+            MainQueueScheduler.async { [weak self] in
                 cached(self?.dataTask, cachedData)
             }
         }
@@ -227,7 +227,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         receivedSize += Int64(data.count)
         receivedData.append(data)
-        CZMainQueueScheduler.async { [weak self] in
+        MainQueueScheduler.async { [weak self] in
             guard let `self` = self else {return}
             self.progress?(self.receivedSize, self.expectedSize, self.url)
         }
@@ -260,7 +260,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
         if cached != nil {
             httpCache?.saveData(receivedData, forKey: httpCacheKey)
         }
-        CZMainQueueScheduler.sync { [weak self] in
+        MainQueueScheduler.sync { [weak self] in
             guard let `self` = self else {return}
             self.success?(task as? URLSessionDataTask, self.receivedData)
         }
