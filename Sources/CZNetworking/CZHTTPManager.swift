@@ -54,9 +54,10 @@ open class CZHTTPManager: NSObject {
   
   // MARK: Codable
     
-  /// Retrieve Codable models with specified `urlStr`, `params`.
-  /// In `success` callback, it automatically decode json data to desired `Model` type.
-  /// `Model` type can be inferred in `success` call site.
+  /// Retrieves Codable models with specified paremeters `urlStr`/`params` etc.
+  /// In `success` callback, it automatically decode json data to desired `Model` type if applicable.
+  ///
+  /// - Note: `Model` type can be inferred in `success` call site.
   public func GETCodableModel<Model: Codable>(_ urlStr: String,
                                               headers: HTTPRequestWorker.Headers? = nil,
                                               params: HTTPRequestWorker.Params? = nil,
