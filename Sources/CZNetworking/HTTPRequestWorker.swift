@@ -10,7 +10,7 @@ import Foundation
 import CZUtils
 
 @objc open class HTTPRequestWorker: CZConcurrentOperation {
-    public typealias Params = [AnyHashable: Any]
+    public typealias Params = [AnyHashable: AnyHashable]
     public typealias ParamList = [AnyHashable]
     public typealias Headers = [String: String]
     private enum config {

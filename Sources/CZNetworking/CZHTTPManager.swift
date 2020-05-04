@@ -58,6 +58,9 @@ open class CZHTTPManager: NSObject {
   /// In `success` callback, it automatically decode json data to desired `Model` type if applicable.
   ///
   /// - Note: `Model` type can be inferred in `success` call site.
+  ///
+  /// - Parameters:
+  ///   - dataKey: The key used to retrieve models array. e.g.  key of dictionary is "items".
   public func GETCodableModel<Model: Codable>(_ urlStr: String,
                                               headers: HTTPRequestWorker.Headers? = nil,
                                               params: HTTPRequestWorker.Params? = nil,
