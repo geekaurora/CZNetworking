@@ -127,7 +127,7 @@ import CZUtils
         dataTask = buildUrlSessionTask()
     }
     
-    open override func executeBlock() {
+    open override func execute() {
         // Fetch from cache
         if  requestType == .GET,
             let cached = cached,
