@@ -9,7 +9,13 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    fetchFeeds()
+    testFetch()
+  }
+  
+  func testFetch() {
+    (0..<5).forEach { _ in
+      self.fetchFeeds()
+    }
   }
   
   /// Fetch codable Feed array with json data.
@@ -21,8 +27,7 @@ class ViewController: UIViewController {
     }, failure: { (task, error) in
       assertionFailure("Failed to fetch feeds. Error - \(error)")
     })
-  }
-  
+  }  
 }
 
 struct Feed: Codable {

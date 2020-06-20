@@ -9,7 +9,7 @@
 import Foundation
 import CZUtils
 
-@objc open class HTTPRequestWorker: CZConcurrentOperation {
+@objc open class HTTPRequestWorker: ConcurrentBlockOperation {
     public typealias Params = [AnyHashable: AnyHashable]
     public typealias ParamList = [AnyHashable]
     public typealias Headers = [String: String]
@@ -127,7 +127,7 @@ import CZUtils
         dataTask = buildUrlSessionTask()
     }
     
-    open override func execute() {
+    open override func executeBlock() {
         // Fetch from cache
         if  requestType == .GET,
             let cached = cached,
