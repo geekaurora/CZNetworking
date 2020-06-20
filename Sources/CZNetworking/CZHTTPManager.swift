@@ -53,7 +53,7 @@ open class CZHTTPManager: NSObject {
   }
   
   // MARK: Codable
-    
+  
   /// Retrieves Codable models with specified paremeters `urlStr`/`params` etc.
   /// In `success` callback, it automatically decode json data to desired `Model` type if applicable.
   ///
@@ -235,28 +235,9 @@ open class CZHTTPManager: NSObject {
   }
 }
 
-private extension CZHTTPManager {
-  
-  func startOperation(_ requestType: HTTPRequestWorker.RequestType,
-                      urlStr: String,
-                      headers: HTTPRequestWorker.Headers? = nil,
-                      params: HTTPRequestWorker.Params? = nil,
-                      success: HTTPRequestWorker.Success? = nil,
-                      failure: HTTPRequestWorker.Failure? = nil,
-                      cached: HTTPRequestWorker.Cached? = nil,
-                      progress: HTTPRequestWorker.Progress? = nil) {
-    let op = HTTPRequestWorker(
-      requestType,
-      url: URL(string: urlStr)!,
-      params: params,
-      headers: headers,
-      httpCache: self.httpCache,
-      success: success,
-      failure: failure,
-      cached: cached,
-      progress: progress)
-    queue.addOperation(op)
-  }
+// MARK: - Utils
+
+public extension CZHTTPManager {
   
   func model<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> Model? {
     guard let dict: CZDictionary = {
@@ -280,6 +261,32 @@ private extension CZHTTPManager {
       }
     }()
     return dicts?.compactMap { Model(dictionary: $0) }
+  }
+  
+}
+
+
+private extension CZHTTPManager {
+  
+  func startOperation(_ requestType: HTTPRequestWorker.RequestType,
+                      urlStr: String,
+                      headers: HTTPRequestWorker.Headers? = nil,
+                      params: HTTPRequestWorker.Params? = nil,
+                      success: HTTPRequestWorker.Success? = nil,
+                      failure: HTTPRequestWorker.Failure? = nil,
+                      cached: HTTPRequestWorker.Cached? = nil,
+                      progress: HTTPRequestWorker.Progress? = nil) {
+    let op = HTTPRequestWorker(
+      requestType,
+      url: URL(string: urlStr)!,
+      params: params,
+      headers: headers,
+      httpCache: self.httpCache,
+      success: success,
+      failure: failure,
+      cached: cached,
+      progress: progress)
+    queue.addOperation(op)
   }
   
 }
