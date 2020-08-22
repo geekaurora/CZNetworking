@@ -21,6 +21,13 @@ final class CZHTTPManagerTests: XCTestCase {
     ]
     static let models = (0..<10).map { TestModel(id: $0, name: "Model\($0)") }
   }
+  static let queueLable = "com.tests.queue"
+  @ThreadSafe
+  private var executionSuccessCount = 0
+  
+  override func setUp() {
+    executionSuccessCount = 0
+  }
   
   /**
    Test GET() method.
@@ -86,6 +93,60 @@ final class CZHTTPManagerTests: XCTestCase {
     }
     
     // Wait for expectatation.
+    waitForExpectatation()
+  }
+    
+  /**
+   Test GET() method with `cached` handler on multi threads.
+   */
+  func testGETWithCacheMultiThreads() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+    let mockDataMap = [MockData.urlForGet: mockData]
+    
+    let success: HTTPRequestWorker.Success = { (_, data) in
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+    }
+    
+    let cached: HTTPRequestWorker.Success = { (_, data) in
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+    }
+    
+    // 1. Set up sessionConfiguration.
+    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
+    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    
+    // 2. Fetch with stub URLSession on multi threads.
+    let totalCount = 1000
+    let dispatchGroup = DispatchGroup()
+    (0..<totalCount).forEach { _ in
+      dispatchGroup.enter()
+      CZHTTPManager.shared.GET(
+        MockData.urlForGet.absoluteString,
+        success: { (task, data) in
+          success(task, data)
+          self._executionSuccessCount.threadLock { $0 = $0 + 1
+            print("Success count = \($0)")
+          }
+          dispatchGroup.leave()
+      }, cached: cached)
+    }
+    
+    // 3. Wait till group multi thread tasks complete.
+    dispatchGroup.notify(queue: .main) {
+      let successCount = self._executionSuccessCount.threadLock { $0 }
+      // Verify success `count` with the expected value.
+      XCTAssert(
+        successCount == totalCount,
+        "Not all executions succeed! Actual result = \(successCount), Expected result = \(totalCount)")
+      expectation.fulfill()
+    }
+    
+    // 4. Wait for expectatation.
     waitForExpectatation()
   }
   
