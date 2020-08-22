@@ -8,7 +8,7 @@ class ViewController: UIViewController {
   private let httManager: CZHTTPManager = CZHTTPManager.shared.maxConcurrencies(1)
   
   override func viewDidLoad() {
-    super.viewDidLoad()
+    super.viewDidLoad()    
     testFetch()
   }
   

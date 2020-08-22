@@ -1,5 +1,6 @@
 import XCTest
 import CZUtils
+import CZTestUtils
 @testable import CZNetworking
 
 final class CZHTTPManagerTests: XCTestCase {
@@ -18,9 +19,65 @@ final class CZHTTPManagerTests: XCTestCase {
     ]
   }
   
+
+    func testGETCodable() {
+      let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(3, testCase: self)
+      
+      // Create mockDataMap.
+      let url = URL(string: "https://www.apple.com/newsroom/rss-feed.rss")!
+      let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+      let mockDataMap = [url: mockData]
+      
+      // Fetch with stub URLSession.
+      let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
+      CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+      
+  //    CZHTTPManager.shared.GetOneModel(url.absoluteString, success: { data in
+  //
+  //    })
+      
+      CZHTTPManager.shared.GET(url.absoluteString, success: { (_, data) in
+        let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+        XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
+        expectation.fulfill()
+      })
+      
+  //
+  //    let innerCompletion = { (feeds: [Model]) in
+  //      print("\(#function) Fetched feeds: \(feeds)")
+  //      completion(feeds, nil)
+  //    }
+  //    let cachedCompletion = shouldUseCache ? innerCompletion : nil
+  //
+  //    CZHTTPManager.shared.GETCodableModel(
+  //      endPoint,
+  //      headers: headers,
+  //      params: params,
+  //      dataKey: dataKey,
+  //      success: innerCompletion,
+  //      failure: { (task, error) in
+  //        assertionFailure("\(#function) - failed to fetch models. Error - \(error)")
+  //        completion(nil, error)
+  //    }, cached: cachedCompletion)
+      
+  //
+  //    session.dataTask(with: url) {  (data, response, error) in
+  //      guard let data = data.assertIfNil else {
+  //        return
+  //      }
+  //      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+  //      XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
+  //      expectation.fulfill()
+  //    }.resume()
+      
+      waitForExpectatation()
+      
+  //    sleep(3000)
+    }
+  
   func testGET() {
     let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(3, testCase: self)
-
+    
     // Create mockDataMap.
     let url = URL(string: "https://www.apple.com/newsroom/rss-feed.rss")!
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
@@ -29,45 +86,13 @@ final class CZHTTPManagerTests: XCTestCase {
     // Fetch with stub URLSession.
     let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
     CZHTTPManager.urlSessionConfiguration = sessionConfiguration
-    
-//    CZHTTPManager.shared.GetOneModel(url.absoluteString, success: { data in
-//
-//    })
-    
     CZHTTPManager.shared.GET(url.absoluteString, success: { (_, data) in
-      
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
+      expectation.fulfill()
     })
-    
-//
-//    let innerCompletion = { (feeds: [Model]) in
-//      print("\(#function) Fetched feeds: \(feeds)")
-//      completion(feeds, nil)
-//    }
-//    let cachedCompletion = shouldUseCache ? innerCompletion : nil
-//
-//    CZHTTPManager.shared.GETCodableModel(
-//      endPoint,
-//      headers: headers,
-//      params: params,
-//      dataKey: dataKey,
-//      success: innerCompletion,
-//      failure: { (task, error) in
-//        assertionFailure("\(#function) - failed to fetch models. Error - \(error)")
-//        completion(nil, error)
-//    }, cached: cachedCompletion)
-    
-//
-//    session.dataTask(with: url) {  (data, response, error) in
-//      guard let data = data.assertIfNil else {
-//        return
-//      }
-//      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
-//      XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
-//      expectation.fulfill()
-//    }.resume()
-    
-//    waitForExpectatation()
-    
-    sleep(3)
+
+    // Wait for expectatation.
+    waitForExpectatation()
   }
 }

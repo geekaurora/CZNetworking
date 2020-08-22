@@ -10,7 +10,8 @@ public class CZHTTPStub {
     URLProtocolMock.mockDataMap.insert(mockDataMap)
     
     // Set up URLSessionConfiguration to use mock.
-    let config = URLSessionConfiguration.ephemeral
+//    let config = URLSessionConfiguration.ephemeral
+    let config = URLSessionConfiguration.default
     config.protocolClasses = [URLProtocolMock.self]
     
     // Return config.
