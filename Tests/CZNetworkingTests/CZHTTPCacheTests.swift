@@ -32,7 +32,7 @@ final class CZHTTPCacheTests: XCTestCase {
     Thread.sleep(forTimeInterval: 0.01)
 
     let readData = httpCache.readData(forKey: MockData.key) as? Data
-    XCTAssert(data == readData, "Actual result \(readData), Expected result = \(data)")
+    XCTAssert(data == readData, "Actual result = \(readData), Expected result = \(data)")
   }
   
   func testReadWriteDictionary() {
@@ -41,7 +41,7 @@ final class CZHTTPCacheTests: XCTestCase {
     Thread.sleep(forTimeInterval: 0.01)
     
     let readDictionary = httpCache.readData(forKey: MockData.key) as? [String: AnyHashable]
-    XCTAssert(dictionary == readDictionary, "Actual result \(readDictionary), Expected result = \(dictionary)")
+    XCTAssert(dictionary == readDictionary, "Actual result = \(readDictionary), Expected result = \(dictionary)")
   }
   
   func testReadWriteArray() {
@@ -50,6 +50,6 @@ final class CZHTTPCacheTests: XCTestCase {
     Thread.sleep(forTimeInterval: 0.01)
     
     let readArray = httpCache.readData(forKey: MockData.key) as? [AnyHashable]
-    XCTAssert(array == readArray, "Actual result \(readArray), Expected result = \(array)")
+    XCTAssert(array == readArray, "Actual result = \(readArray), Expected result = \(array)")
   }
 }

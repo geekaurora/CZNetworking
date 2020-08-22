@@ -5,6 +5,7 @@ import CZTestUtils
 
 final class CZHTTPManagerTests: XCTestCase {
   private enum MockData {
+    static let url = URL(string: "https://www.apple.com/newsroom/rss-feed.rss")!
     static let dictionary: [String: AnyHashable] = [
       "a": "sdlfjas",
       "c": "sdlksdf",
@@ -17,82 +18,92 @@ final class CZHTTPManagerTests: XCTestCase {
       "239823sd",
       189298723,
     ]
+    static let models = (0..<10).map { TestModel(id: $0, name: "Model\($0)") }
   }
   
-
-    func testGETCodable() {
-      let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(3, testCase: self)
-      
-      // Create mockDataMap.
-      let url = URL(string: "https://www.apple.com/newsroom/rss-feed.rss")!
-      let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
-      let mockDataMap = [url: mockData]
-      
-      // Fetch with stub URLSession.
-      let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
-      CZHTTPManager.urlSessionConfiguration = sessionConfiguration
-      
-  //    CZHTTPManager.shared.GetOneModel(url.absoluteString, success: { data in
-  //
-  //    })
-      
-      CZHTTPManager.shared.GET(url.absoluteString, success: { (_, data) in
-        let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
-        XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
-        expectation.fulfill()
-      })
-      
-  //
-  //    let innerCompletion = { (feeds: [Model]) in
-  //      print("\(#function) Fetched feeds: \(feeds)")
-  //      completion(feeds, nil)
-  //    }
-  //    let cachedCompletion = shouldUseCache ? innerCompletion : nil
-  //
-  //    CZHTTPManager.shared.GETCodableModel(
-  //      endPoint,
-  //      headers: headers,
-  //      params: params,
-  //      dataKey: dataKey,
-  //      success: innerCompletion,
-  //      failure: { (task, error) in
-  //        assertionFailure("\(#function) - failed to fetch models. Error - \(error)")
-  //        completion(nil, error)
-  //    }, cached: cachedCompletion)
-      
-  //
-  //    session.dataTask(with: url) {  (data, response, error) in
-  //      guard let data = data.assertIfNil else {
-  //        return
-  //      }
-  //      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
-  //      XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
-  //      expectation.fulfill()
-  //    }.resume()
-      
-      waitForExpectatation()
-      
-  //    sleep(3000)
-    }
-  
   func testGET() {
-    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(3, testCase: self)
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
     
     // Create mockDataMap.
-    let url = URL(string: "https://www.apple.com/newsroom/rss-feed.rss")!
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
-    let mockDataMap = [url: mockData]
+    let mockDataMap = [MockData.url: mockData]
     
     // Fetch with stub URLSession.
     let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
     CZHTTPManager.urlSessionConfiguration = sessionConfiguration
-    CZHTTPManager.shared.GET(url.absoluteString, success: { (_, data) in
+    CZHTTPManager.shared.GET(MockData.url.absoluteString, success: { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
-      XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
       expectation.fulfill()
     })
-
+    
     // Wait for expectatation.
     waitForExpectatation()
   }
+  
+  func testGETWithCache() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+    let mockDataMap = [MockData.url: mockData]
+        
+    let success: HTTPRequestWorker.Success = { (_, data) in
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+    }
+    
+    let cached: HTTPRequestWorker.Success = { (_, data) in
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+      expectation.fulfill()
+    }
+    
+    // 1. Fetch with stub URLSession.
+    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
+    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    CZHTTPManager.shared.GET(
+      MockData.url.absoluteString,
+      success: success)
+    
+    // 2. Verify cache: fetch again.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+      CZHTTPManager.shared.GET(
+        MockData.url.absoluteString,
+        success: success,
+        cached: cached)
+    }
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
+  
+  func testGETCodable() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CodableHelper.encode(MockData.models)!
+    let mockDataMap = [MockData.url: mockData]
+    
+    // Fetch with stub URLSession.
+    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
+    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    
+    // Verify data.
+    CZHTTPManager.shared.GETCodableModel(MockData.url.absoluteString, success: { (models: [TestModel]) in
+      XCTAssert(
+        models.isEqual(toCodable: MockData.models),
+        "Actual result = \n\(models) \n\nExpected result = \n\(MockData.models)")
+      expectation.fulfill()
+    })
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
+  
+}
+
+struct TestModel: Codable {
+  let id: Int
+  let name: String
 }

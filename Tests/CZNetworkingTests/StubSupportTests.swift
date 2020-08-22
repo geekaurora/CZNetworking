@@ -37,7 +37,7 @@ final class StubSupportTests: XCTestCase {
         return
       }
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
-      XCTAssert(res == MockData.dictionary, "Actual result \(res), Expected result = \(MockData.dictionary)")
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
       expectation.fulfill()
     }.resume()
     
