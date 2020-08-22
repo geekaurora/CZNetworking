@@ -21,21 +21,19 @@ final class StubSupportTests: XCTestCase {
     ]
   }
   
-  override func setUp() {    
+  override func setUp() {
   }
   
   func testStubData() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(3, testCase: self)
+
+    // Create stub URLSession.
     let url = URL(string: "https://www.apple.com/newsroom/rss-feed.rss")!
-    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)
-    URLProtocolMock.mockDataMap[url] = mockData
+    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+    let mockDataMap = [url: mockData]
+    let session = CZHTTPStub.stubURLSession(mockDataMap: mockDataMap)
     
-    // Set up URLSessionConfiguration to use mock.
-    let config = URLSessionConfiguration.ephemeral
-    config.protocolClasses = [URLProtocolMock.self]
-    
-    // Fetch with URLSession.
-    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
-    let session = URLSession(configuration: config)
+    // Fetch with URLSession for mock data.
     session.dataTask(with: url) {  (data, response, error) in
       guard let data = data.assertIfNil else {
         return
