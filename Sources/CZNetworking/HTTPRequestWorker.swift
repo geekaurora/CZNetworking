@@ -9,7 +9,8 @@
 import Foundation
 import CZUtils
 
-@objc open class HTTPRequestWorker: ConcurrentBlockOperation {
+@objc
+open class HTTPRequestWorker: ConcurrentBlockOperation {
   public typealias Params = [AnyHashable: AnyHashable]
   public typealias ParamList = [AnyHashable]
   public typealias Headers = [String: String]
