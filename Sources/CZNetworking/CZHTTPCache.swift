@@ -11,84 +11,90 @@ import CZUtils
 
 /// Thread safe local cache for HTTP response.
 open class CZHTTPCache: NSObject {
-    private let ioQueue: DispatchQueue
-    
-    override init() {
-        ioQueue = DispatchQueue(
-            label: "com.czhttpCache.ioQueue",
-            qos: .default,
-            attributes: .concurrent,
-            autoreleaseFrequency: .inherit,
-            target: nil)
-        super.init()
+  private let ioQueue: DispatchQueue
+  
+  override init() {
+    ioQueue = DispatchQueue(
+      label: "com.czhttpCache.ioQueue",
+      qos: .default,
+      attributes: .concurrent,
+      autoreleaseFrequency: .inherit,
+      target: nil)
+    super.init()
+  }
+  
+  private let folder: URL = {
+    var documentPath = try! FileManager.default.url(for:.documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+    let cacheFolder = documentPath.appendingPathComponent("CZHTTPCache")
+    do {
+      try FileManager.default.createDirectory(atPath: cacheFolder.path, withIntermediateDirectories: true, attributes: nil)
+    } catch let error {
+      assertionFailure("Failed to create HTTPCache folder. Error: \(error)")
     }
-
-    private let folder: URL = {
-        var documentPath = try! FileManager.default.url(for:.documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        let cacheFolder = documentPath.appendingPathComponent("CZHTTPCache")
-        do {
-            try FileManager.default.createDirectory(atPath: cacheFolder.path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error {
-            assertionFailure("Failed to create HTTPCache folder. Error: \(error)")
-        }
-        return cacheFolder
-    }()
-    static func cacheKey(url: URL, params: [AnyHashable: Any]?) -> String {
-        return CZHTTPJsonSerializer.url(baseURL: url, params: params).absoluteString
+    return cacheFolder
+  }()
+  static func cacheKey(url: URL, params: [AnyHashable: Any]?) -> String {
+    return CZHTTPJsonSerializer.url(baseURL: url, params: params).absoluteString
+  }
+  
+  func saveData(_ data: Any, forKey key: String) {
+    ioQueue.async(flags: .barrier) {[weak self] in
+      guard let `self` = self else {return}
+      dbgPrint("key = \(key); self.fileURL(forKey: key): \(self.fileURL(forKey: key))")
+      
+      switch data {
+      case let data as NSDictionary:
+        data.write(to: self.fileURL(forKey: key), atomically: true)
+      case let data as NSArray:
+        data.write(to: self.fileURL(forKey: key), atomically: true)
+      case let data as NSData:
+        data.write(to: self.fileURL(forKey: key), atomically: true)
+      default:
+        assertionFailure("Unsupported data type.")
+        return
+      }
     }
-
-    func saveData(_ data: Any, forKey key: String) {
-        ioQueue.async(flags: .barrier) {[weak self] in
-            guard let `self` = self else {return}
-            switch data {
-            case let data as NSDictionary:
-                data.write(to: self.fileURL(forKey: key), atomically: false)
-            case let data as NSArray:
-                data.write(to: self.fileURL(forKey: key), atomically: false)
-            case let data as Data:
-                do {
-                    try data.write(to: self.fileURL(forKey: key), options: .atomic)
-                } catch {
-                    dbgPrint("Failed to write data. Error - \(error.localizedDescription)")
-                }
-            default:
-                assertionFailure("Unsupported data type.")
-                return
-            }
-        }
+  }
+  
+  func readData(forKey key: String) -> Any? {
+    return ioQueue.sync {[weak self] () -> Any? in
+      guard let `self` = self else { return nil }
+      if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
+        return dict
+      }
+      if let array = NSArray(contentsOf: self.fileURL(forKey: key)) {
+        return array
+      }
+      if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
+        return dict
+      }
+      do {
+        let data = try Data(contentsOf: self.fileURL(forKey: key))
+        return data
+      } catch {
+        dbgPrint("Failed to read data. Error - \(error.localizedDescription)")
+      }
+      return nil
     }
-    
-    func readData(forKey key: String) -> Any? {
-        return ioQueue.sync {[weak self] () -> Any? in
-            guard let `self` = self else { return nil }
-            if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
-                return dict
-            }
-            if let array = NSArray(contentsOf: self.fileURL(forKey: key)) {
-                return array
-            }
-            if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
-                return dict
-            }
-            do {
-                let data = try Data(contentsOf: self.fileURL(forKey: key))
-                return data
-            } catch {
-                dbgPrint("Failed to read data. Error - \(error.localizedDescription)")
-            }
-            return nil
-        }
+  }
+  
+  func removeData(key: String) {
+    ioQueue.async(flags: .barrier) {[weak self] in
+      guard let `self` = self else {return}
+      let path = self.fileURL(forKey: key)
+      CZFileHelper.removeFile(path)
     }
+  }
 }
 
 private extension CZHTTPCache {
-    func fileURL(forKey key: String) -> URL {
-        return folder.appendingPathComponent(key.MD5)
-    }
+  func fileURL(forKey key: String) -> URL {
+    return folder.appendingPathComponent(key.MD5)
+  }
 }
 
 protocol FileWritable {
-    func write(toFile: String, atomically: Bool) -> Bool
+  func write(toFile: String, atomically: Bool) -> Bool
 }
 
 

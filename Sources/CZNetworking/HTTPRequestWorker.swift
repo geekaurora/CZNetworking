@@ -9,7 +9,8 @@
 import Foundation
 import CZUtils
 
-@objc open class HTTPRequestWorker: ConcurrentBlockOperation {
+@objc
+open class HTTPRequestWorker: ConcurrentBlockOperation {
   public typealias Params = [AnyHashable: AnyHashable]
   public typealias ParamList = [AnyHashable]
   public typealias Headers = [String: String]
@@ -150,7 +151,7 @@ import CZUtils
    Build urlSessionTask based on settings
    */
   private func buildUrlSessionTask() -> URLSessionDataTask? {
-    urlSession = URLSession(configuration: .default,
+    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
                             delegate: self,
                             delegateQueue: nil)
     let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
@@ -238,24 +239,26 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
   public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     defer { finish() }
     
-    guard self.response == task.response else { return }
-    
-    guard error == nil,
-      let httpResponse = response as? HTTPURLResponse,
-      httpResponse.statusCode == 200 else {
-        if error?.retrievedCode != NSURLErrorCancelled {
-          // Failure completion
-          var errorDescription = error?.localizedDescription ?? ""
-          let responseString = "Response: \(String(describing: response))"
-          errorDescription = responseString + "\n"
-          if let receivedDict: Any = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
-            errorDescription += "\nReceivedData: \(receivedDict)"
+    if !CZTestHelper.isInUnitTest {
+      guard self.response == task.response else { return }
+      
+      guard error == nil,
+        let httpResponse = response as? HTTPURLResponse,
+        httpResponse.statusCode == 200 else {
+          if error?.retrievedCode != NSURLErrorCancelled {
+            // Failure completion
+            var errorDescription = error?.localizedDescription ?? ""
+            let responseString = "Response: \(String(describing: response))"
+            errorDescription = responseString + "\n"
+            if let receivedDict: Any = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
+              errorDescription += "\nReceivedData: \(receivedDict)"
+            }
+            let errorRes = error ?? CZNetError(errorDescription)
+            dbgPrint("Failure of dataTask, error - \(errorRes)")
+            failure?(nil, errorRes)
           }
-          let errorRes = error ?? CZNetError(errorDescription)
-          dbgPrint("Failure of dataTask, error - \(errorRes)")
-          failure?(nil, errorRes)
-        }
-        return
+          return
+      }
     }
     
     // Success completion

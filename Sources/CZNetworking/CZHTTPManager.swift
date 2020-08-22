@@ -14,6 +14,8 @@ import CZUtils
  */
 open class CZHTTPManager: NSObject {
   public static let shared = CZHTTPManager()
+  public static var urlSessionConfiguration = URLSessionConfiguration.default
+  public static var isUnderUnitTest = false
   private let queue: OperationQueue
   private let httpCache: CZHTTPCache
   public enum Constant {
