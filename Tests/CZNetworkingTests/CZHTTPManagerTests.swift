@@ -47,7 +47,7 @@ final class CZHTTPManagerTests: XCTestCase {
     // Create mockDataMap.
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.url: mockData]
-        
+    
     let success: HTTPRequestWorker.Success = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
@@ -56,7 +56,6 @@ final class CZHTTPManagerTests: XCTestCase {
     let cached: HTTPRequestWorker.Success = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
-      expectation.fulfill()
     }
     
     // 1. Fetch with stub URLSession.
@@ -64,14 +63,19 @@ final class CZHTTPManagerTests: XCTestCase {
     CZHTTPManager.urlSessionConfiguration = sessionConfiguration
     CZHTTPManager.shared.GET(
       MockData.url.absoluteString,
-      success: success)
+      success: success,
+      cached: cached)
     
     // 2. Verify cache: fetch again.
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
       CZHTTPManager.shared.GET(
         MockData.url.absoluteString,
         success: success,
-        cached: cached)
+        cached: { (task, data) in
+          cached(task, data)
+          // Fullfill the expectatation.
+          expectation.fulfill()
+      })
     }
     
     // Wait for expectatation.
