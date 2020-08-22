@@ -151,7 +151,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
    Build urlSessionTask based on settings
    */
   private func buildUrlSessionTask() -> URLSessionDataTask? {
-    urlSession = URLSession(configuration: .default,
+    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
                             delegate: self,
                             delegateQueue: nil)
     let paramsString: String? = CZHTTPJsonSerializer.string(with: params)

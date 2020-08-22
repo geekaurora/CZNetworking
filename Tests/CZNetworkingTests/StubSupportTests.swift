@@ -21,19 +21,16 @@ final class StubSupportTests: XCTestCase {
     ]
   }
   
-  override func setUp() {
-  }
-  
   func testStubData() {
     let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(3, testCase: self)
 
-    // Create stub URLSession.
+    // Create mockDataMap.
     let url = URL(string: "https://www.apple.com/newsroom/rss-feed.rss")!
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [url: mockData]
-    let session = CZHTTPStub.stubURLSession(mockDataMap: mockDataMap)
     
-    // Fetch with URLSession for mock data.
+    // Fetch with stub URLSession.
+    let session = CZHTTPStub.stubURLSession(mockDataMap: mockDataMap)
     session.dataTask(with: url) {  (data, response, error) in
       guard let data = data.assertIfNil else {
         return
@@ -43,7 +40,7 @@ final class StubSupportTests: XCTestCase {
       expectation.fulfill()
     }.resume()
     
+    // Wait for expectation.
     waitForExpectatation()
   }
-  
 }
