@@ -9,13 +9,13 @@
 import Foundation
 import CZUtils
 
-/// Local Cache class for HTTP response
+/// Thread safe local cache for HTTP response.
 open class CZHTTPCache: NSObject {
     private let ioQueue: DispatchQueue
     
     override init() {
         ioQueue = DispatchQueue(
-            label: "com.tony.httpCache.ioQueue",
+            label: "com.czhttpCache.ioQueue",
             qos: .default,
             attributes: .concurrent,
             autoreleaseFrequency: .inherit,

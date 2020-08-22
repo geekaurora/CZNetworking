@@ -170,7 +170,7 @@ import CZUtils
       dataTask = urlSession?.dataTask(with: request as URLRequest)
       
     case let .POST(contentType, data):
-      // Set postData as input data if non-nil
+      // Set postData as input data if non nil.
       let postData = data ?? paramsString?.data(using: .utf8)
       let contentTypeValue: String = {
         switch contentType {
@@ -207,6 +207,8 @@ import CZUtils
     return dataTask
   }
 }
+
+// MARK: - URLSessionDataDelegate
 
 extension HTTPRequestWorker: URLSessionDataDelegate {
   public func urlSession(_ session: URLSession,
@@ -267,5 +269,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     
   }
 }
+
+// MARK: - URLSessionDelegate
 
 extension HTTPRequestWorker: URLSessionDelegate {}
