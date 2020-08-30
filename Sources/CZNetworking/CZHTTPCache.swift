@@ -40,7 +40,6 @@ open class CZHTTPCache: NSObject {
   func saveData(_ data: Any, forKey key: String) {
     ioQueue.async(flags: .barrier) {[weak self] in
       guard let `self` = self else {return}
-      dbgPrint("key = \(key); self.fileURL(forKey: key): \(self.fileURL(forKey: key))")
       
       switch data {
       case let data as NSDictionary:
