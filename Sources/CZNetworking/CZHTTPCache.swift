@@ -33,13 +33,21 @@ open class CZHTTPCache: NSObject {
     }
     return cacheFolder
   }()
+  
   static func cacheKey(url: URL, params: [AnyHashable: Any]?) -> String {
     return CZHTTPJsonSerializer.url(baseURL: url, params: params).absoluteString
   }
-  
-  func saveData(_ data: Any, forKey key: String) {
-    ioQueue.async(flags: .barrier) {[weak self] in
-      guard let `self` = self else {return}
+    
+  /// Save data to the cache - supports to save NSData and JSON object.
+  ///
+  /// - Note: `data` can be NSData or JSON object. If it's JSON object, will be serialized automatically/
+  ///
+  /// - Parameters:
+  ///   - data: NSData or JSONObject to be saved.
+  ///   - key: the key for `data`.
+  public func saveData(_ data: Any, forKey key: String) {
+    ioQueue.async(flags: .barrier) { [weak self] in
+      guard let `self` = self else { return }
       
       switch data {
       case let data as NSDictionary:
@@ -55,8 +63,15 @@ open class CZHTTPCache: NSObject {
     }
   }
   
-  func readData(forKey key: String) -> Any? {
-    return ioQueue.sync {[weak self] () -> Any? in
+  /// Read data from the cache - supports NSData and JSON object.
+  ///
+  /// - Note: If saved data is JSON object, will be deserialized automatically.
+  ///
+  /// - Parameters:
+  ///   - data: NSData or JSONObject to be saved.
+  ///   - key: the key for `data`.
+  public func readData(forKey key: String) -> Any? {
+    return ioQueue.sync { [weak self] () -> Any? in
       guard let `self` = self else { return nil }
       if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
         return dict
@@ -77,9 +92,9 @@ open class CZHTTPCache: NSObject {
     }
   }
   
-  func removeData(key: String) {
-    ioQueue.async(flags: .barrier) {[weak self] in
-      guard let `self` = self else {return}
+  public func removeData(key: String) {
+    ioQueue.async(flags: .barrier) { [weak self] in
+      guard let `self` = self else { return }
       let path = self.fileURL(forKey: key)
       CZFileHelper.removeFile(path)
     }
