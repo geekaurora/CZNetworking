@@ -11,6 +11,7 @@ import CZUtils
 
 /// Thread safe local cache for HTTP response.
 open class CZHTTPCache: NSObject {
+  public static let shared = CZHTTPCache()
   private let ioQueue: DispatchQueue
   
   override init() {
@@ -49,16 +50,20 @@ open class CZHTTPCache: NSObject {
     ioQueue.async(flags: .barrier) { [weak self] in
       guard let `self` = self else { return }
       
-      switch data {
-      case let data as NSDictionary:
-        data.write(to: self.fileURL(forKey: key), atomically: true)
-      case let data as NSArray:
-        data.write(to: self.fileURL(forKey: key), atomically: true)
-      case let data as NSData:
-        data.write(to: self.fileURL(forKey: key), atomically: true)
-      default:
-        assertionFailure("Unsupported data type.")
-        return
+      let url = self.fileURL(forKey: key)
+      do {
+        switch data {
+        case let data as NSDictionary:
+          try data.write(to: url)
+        case let data as NSArray:
+          try data.write(to: url)
+        case let data as NSData:
+          data.write(to: url, atomically: true)
+        default:
+          assertionFailure("Unsupported data type.")
+        }
+      } catch {
+          assertionFailure("Failed to write file. Error - \(error.localizedDescription)")
       }
     }
   }
@@ -73,17 +78,19 @@ open class CZHTTPCache: NSObject {
   public func readData(forKey key: String) -> Any? {
     return ioQueue.sync { [weak self] () -> Any? in
       guard let `self` = self else { return nil }
-      if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
+      
+      let url = self.fileURL(forKey: key)
+      if let dict = NSDictionary(contentsOf: url) {
         return dict
       }
-      if let array = NSArray(contentsOf: self.fileURL(forKey: key)) {
+      if let array = NSArray(contentsOf: url) {
         return array
       }
-      if let dict = NSDictionary(contentsOf: self.fileURL(forKey: key)) {
+      if let dict = NSDictionary(contentsOf: url) {
         return dict
       }
       do {
-        let data = try Data(contentsOf: self.fileURL(forKey: key))
+        let data = try Data(contentsOf: url)
         return data
       } catch {
         dbgPrint("Failed to read data. Error - \(error.localizedDescription)")
