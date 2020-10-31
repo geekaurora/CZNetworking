@@ -58,7 +58,7 @@ open class CZHTTPManager: NSObject {
   
   // MARK: Codable
   
-  /// Retrieves Codable models with specified paremeters `urlStr`/`params` etc.
+  /// Retrieves Codable model with specified paremeters `urlStr`/`params` etc.
   /// In `success` callback, it automatically decode json data to desired `Model` type if applicable.
   ///
   /// - Note: `Model` type can be inferred in `success` call site.
@@ -92,6 +92,57 @@ open class CZHTTPManager: NSObject {
         return
       }
       completion?(model)
+    }
+    
+    GET(urlStr,
+        headers: headers,
+        params: params,
+        success: { (task, data) in
+          modelingHandler(success, task, data)
+    },
+        failure: failure,
+        cached: { (task, data) in
+          modelingHandler(cached, task, data)
+    },
+        progress: progress)
+  }
+  
+  /// Retrieves Codable models with specified paremeters `urlStr`/`params` etc.
+  /// In `success` callback, it automatically decode json data to desired `Model` type if applicable.
+  ///
+  /// - Note:
+  /// The reason to use `GETCodableModels` instead of `GETCodableModel` is to assert the exact failed decoding model.
+  /// `Model` type can be inferred in `success` call site.
+  ///
+  /// - Parameters:
+  ///   - dataKey: The key used to retrieve models array. e.g.  key of dictionary is "items".
+  public func GETCodableModels<Model: Codable>(_ urlStr: String,
+                                              headers: HTTPRequestWorker.Headers? = nil,
+                                              params: HTTPRequestWorker.Params? = nil,
+                                              dataKey: String? = nil,
+                                              success: @escaping ([Model]) -> Void,
+                                              failure: HTTPRequestWorker.Failure? = nil,
+                                              cached: (([Model]) -> Void)? = nil,
+                                              progress: HTTPRequestWorker.Progress? = nil) {
+    
+    typealias Completion = ([Model]) -> Void
+    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
+      let retrievedData: Data? = {
+        // With given dataKey, retrieve corresponding field from dictionary
+        if let dataKey = dataKey,
+          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
+          let dataDict = dict[dataKey]  {
+          return CZHTTPJsonSerializer.jsonData(with: dataDict)
+        }
+        // Othewise, return directly as data should be decodable
+        return data
+      }()
+      
+      guard let models: [Model] = CodableHelper.decodeArray(retrievedData).assertIfNil else {
+        failure?(task, CZNetError.parse)
+        return
+      }
+      completion?(models)
     }
     
     GET(urlStr,
