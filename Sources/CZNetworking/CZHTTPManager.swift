@@ -110,8 +110,9 @@ open class CZHTTPManager: NSObject {
   /// Retrieves Codable models with specified paremeters `urlStr`/`params` etc.
   /// In `success` callback, it automatically decode json data to desired `Model` type if applicable.
   ///
-  /// - Note:
-  /// The reason to use `GETCodableModels` instead of `GETCodableModel` is to assert the exact failed decoding model.
+  /// ### Note
+  /// - `Data` in `success` callback is the original response data.
+  /// - The reason to use `GETCodableModels` instead of `GETCodableModel` is to assert the exact failed decoding model.
   /// `Model` type can be inferred in `success` call site.
   ///
   /// - Parameters:
@@ -120,12 +121,12 @@ open class CZHTTPManager: NSObject {
                                               headers: HTTPRequestWorker.Headers? = nil,
                                               params: HTTPRequestWorker.Params? = nil,
                                               dataKey: String? = nil,
-                                              success: @escaping ([Model]) -> Void,
+                                              success: @escaping ([Model], Data?) -> Void,
                                               failure: HTTPRequestWorker.Failure? = nil,
-                                              cached: (([Model]) -> Void)? = nil,
+                                              cached: (([Model], Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
     
-    typealias Completion = ([Model]) -> Void
+    typealias Completion = ([Model], Data?) -> Void
     let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
       let retrievedData: Data? = {
         // With given dataKey, retrieve corresponding field from dictionary
@@ -142,7 +143,7 @@ open class CZHTTPManager: NSObject {
         failure?(task, CZNetError.parse)
         return
       }
-      completion?(models)
+      completion?(models, data)
     }
     
     GET(urlStr,
@@ -156,6 +157,37 @@ open class CZHTTPManager: NSObject {
           modelingHandler(cached, task, data)
     },
         progress: progress)
+  }
+  
+  /// Get Codable models without `Data` in `success` closure.
+  public func GETCodableModels<Model: Codable>(_ urlStr: String,
+                                               headers: HTTPRequestWorker.Headers? = nil,
+                                               params: HTTPRequestWorker.Params? = nil,
+                                               dataKey: String? = nil,
+                                               success: @escaping ([Model]) -> Void,
+                                               failure: HTTPRequestWorker.Failure? = nil,
+                                               cached: (([Model]) -> Void)? = nil,
+                                               progress: HTTPRequestWorker.Progress? = nil) {
+    let cachedClosure: (([Model], Data?) -> Void)? = {
+      guard let cached = cached else {
+        return nil
+      }
+      return { (models, data) in
+        cached(models)
+      }
+    }()
+    
+    GETCodableModels(
+      urlStr,
+      headers: headers,
+      params: params,
+      dataKey: dataKey,
+      success: { (models, data) in
+        success(models)
+    },
+      failure: failure,
+      cached: cachedClosure,
+      progress: progress)
   }
   
   // MARK: CZDictionaryable

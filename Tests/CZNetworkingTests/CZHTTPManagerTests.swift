@@ -176,6 +176,32 @@ final class CZHTTPManagerTests: XCTestCase {
     waitForExpectatation()
   }
   
+  /**
+   Test GETCodableModels() method.
+   */
+  func testGETCodableModels() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CodableHelper.encode(MockData.models)!
+    let mockDataMap = [MockData.urlForGetCodable: mockData]
+    
+    // Fetch with stub URLSession.
+    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
+    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    
+    // Verify data.
+    CZHTTPManager.shared.GETCodableModels(MockData.urlForGetCodable.absoluteString, success: { (models: [TestModel]) in
+      XCTAssert(
+        models.isEqual(toCodable: MockData.models),
+        "Actual result = \n\(models) \n\nExpected result = \n\(MockData.models)")
+      expectation.fulfill()
+    })
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }  
+  
 }
 
 struct TestModel: Codable {
