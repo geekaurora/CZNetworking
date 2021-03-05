@@ -31,7 +31,7 @@ final class CZHTTPCacheTests: XCTestCase {
     httpCache.saveData(data, forKey: MockData.key)
     Thread.sleep(forTimeInterval: 0.01)
 
-    let readData = httpCache.readData(forKey: MockData.key) as? Data
+    let readData = httpCache.readData(forKey: MockData.key, shouldDeserializeJsonData: false) as? Data
     XCTAssert(data == readData, "Actual result = \(readData), Expected result = \(data)")
   }
   
