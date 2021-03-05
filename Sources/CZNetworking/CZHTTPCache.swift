@@ -46,25 +46,17 @@ open class CZHTTPCache: NSObject {
   /// - Parameters:
   ///   - data: NSData or JSONObject to be saved.
   ///   - key: the key for `data`.
-  public func saveData(_ data: Any, forKey key: String) {
+  public func saveData(_ input: Any, forKey key: String) {
     ioQueue.async(flags: .barrier) { [weak self] in
       guard let `self` = self else { return }
       
       let url = self.fileURL(forKey: key)
-      do {
-        switch data {
-        case let data as NSDictionary:
-          try data.write(to: url)
-        case let data as NSArray:
-          try data.write(to: url)
-        case let data as NSData:
-          data.write(to: url, atomically: true)
-        default:
-          assertionFailure("Unsupported data type.")
-        }
-      } catch {
-          assertionFailure("Failed to write file. Error - \(error.localizedDescription)")
+      guard let data = (input as? Data)
+              ?? CZHTTPJsonSerializer.jsonData(with: input).assertIfNil else {
+        return
       }
+      let success = (data as NSData).write(to: url, atomically: true)
+      assert(success, "\(#function) - failed to write file.")
     }
   }
   
@@ -73,9 +65,10 @@ open class CZHTTPCache: NSObject {
   /// - Note: If saved data is JSON object, will be deserialized automatically.
   ///
   /// - Parameters:
-  ///   - data: NSData or JSONObject to be saved.
   ///   - key: the key for `data`.
-  public func readData(forKey key: String) -> Any? {
+  ///   - shouldDeserializeJsonData: indicates whether deserialize Data to JsonObject automatically.
+  public func readData(forKey key: String,
+                       shouldDeserializeJsonData: Bool = true) -> Any? {
     return ioQueue.sync { [weak self] () -> Any? in
       guard let `self` = self else { return nil }
       
@@ -86,11 +79,12 @@ open class CZHTTPCache: NSObject {
       if let array = NSArray(contentsOf: url) {
         return array
       }
-      if let dict = NSDictionary(contentsOf: url) {
-        return dict
-      }
       do {
         let data = try Data(contentsOf: url)
+        if shouldDeserializeJsonData,
+           let jsonObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) {
+          return jsonObject
+        }
         return data
       } catch {
         dbgPrint("Failed to read data. Error - \(error.localizedDescription)")
