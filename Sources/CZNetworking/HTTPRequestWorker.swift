@@ -132,7 +132,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     // Fetch from cache
     if  requestType == .GET,
       let cached = cached,
-      let cachedData = httpCache?.readData(forKey: httpCacheKey) as? Data {
+      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
       MainQueueScheduler.async { [weak self] in
         cached(self?.dataTask, cachedData)
       }
