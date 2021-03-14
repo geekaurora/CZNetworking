@@ -45,31 +45,28 @@ private extension Upload {
     }
     
     static func buildBaseRequest(_ url: URL, boundary: String) -> URLRequest {
-
-//#if false
-//        case let .POST(contentType, data):
-//        // Set postData as input data if non-nil
-//        let postData = data ?? paramsString?.data(using: .utf8)
-//        let contentTypeValue: String = {
-//            switch contentType {
-//            case .formUrlencoded:
-//                return "application/x-www-form-urlencoded"
-//            case .textPlain:
-//                return "text/plain"
-//            }
-//        }()
-//        request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
-//        request.addValue("application/json", forHTTPHeaderField: "Accept")
-//        let contentLength = postData?.count ?? 0
-//        request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
-//        request.httpBody = postData
-//        dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
-//#endif
-
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         return request
+      
+      //  case let .POST(contentType, data):
+      //  // Set postData as input data if non-nil
+      //  let postData = data ?? paramsString?.data(using: .utf8)
+      //  let contentTypeValue: String = {
+      //    switch contentType {
+      //    case .formUrlencoded:
+      //      return "application/x-www-form-urlencoded"
+      //    case .textPlain:
+      //      return "text/plain"
+      //    }
+      //  }()
+      //  request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
+      //  request.addValue("application/json", forHTTPHeaderField: "Accept")
+      //  let contentLength = postData?.count ?? 0
+      //  request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
+      //  request.httpBody = postData
+      //  dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
     }
     
     static func buildRequest(_ url: URL,

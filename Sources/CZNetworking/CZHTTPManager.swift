@@ -352,7 +352,6 @@ public extension CZHTTPManager {
   
 }
 
-
 private extension CZHTTPManager {
   
   func startOperation(_ requestType: HTTPRequestWorker.RequestType,
@@ -363,9 +362,12 @@ private extension CZHTTPManager {
                       failure: HTTPRequestWorker.Failure? = nil,
                       cached: HTTPRequestWorker.Cached? = nil,
                       progress: HTTPRequestWorker.Progress? = nil) {
+    guard let url = URL(string: urlStr).assertIfNil else {
+      return
+    }
     let op = HTTPRequestWorker(
       requestType,
-      url: URL(string: urlStr)!,
+      url: url,
       params: params,
       headers: headers,
       httpCache: self.httpCache,
