@@ -2,7 +2,7 @@ import Foundation
 import CZUtils
 
 /**
- Stub mock data to CZHTTPManager.
+ Stub mock data to CZHTTPManager. This stub can be utilized by any networking frameworks built unpon CZHTTPManager.
  
  ### Usage
  ```
@@ -19,8 +19,7 @@ import CZUtils
 public extension CZHTTPManager {
   /**
    Stub mock data to CZHTTPManager.
-   - parameters:
-    - mockDataDict: [URL: Data] dictionary that maps `url` to its mocked data.
+    - Parameter mockDataDict: [URL: Data] dictionary that maps `url` to its corresponding mocked data.
    */
   static func stubMockData(dict mockDataDict: URLProtocolMock.MockDataMap) {
     // Fetch with stub URLSession.

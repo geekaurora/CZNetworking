@@ -39,10 +39,9 @@ final class CZHTTPManagerTests: XCTestCase {
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    // Fetch with stub URLSession.
-    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
-    // Replace urlSessionConfiguration of CZHTTPManager to stub data.
-    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    // Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
     CZHTTPManager.shared.GET(MockData.urlForGet.absoluteString, success: { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
@@ -73,9 +72,10 @@ final class CZHTTPManagerTests: XCTestCase {
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
+    // 0. Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
     // 1. Fetch with stub URLSession.
-    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
-    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
     CZHTTPManager.shared.GET(
       MockData.urlForGet.absoluteString,
       success: success,
@@ -117,9 +117,8 @@ final class CZHTTPManagerTests: XCTestCase {
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
-    // 1. Set up sessionConfiguration.
-    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
-    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    // 1. Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
     
     // 2. Fetch with stub URLSession on multi threads.
     let totalCount = 1000
@@ -161,9 +160,8 @@ final class CZHTTPManagerTests: XCTestCase {
     let mockData = CodableHelper.encode(MockData.models)!
     let mockDataMap = [MockData.urlForGetCodable: mockData]
     
-    // Fetch with stub URLSession.
-    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
-    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    // Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
     
     // Verify data.
     CZHTTPManager.shared.GETCodableModel(MockData.urlForGetCodable.absoluteString, success: { (models: [TestModel]) in
@@ -185,11 +183,10 @@ final class CZHTTPManagerTests: XCTestCase {
     
     // Create mockDataMap.
     let mockData = CodableHelper.encode(MockData.models)!
-    let mockDataMap = [MockData.urlForGetCodable: mockData]
+    let mockDataMap = [MockData.urlForGetCodable: mockData]    
     
-    // Fetch with stub URLSession.
-    let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
-    CZHTTPManager.urlSessionConfiguration = sessionConfiguration
+    // Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
     
     // Verify data.
     CZHTTPManager.shared.GETCodableModels(MockData.urlForGetCodable.absoluteString, success: { (models: [TestModel]) in
