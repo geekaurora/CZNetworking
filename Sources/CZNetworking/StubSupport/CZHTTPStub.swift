@@ -19,6 +19,7 @@ import CZUtils
 public extension CZHTTPManager {
   /**
    Stub mock data to CZHTTPManager.
+   
     - Parameter mockDataDict: [URL: Data] dictionary that maps `url` to its corresponding mocked data.
    */
   static func stubMockData(dict mockDataDict: URLProtocolMock.MockDataMap) {
