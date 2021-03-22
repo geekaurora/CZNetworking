@@ -38,7 +38,7 @@ open class CZHTTPCache: NSObject {
   static func cacheKey(url: URL, params: [AnyHashable: Any]?) -> String {
     return CZHTTPJsonSerializer.url(baseURL: url, params: params).absoluteString
   }
-    
+  
   /// Save data to the cache - supports to save NSData and JSON object.
   ///
   /// - Note: `data` can be NSData or JSON object. If it's JSON object, will be serialized automatically/
