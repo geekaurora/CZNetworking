@@ -41,6 +41,7 @@ final class CZHTTPManagerTests: XCTestCase {
     
     // Fetch with stub URLSession.
     let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataMap)
+    // Replace urlSessionConfiguration of CZHTTPManager to stub data.
     CZHTTPManager.urlSessionConfiguration = sessionConfiguration
     CZHTTPManager.shared.GET(MockData.urlForGet.absoluteString, success: { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)

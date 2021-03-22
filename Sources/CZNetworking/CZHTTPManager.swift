@@ -14,6 +14,7 @@ import CZUtils
  */
 open class CZHTTPManager: NSObject {
   public static let shared = CZHTTPManager()
+  /// URL session configuration, that can be repaced with test stubing.
   public static var urlSessionConfiguration = URLSessionConfiguration.default
   public static var isUnderUnitTest = false
   private let queue: OperationQueue
