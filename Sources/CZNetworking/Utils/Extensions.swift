@@ -1,11 +1,3 @@
-//
-//  Extensions.swift
-//  CZNetworking
-//
-//  Created by Cheng Zhang on 12/11/15.
-//  Copyright © 2015 Cheng Zhang. All rights reserved.
-//
-
 import Foundation
 import CZUtils
 

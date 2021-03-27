@@ -1,11 +1,3 @@
-//
-//  Upload.swift
-//  CZNetworking
-//
-//  Created by Cheng Zhang on 1/24/19.
-//  Copyright © 2019 Cheng Zhang. All rights reserved.
-//
-
 import Foundation
 import CZUtils
 import MobileCoreServices

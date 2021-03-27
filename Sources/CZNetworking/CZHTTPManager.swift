@@ -1,16 +1,10 @@
-//
-//  CZHTTPManager.swift
-//  CZNetworking
-//
-//  Created by Cheng Zhang on 1/9/16.
-//  Copyright © 2016 Cheng Zhang. All rights reserved.
-//
-
 import Foundation
 import CZUtils
 
 /**
- Asynchronous HTTP requests manager based on NSOperationQueue
+ Asynchronous HTTP requests manager based on NSOperationQueue.
+ 
+ - Note: It automatically cancels the previous task with the same URL.
  */
 open class CZHTTPManager: NSObject {
   public static let shared = CZHTTPManager()

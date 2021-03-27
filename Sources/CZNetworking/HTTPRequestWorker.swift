@@ -1,11 +1,3 @@
-//
-//  HTTPRequestWorker.swift
-//  CZNetworking
-//
-//  Created by Cheng Zhang on 1/3/16.
-//  Copyright © 2016 Cheng Zhang. All rights reserved.
-//
-
 import Foundation
 import CZUtils
 
