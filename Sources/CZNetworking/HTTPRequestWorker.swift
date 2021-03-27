@@ -76,7 +76,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     case formUrlencoded
   }
   
-  /// Progress closure: (currSize, expectedSize, downloadURL)
+  /// Progress closure: (currSize, totalSize, downloadURL)
   public typealias Progress = (Int64, Int64, URL) -> Void
   public typealias Success = (URLSessionDataTask?, Data?) -> Void
   public typealias Failure = (URLSessionDataTask?, Error) -> Void
