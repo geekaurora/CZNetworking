@@ -120,7 +120,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     dataTask = buildUrlSessionTask()
   }
   
-  open override func execute() {
+  open override func _execute() {
     // Fetch from cache
     if  requestType == .GET,
       let cached = cached,
