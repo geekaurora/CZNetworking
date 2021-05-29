@@ -130,8 +130,23 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       }
     }
     
+    dbgPrint("url = \(url)")
     // Fetch from network
-    dataTask?.resume()
+    if self.headers != nil {
+      dataTask?.resume()
+    } else {
+      // * TEST: Download files
+      URLSession.shared.dataTask(with: url) { (data, response, error) in
+        defer {
+          self.finish()
+        }
+        if let error = error {
+          self.failure?(nil, error)
+          return
+        }
+        self.success?(nil, data)
+      }.resume()
+    }
   }
   
   open override func cancel() {
