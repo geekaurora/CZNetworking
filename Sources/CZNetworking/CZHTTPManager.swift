@@ -22,6 +22,9 @@ open class CZHTTPManager: NSObject {
     queue = OperationQueue()
     queue.name = Config.operationQueueName
     queue.maxConcurrentOperationCount = maxConcurrencies
+    // * Updated.
+    queue.qualityOfService = .userInitiated
+    
     httpCache = CZHTTPCache()
     super.init()
   }

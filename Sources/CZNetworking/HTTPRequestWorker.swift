@@ -86,9 +86,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   private var urlSession: URLSession?
   private var dataTask: URLSessionDataTask?
   private var response: URLResponse?
-  private lazy var expectedSize: Int64 = 0
-  private lazy var receivedSize: Int64 = 0
-  private lazy var receivedData = Data()
+  private var expectedSize: Int64 = 0
+  private var receivedSize: Int64 = 0
+  private var receivedData = Data()
   private var httpCache: CZHTTPCache?
   private var httpCacheKey: String {
     return CZHTTPCache.cacheKey(url: url, params: params)
@@ -108,7 +108,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     self.url = url
     self.params = params
     self.headers = headers
-    self.httpCache = httpCache
+    // self.httpCache = httpCache
     self.shouldSerializeJson = shouldSerializeJson
     self.progress = progress
     self.cached = cached
@@ -257,7 +257,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     if cached != nil {
       httpCache?.saveData(receivedData, forKey: httpCacheKey)
     }
-    MainQueueScheduler.sync { [weak self] in
+    MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
       self.success?(task as? URLSessionDataTask, self.receivedData)
     }
