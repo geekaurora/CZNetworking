@@ -185,11 +185,13 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
         defer {
           self.finish()
         }
-        if let error = error {
-          self.failure?(nil, error)
-          return
+        MainQueueScheduler.async {
+          if let error = error {
+            self.failure?(nil, error)
+            return
+          }
+          self.success?(nil, data)
         }
-        self.success?(nil, data)
       }
       
     case let .POST(contentType, data):
