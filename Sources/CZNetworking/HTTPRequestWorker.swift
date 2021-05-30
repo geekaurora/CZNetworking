@@ -94,22 +94,23 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     configuration: CZHTTPManager.urlSessionConfiguration,
     delegate: nil,
     delegateQueue: nil)
-  
+    
   private var dataTask: URLSessionDataTask?
-  private var response: URLResponse?
-  private var expectedSize: Int64 = 0
-  private var receivedSize: Int64 = 0
-  private var receivedData = Data()
-  private var httpCache: CZHTTPCache?
+  @ThreadSafe private var response: URLResponse?
+  @ThreadSafe private var expectedSize: Int64 = 0
+  @ThreadSafe private var receivedSize: Int64 = 0
+  @ThreadSafe private var receivedData = Data()
+
+  private let httpCache: CZHTTPCache? = nil
   private var httpCacheKey: String {
     return CZHTTPCache.cacheKey(url: url, params: params)
   }
-  
+
   required public init(_ requestType: RequestType,
                        url: URL,
                        params: Params? = nil,
                        headers: Headers? = nil,
-                       urlSessionManager: CZURLSessionManager,
+                       urlSessionManager: CZURLSessionManager? = nil,
                        shouldSerializeJson: Bool = true,
                        httpCache: CZHTTPCache? = nil,
                        success: Success? = nil,
@@ -138,15 +139,31 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
   }
   
+  open func testStartFetch() {
+//    dbgPrint("url = \(url)")
+//    dataTask?.resume()
+    
+    URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
+      guard let `self` = self else { return }
+      MainQueueScheduler.async {
+        if let error = error {
+          self.failure?(nil, error)
+          return
+        }
+        self.success?(nil, data)
+      }
+    }.resume()
+  }
+  
   open override func _execute() {
     // Fetch from cache
-    if  requestType == .GET,
-      let cached = cached,
-      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
-      MainQueueScheduler.async { [weak self] in
-        cached(self?.dataTask, cachedData)
-      }
-    }
+//    if  requestType == .GET,
+//      let cached = cached,
+//      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
+//      MainQueueScheduler.async { [weak self] in
+//        cached(self?.dataTask, cachedData)
+//      }
+//    }
     
     dbgPrint("url = \(url)")
     // Fetch from network
@@ -189,8 +206,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     case .GET, .PUT:
        // dataTask = urlSession?.dataTask(with: request as URLRequest)
           
-      return urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
-        defer {
+      //return urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
+      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
+       defer {
           self.finish()
         }
         MainQueueScheduler.async {
@@ -260,8 +278,14 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
   }
   
   public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-    receivedSize += Int64(data.count)
-    receivedData.append(data)
+    // receivedSize += Int64(data.count)
+    // receivedData.append(data)
+    _receivedSize.threadLock { (_receivedSize) -> Void in
+      _receivedSize += Int64(data.count)
+    }
+    _receivedData.threadLock { (_receivedData) -> Void in
+      _receivedData.append(data)
+    }
     MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
       self.progress?(self.receivedSize, self.expectedSize, self.url)
