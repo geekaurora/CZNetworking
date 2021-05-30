@@ -83,8 +83,13 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   private let params: Params?
   private let headers: Headers?
   
-  private var urlSession: URLSession?
-  // * TEST.
+  //private weak var urlSessionManager: CZURLSessionManager?
+  private let urlSessionManager: CZURLSessionManager?
+  private var urlSession: URLSession? {
+    // urlSessionManager?.urlSession
+    Self.urlSession
+  }
+  
   private static var urlSession: URLSession? = URLSession(
     configuration: CZHTTPManager.urlSessionConfiguration,
     delegate: nil,
@@ -104,6 +109,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
                        url: URL,
                        params: Params? = nil,
                        headers: Headers? = nil,
+                       urlSessionManager: CZURLSessionManager,
                        shouldSerializeJson: Bool = true,
                        httpCache: CZHTTPCache? = nil,
                        success: Success? = nil,
@@ -114,6 +120,8 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     self.url = url
     self.params = params
     self.headers = headers
+    self.urlSessionManager = urlSessionManager
+    
     // self.httpCache = httpCache
     self.shouldSerializeJson = shouldSerializeJson
     self.progress = progress
@@ -150,20 +158,20 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     super.cancel()
   }
   
-  open override func finish() {
-    // Note: Should invalidate session, otherwise there's retain cycle that causes leaks.
-    // Because URLSession retains Strong reference to delegate.
-    urlSession?.finishTasksAndInvalidate()
-    super.finish()
-  }
+//  open override func finish() {
+//    // Note: Should invalidate session, otherwise there's retain cycle that causes leaks.
+//    // Because URLSession retains Strong reference to delegate.
+//    urlSession?.finishTasksAndInvalidate()
+//    super.finish()
+//  }
   
   /**
    Build urlSessionTask based on settings
    */
   private func buildUrlSessionTask() -> URLSessionDataTask? {
-    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
-                            delegate: self,
-                            delegateQueue: nil)
+//    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
+//                            delegate: self,
+//                            delegateQueue: nil)
     
     let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
     let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
@@ -179,20 +187,20 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     var dataTask: URLSessionDataTask? = nil
     switch requestType {
     case .GET, .PUT:
-       dataTask = urlSession?.dataTask(with: request as URLRequest)
+       // dataTask = urlSession?.dataTask(with: request as URLRequest)
           
-//      return Self.urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
-//        defer {
-//          self.finish()
-//        }
-//        MainQueueScheduler.async {
-//          if let error = error {
-//            self.failure?(nil, error)
-//            return
-//          }
-//          self.success?(nil, data)
-//        }
-//      }
+      return urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
+        defer {
+          self.finish()
+        }
+        MainQueueScheduler.async {
+          if let error = error {
+            self.failure?(nil, error)
+            return
+          }
+          self.success?(nil, data)
+        }
+      }
       
     case let .POST(contentType, data):
       // Set postData as input data if non nil.

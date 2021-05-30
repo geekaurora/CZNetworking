@@ -8,25 +8,31 @@ import CZUtils
  */
 open class CZHTTPManager: NSObject {
   public static let shared = CZHTTPManager()
-  /// URL session configuration, that can be repaced with test stubing.
-  public static var urlSessionConfiguration = URLSessionConfiguration.default
-  public static var isUnderUnitTest = false
-  private let queue: OperationQueue
-  private let httpCache: CZHTTPCache
+  
   public enum Config {
     public static var maxConcurrencies = 5
     public static var operationQueueName = "CZHTTPManager.operationQueue"
   }
+  /// URL session configuration, that can be repaced with test stubing.
+  public static var urlSessionConfiguration = URLSessionConfiguration.default
+  public static var isUnderUnitTest = false
+  
+  let queue: OperationQueue
+  let httpCache: CZHTTPCache
+  let urlSessionManager: CZURLSessionManager
   
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
     queue = OperationQueue()
     queue.name = Config.operationQueueName
     queue.maxConcurrentOperationCount = maxConcurrencies
-    // * Updated.
+    // *Updated.
     queue.qualityOfService = .userInitiated
-    
+
+    urlSessionManager = CZURLSessionManager()
     httpCache = CZHTTPCache()
     super.init()
+    
+    urlSessionManager.coordinator = self
   }
   
   public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
@@ -39,6 +45,7 @@ open class CZHTTPManager: NSObject {
   public func GET(_ urlStr: String,
                   headers: HTTPRequestWorker.Headers? = nil,
                   params: HTTPRequestWorker.Params? = nil,
+                  shouldSerializeJson: Bool = false,
                   success: HTTPRequestWorker.Success? = nil,
                   failure: HTTPRequestWorker.Failure? = nil,
                   cached: HTTPRequestWorker.Cached? = nil,
@@ -356,6 +363,7 @@ private extension CZHTTPManager {
                       urlStr: String,
                       headers: HTTPRequestWorker.Headers? = nil,
                       params: HTTPRequestWorker.Params? = nil,
+                      shouldSerializeJson: Bool = false,
                       success: HTTPRequestWorker.Success? = nil,
                       failure: HTTPRequestWorker.Failure? = nil,
                       cached: HTTPRequestWorker.Cached? = nil,
@@ -368,6 +376,8 @@ private extension CZHTTPManager {
       url: url,
       params: params,
       headers: headers,
+      urlSessionManager: urlSessionManager,
+      shouldSerializeJson: shouldSerializeJson,
       httpCache: self.httpCache,
       success: success,
       failure: failure,
