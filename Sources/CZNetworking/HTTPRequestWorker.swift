@@ -150,12 +150,12 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     super.cancel()
   }
   
-//  open override func finish() {
-//    // Note: Should invalidate session, otherwise there's retain cycle that causes leaks.
-//    // Because URLSession retains Strong reference to delegate.
-//    urlSession?.finishTasksAndInvalidate()
-//    super.finish()
-//  }
+  open override func finish() {
+    // Note: Should invalidate session, otherwise there's retain cycle that causes leaks.
+    // Because URLSession retains Strong reference to delegate.
+    urlSession?.finishTasksAndInvalidate()
+    super.finish()
+  }
   
   /**
    Build urlSessionTask based on settings
@@ -179,20 +179,20 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     var dataTask: URLSessionDataTask? = nil
     switch requestType {
     case .GET, .PUT:
-      // dataTask = urlSession?.dataTask(with: request as URLRequest)
-            
-      return Self.urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
-        defer {
-          self.finish()
-        }
-        MainQueueScheduler.async {
-          if let error = error {
-            self.failure?(nil, error)
-            return
-          }
-          self.success?(nil, data)
-        }
-      }
+       dataTask = urlSession?.dataTask(with: request as URLRequest)
+          
+//      return Self.urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
+//        defer {
+//          self.finish()
+//        }
+//        MainQueueScheduler.async {
+//          if let error = error {
+//            self.failure?(nil, error)
+//            return
+//          }
+//          self.success?(nil, data)
+//        }
+//      }
       
     case let .POST(contentType, data):
       // Set postData as input data if non nil.
