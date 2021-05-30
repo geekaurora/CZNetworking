@@ -85,10 +85,12 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   
   //private weak var urlSessionManager: CZURLSessionManager?
   private let urlSessionManager: CZURLSessionManager?
-  private var urlSession: URLSession? {
-    // urlSessionManager?.urlSession
-    Self.urlSession
-  }
+  private var urlSession: URLSession?
+  
+//  {
+//    // urlSessionManager?.urlSession
+//    Self.urlSession
+//  }
   
   private static var urlSession: URLSession? = URLSession(
     configuration: CZHTTPManager.urlSessionConfiguration,
@@ -133,10 +135,6 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
     // Build urlSessionTask
     dataTask = buildUrlSessionTask()
-  }
-  
-  deinit {
-    
   }
   
   open func testStartFetch() {
@@ -186,9 +184,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
    Build urlSessionTask based on settings
    */
   private func buildUrlSessionTask() -> URLSessionDataTask? {
-//    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
-//                            delegate: self,
-//                            delegateQueue: nil)
+    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
+                            delegate: self,
+                            delegateQueue: nil)
     
     let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
     let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
@@ -204,21 +202,21 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     var dataTask: URLSessionDataTask? = nil
     switch requestType {
     case .GET, .PUT:
-       // dataTask = urlSession?.dataTask(with: request as URLRequest)
+      dataTask = urlSession?.dataTask(with: request as URLRequest)
           
       //return urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
-      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
-       defer {
-          self.finish()
-        }
-        MainQueueScheduler.async {
-          if let error = error {
-            self.failure?(nil, error)
-            return
-          }
-          self.success?(nil, data)
-        }
-      }
+//      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
+//       defer {
+//          self.finish()
+//        }
+//        MainQueueScheduler.async {
+//          if let error = error {
+//            self.failure?(nil, error)
+//            return
+//          }
+//          self.success?(nil, data)
+//        }
+//      }
       
     case let .POST(contentType, data):
       // Set postData as input data if non nil.
