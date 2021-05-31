@@ -19,10 +19,7 @@ open class CZHTTPManager: NSObject {
   
   let workQueue: OperationQueue
   let httpCache: CZHTTPCache
-  let urlSessionManager: CZURLSessionManager
-  //private(set) var weakHTTPRequestWorkers = ThreadSafeWeakArray<HTTPRequestWorker>()
-  private(set) var weakHTTPRequestWorkers = ThreadSafeArray<HTTPRequestWorker>()
-  
+
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
     workQueue = OperationQueue()
     workQueue.name = Config.operationQueueName
@@ -30,11 +27,8 @@ open class CZHTTPManager: NSObject {
     // *Updated.
     workQueue.qualityOfService = .userInitiated
 
-    urlSessionManager = CZURLSessionManager()
     httpCache = CZHTTPCache()
     super.init()
-    
-    urlSessionManager.coordinator = self
   }
   
   public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
@@ -378,14 +372,12 @@ private extension CZHTTPManager {
       url: url,
       params: params,
       headers: headers,
-      urlSessionManager: urlSessionManager,
       shouldSerializeJson: shouldSerializeJson,
       httpCache: self.httpCache,
       success: success,
       failure: failure,
       cached: cached,
       progress: progress)
-    weakHTTPRequestWorkers.append(reqestWorkerOperation)
     workQueue.addOperation(reqestWorkerOperation)
   }
   

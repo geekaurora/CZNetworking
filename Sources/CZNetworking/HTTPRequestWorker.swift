@@ -83,8 +83,6 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   private let params: Params?
   private let headers: Headers?
   
-  //private weak var urlSessionManager: CZURLSessionManager?
-  private let urlSessionManager: CZURLSessionManager?
   private var urlSession: URLSession?
 //  {
 //    urlSessionManager?.urlSession
@@ -111,7 +109,6 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
                        url: URL,
                        params: Params? = nil,
                        headers: Headers? = nil,
-                       urlSessionManager: CZURLSessionManager? = nil,
                        shouldSerializeJson: Bool = true,
                        httpCache: CZHTTPCache? = nil,
                        success: Success? = nil,
@@ -122,7 +119,6 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     self.url = url
     self.params = params
     self.headers = headers
-    self.urlSessionManager = urlSessionManager
     
     // self.httpCache = httpCache
     self.shouldSerializeJson = shouldSerializeJson

@@ -1,6 +1,7 @@
 import Foundation
 import CZUtils
 
+/*
 /// Manager that manages URLSession for CZNetworking.
 public class CZURLSessionManager: NSObject {
   private(set) var urlSession: URLSession!
@@ -75,3 +76,5 @@ private extension CZURLSessionManager {
     return nil
   }
 }
+
+ */
