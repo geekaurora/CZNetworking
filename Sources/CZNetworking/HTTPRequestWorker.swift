@@ -87,8 +87,8 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   private let urlSessionManager: CZURLSessionManager?
   private var urlSession: URLSession?
   {
-    // urlSessionManager?.urlSession
-    Self.urlSession
+    urlSessionManager?.urlSession
+    //Self.urlSession
   }
   
   private static var urlSession: URLSession? = URLSession(
@@ -198,6 +198,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       }
     }
     
+    assert(urlSession != nil, "urlSession shouldn't be nil.")
     var dataTask: URLSessionDataTask? = nil
     switch requestType {
     case .GET, .PUT:
