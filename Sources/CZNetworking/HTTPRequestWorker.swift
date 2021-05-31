@@ -134,7 +134,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
     // Build urlSessionTask
     dataTask = buildUrlSessionTask()
-  }  
+  }
   
   open override func _execute() {
     // Fetch from cache
@@ -167,9 +167,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
    Build urlSessionTask based on settings
    */
   private func buildUrlSessionTask() -> URLSessionDataTask? {
-    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
-                            delegate: self,
-                            delegateQueue: nil)
+        urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
+                                delegate: self,
+                                delegateQueue: nil)
     
     let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
     let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
@@ -186,10 +186,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     var dataTask: URLSessionDataTask? = nil
     switch requestType {
     case .GET, .PUT:
-       dataTask = urlSession?.dataTask(with: request as URLRequest)
+      dataTask = urlSession?.dataTask(with: request as URLRequest)
           
-//      return urlSession?.dataTask(with: request as URLRequest) { (data, response, error) in
-//      // return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
+//      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
 //       defer {
 //          self.finish()
 //        }
