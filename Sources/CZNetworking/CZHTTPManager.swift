@@ -17,16 +17,18 @@ open class CZHTTPManager: NSObject {
   public static var urlSessionConfiguration = URLSessionConfiguration.default
   public static var isUnderUnitTest = false
   
-  let queue: OperationQueue
+  let workQueue: OperationQueue
   let httpCache: CZHTTPCache
   let urlSessionManager: CZURLSessionManager
+  //private(set) var weakHTTPRequestWorkers = ThreadSafeWeakArray<HTTPRequestWorker>()
+  private(set) var weakHTTPRequestWorkers = ThreadSafeArray<HTTPRequestWorker>()
   
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
-    queue = OperationQueue()
-    queue.name = Config.operationQueueName
-    queue.maxConcurrentOperationCount = maxConcurrencies
+    workQueue = OperationQueue()
+    workQueue.name = Config.operationQueueName
+    workQueue.maxConcurrentOperationCount = maxConcurrencies
     // *Updated.
-    queue.qualityOfService = .userInitiated
+    workQueue.qualityOfService = .userInitiated
 
     urlSessionManager = CZURLSessionManager()
     httpCache = CZHTTPCache()
@@ -36,7 +38,7 @@ open class CZHTTPManager: NSObject {
   }
   
   public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
-    queue.maxConcurrentOperationCount = maxConcurrencies
+    workQueue.maxConcurrentOperationCount = maxConcurrencies
     return self
   }
   
@@ -371,7 +373,7 @@ private extension CZHTTPManager {
     guard let url = URL(string: urlStr).assertIfNil else {
       return
     }
-    let op = HTTPRequestWorker(
+    let reqestWorkerOperation = HTTPRequestWorker(
       requestType,
       url: url,
       params: params,
@@ -383,7 +385,8 @@ private extension CZHTTPManager {
       failure: failure,
       cached: cached,
       progress: progress)
-    queue.addOperation(op)
+    weakHTTPRequestWorkers.append(reqestWorkerOperation)
+    workQueue.addOperation(reqestWorkerOperation)
   }
   
 }
