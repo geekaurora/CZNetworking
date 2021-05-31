@@ -36,6 +36,18 @@ open class CZHTTPManager: NSObject {
     return self
   }
   
+  public func cancelTask(with url: URL?) {
+    guard let url = url else { return }
+    
+    let cancelIfNeeded = { (operation: Operation) in
+      if let operation = operation as? HTTPRequestWorker,
+         operation.url == url {
+        operation.cancel()
+      }
+    }
+    workQueue.operations.forEach(cancelIfNeeded)
+  }
+  
   // MARK: - GET
   
   public func GET(_ urlStr: String,
