@@ -86,10 +86,10 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   //private weak var urlSessionManager: CZURLSessionManager?
   private let urlSessionManager: CZURLSessionManager?
   private var urlSession: URLSession?
-  {
-    urlSessionManager?.urlSession
-    //Self.urlSession
-  }
+//  {
+//    urlSessionManager?.urlSession
+//    //Self.urlSession
+//  }
   
   private static var urlSession: URLSession? = URLSession(
     configuration: CZHTTPManager.urlSessionConfiguration,
@@ -134,23 +134,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
     // Build urlSessionTask
     dataTask = buildUrlSessionTask()
-  }
-  
-//  open func testStartFetch() {
-//    dbgPrint("url = \(url)")
-//    dataTask?.resume()
-//    
-////    URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
-////      guard let `self` = self else { return }
-////      MainQueueScheduler.async {
-////        if let error = error {
-////          self.failure?(nil, error)
-////          return
-////        }
-////        self.success?(nil, data)
-////      }
-////    }.resume()
-//  }
+  }  
   
   open override func _execute() {
     // Fetch from cache
@@ -172,17 +156,21 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     super.cancel()
   }
   
-//  open override func finish() {
-//    // Note: Should invalidate session, otherwise there's retain cycle that causes leaks.
-//    // Because URLSession retains Strong reference to delegate.
-//    urlSession?.finishTasksAndInvalidate()
-//    super.finish()
-//  }
+  open override func finish() {
+    // Note: Should invalidate session, otherwise there's retain cycle that causes leaks.
+    // Because URLSession retains Strong reference to delegate.
+    urlSession?.finishTasksAndInvalidate()
+    super.finish()
+  }
   
   /**
    Build urlSessionTask based on settings
    */
   private func buildUrlSessionTask() -> URLSessionDataTask? {
+    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
+                            delegate: self,
+                            delegateQueue: nil)
+    
     let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
     let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
     let request = NSMutableURLRequest(url: url)
