@@ -84,16 +84,27 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   private let headers: Headers?
   
   private var urlSession: URLSession?
-  private var dataTask: URLSessionDataTask?
-  private var response: URLResponse?
-  private lazy var expectedSize: Int64 = 0
-  private lazy var receivedSize: Int64 = 0
-  private lazy var receivedData = Data()
-  private var httpCache: CZHTTPCache?
+//  {
+//    urlSessionManager?.urlSession
+//    //Self.urlSession
+//  }
+  
+  private static var urlSession: URLSession? = URLSession(
+    configuration: CZHTTPManager.urlSessionConfiguration,
+    delegate: nil,
+    delegateQueue: nil)
+    
+  private(set) var dataTask: URLSessionDataTask?
+  @ThreadSafe private var response: URLResponse?
+  @ThreadSafe private var expectedSize: Int64 = 0
+  @ThreadSafe private var receivedSize: Int64 = 0
+  @ThreadSafe private var receivedData = Data()
+
+  private let httpCache: CZHTTPCache? = nil
   private var httpCacheKey: String {
     return CZHTTPCache.cacheKey(url: url, params: params)
   }
-  
+
   required public init(_ requestType: RequestType,
                        url: URL,
                        params: Params? = nil,
@@ -108,7 +119,8 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     self.url = url
     self.params = params
     self.headers = headers
-    self.httpCache = httpCache
+    
+    // self.httpCache = httpCache
     self.shouldSerializeJson = shouldSerializeJson
     self.progress = progress
     self.cached = cached
@@ -122,14 +134,15 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   
   open override func _execute() {
     // Fetch from cache
-    if  requestType == .GET,
-      let cached = cached,
-      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
-      MainQueueScheduler.async { [weak self] in
-        cached(self?.dataTask, cachedData)
-      }
-    }
+//    if  requestType == .GET,
+//      let cached = cached,
+//      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
+//      MainQueueScheduler.async { [weak self] in
+//        cached(self?.dataTask, cachedData)
+//      }
+//    }
     
+    dbgPrint("url = \(url)")
     // Fetch from network
     dataTask?.resume()
   }
@@ -139,13 +152,22 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     super.cancel()
   }
   
+  open override func finish() {
+    // Note:
+    // Should invalidate URLSession after task completes, to avoid a retain cycle that causes leaks and crash.
+    // Because URLSession retains strong reference to URLSessionDelegate.
+    urlSession?.finishTasksAndInvalidate()
+    super.finish()
+  }
+  
   /**
    Build urlSessionTask based on settings
    */
   private func buildUrlSessionTask() -> URLSessionDataTask? {
-    urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
-                            delegate: self,
-                            delegateQueue: nil)
+        urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
+                                delegate: self,
+                                delegateQueue: nil)
+    
     let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
     let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
     let request = NSMutableURLRequest(url: url)
@@ -157,10 +179,24 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       }
     }
     
+    assert(urlSession != nil, "urlSession shouldn't be nil.")
     var dataTask: URLSessionDataTask? = nil
     switch requestType {
     case .GET, .PUT:
       dataTask = urlSession?.dataTask(with: request as URLRequest)
+          
+//      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
+//       defer {
+//          self.finish()
+//        }
+//        MainQueueScheduler.async {
+//          if let error = error {
+//            self.failure?(nil, error)
+//            return
+//          }
+//          self.success?(nil, data)
+//        }
+//      }
       
     case let .POST(contentType, data):
       // Set postData as input data if non nil.
@@ -220,8 +256,14 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
   }
   
   public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-    receivedSize += Int64(data.count)
-    receivedData.append(data)
+    // receivedSize += Int64(data.count)
+    // receivedData.append(data)
+    _receivedSize.threadLock { (_receivedSize) -> Void in
+      _receivedSize += Int64(data.count)
+    }
+    _receivedData.threadLock { (_receivedData) -> Void in
+      _receivedData.append(data)
+    }
     MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
       self.progress?(self.receivedSize, self.expectedSize, self.url)
@@ -257,7 +299,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     if cached != nil {
       httpCache?.saveData(receivedData, forKey: httpCacheKey)
     }
-    MainQueueScheduler.sync { [weak self] in
+    MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
       self.success?(task as? URLSessionDataTask, self.receivedData)
     }
