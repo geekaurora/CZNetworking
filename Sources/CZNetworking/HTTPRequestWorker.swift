@@ -84,10 +84,6 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   private let headers: Headers?
   
   private var urlSession: URLSession?
-//  {
-//    urlSessionManager?.urlSession
-//    //Self.urlSession
-//  }
   
   private static var urlSession: URLSession? = URLSession(
     configuration: CZHTTPManager.urlSessionConfiguration,
@@ -128,6 +124,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     self.failure = failure
     super.init()
     
+    self.props["url"] = url
     // Build urlSessionTask
     dataTask = buildUrlSessionTask()
   }
