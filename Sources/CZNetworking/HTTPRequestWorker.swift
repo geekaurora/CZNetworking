@@ -96,7 +96,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   @ThreadSafe private var receivedSize: Int64 = 0
   @ThreadSafe private var receivedData = Data()
 
-  private let httpCache: CZHTTPCache? = nil
+  private let httpCache: CZHTTPCache?
   private var httpCacheKey: String {
     return CZHTTPCache.cacheKey(url: url, params: params)
   }
@@ -116,7 +116,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     self.params = params
     self.headers = headers
     
-    // self.httpCache = httpCache
+    self.httpCache = httpCache
     self.shouldSerializeJson = shouldSerializeJson
     self.progress = progress
     self.cached = cached
@@ -131,13 +131,13 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   
   open override func _execute() {
     // Fetch from cache
-//    if  requestType == .GET,
-//      let cached = cached,
-//      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
-//      MainQueueScheduler.async { [weak self] in
-//        cached(self?.dataTask, cachedData)
-//      }
-//    }
+    if  requestType == .GET,
+      let cached = cached,
+      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
+      MainQueueScheduler.async { [weak self] in
+        cached(self?.dataTask, cachedData)
+      }
+    }
     
     dbgPrint("url = \(url)")
     // Fetch from network
