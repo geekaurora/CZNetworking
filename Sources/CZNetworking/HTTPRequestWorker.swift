@@ -153,8 +153,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   }
   
   open override func finish() {
-    // Note: Should invalidate session, otherwise there's retain cycle that causes leaks.
-    // Because URLSession retains Strong reference to delegate.
+    // Note:
+    // Should invalidate URLSession after task completes, to avoid a retain cycle that causes leaks and crash.
+    // Because URLSession retains strong reference to URLSessionDelegate.
     urlSession?.finishTasksAndInvalidate()
     super.finish()
   }
