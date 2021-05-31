@@ -36,12 +36,25 @@ open class CZHTTPManager: NSObject {
     return self
   }
   
+  public func cancelTask(with url: URL?) {
+    guard let url = url else { return }
+    
+    let cancelIfNeeded = { (operation: Operation) in
+      if let operation = operation as? HTTPRequestWorker,
+         operation.url == url {
+        operation.cancel()
+      }
+    }
+    workQueue.operations.forEach(cancelIfNeeded)
+  }
+  
   // MARK: - GET
   
   public func GET(_ urlStr: String,
                   headers: HTTPRequestWorker.Headers? = nil,
                   params: HTTPRequestWorker.Params? = nil,
                   shouldSerializeJson: Bool = false,
+                  queuePriority: Operation.QueuePriority = .normal,
                   success: HTTPRequestWorker.Success? = nil,
                   failure: HTTPRequestWorker.Failure? = nil,
                   cached: HTTPRequestWorker.Cached? = nil,
@@ -51,6 +64,8 @@ open class CZHTTPManager: NSObject {
       urlStr: urlStr,
       headers: headers,
       params: params,
+      shouldSerializeJson: shouldSerializeJson,
+      queuePriority: queuePriority,
       success: success,
       failure: failure,
       cached: cached,
@@ -360,6 +375,7 @@ private extension CZHTTPManager {
                       headers: HTTPRequestWorker.Headers? = nil,
                       params: HTTPRequestWorker.Params? = nil,
                       shouldSerializeJson: Bool = false,
+                      queuePriority: Operation.QueuePriority = .normal,
                       success: HTTPRequestWorker.Success? = nil,
                       failure: HTTPRequestWorker.Failure? = nil,
                       cached: HTTPRequestWorker.Cached? = nil,
@@ -378,6 +394,7 @@ private extension CZHTTPManager {
       failure: failure,
       cached: cached,
       progress: progress)
+    reqestWorkerOperation.queuePriority = queuePriority
     workQueue.addOperation(reqestWorkerOperation)
   }
   
