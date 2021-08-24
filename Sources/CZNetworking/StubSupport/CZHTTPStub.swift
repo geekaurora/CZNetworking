@@ -19,10 +19,13 @@ import CZUtils
 public extension CZHTTPManager {
   /**
    Stub mock data to CZHTTPManager.
-   
+
     - Parameter mockDataDict: [URL: Data] dictionary that maps `url` to its corresponding mocked data.
    */
   static func stubMockData(dict mockDataDict: URLProtocolMock.MockDataMap) {
+    // Note: `task.response` will be nil, should set `CZTestHelper.isInUnitTest` to true to avoid assertion.
+    CZTestHelper.isInUnitTest = true
+    
     // Fetch with stub URLSession.
     let sessionConfiguration = CZHTTPStub.stubURLSessionConfiguration(mockDataMap: mockDataDict)
     // Replace urlSessionConfiguration of CZHTTPManager to stub data.
@@ -41,7 +44,16 @@ public class CZHTTPStub {
     // Set up URLSessionConfiguration to use mock.
 //    let config = URLSessionConfiguration.ephemeral
     let config = URLSessionConfiguration.default
-    config.protocolClasses = [URLProtocolMock.self]
+    
+    /*
+     - 0 : _NSURLHTTPProtocol
+     - 1 : _NSURLDataProtocol
+     - 2 : _NSURLFTPProtocol
+     - 3 : _NSURLFileProtocol
+     - 4 : NSAboutURLProtocol
+     */
+    //config.protocolClasses = [URLProtocolMock.self]
+    config.protocolClasses = [URLProtocolMock.self] + (config.protocolClasses ?? [])
     
     // Return config.
     return config
