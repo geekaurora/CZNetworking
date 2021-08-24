@@ -4,7 +4,7 @@ import CZUtils
 /**
  Mock that be used to inject data into default`URLSession` with `URLSessionConfiguration`.
  
- - Note: Return mockData for `url` if exists,  otherwise it will let other URLProtocols to handle.
+ - Note: Return mockData for `url` if exists,  otherwise it will let other URLProtocols to handle it.
  */
 public class URLProtocolMock: URLProtocol {
   // TestData for url - [testURL: testData].
