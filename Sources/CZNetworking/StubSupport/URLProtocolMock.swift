@@ -22,6 +22,9 @@ public class URLProtocolMock: URLProtocol {
     return false
   }
   
+  // TODO: Check url of URLSessionTask.
+  // public override class func canInit(with task: URLSessionTask) -> Bool {}
+  
   // MARK: - Load data
   
   /** Return mockData for `url` if exists,  otherwise call `super.startLoading()`.  */
