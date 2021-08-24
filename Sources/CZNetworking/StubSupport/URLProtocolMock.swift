@@ -12,28 +12,24 @@ public class URLProtocolMock: URLProtocol {
   public typealias MockDataMap = [URL: Data]
   static var mockDataMap = MockDataMap()
   
-  /** Return mock data for `url`.  */
+  /** Return mockData for `url` if exists,  otherwise call `super.startLoading()`. */
   public override func startLoading() {
-    if let url = request.url {
-      // Return mockData for `url` if exists, nil otherwise.
-      if let data = Self.mockDataMap[url] {
-        self.client?.urlProtocol(self, didLoad: data)
-        
-        // Mark as finished.
-        self.client?.urlProtocolDidFinishLoading(self)
-        return
-      }
+    // Return mockData for `url` if exists.
+    if let url = request.url,
+       let data = Self.mockDataMap[url] {
+      self.client?.urlProtocol(self, didLoad: data)
+      
+      // Mark as finished.
+      self.client?.urlProtocolDidFinishLoading(self)
+      return
     }
-//    // Mark as finished.
-//    self.client?.urlProtocolDidFinishLoading(self)
     
+    // Otherwise call `super.startLoading()` to handle it.
     super.startLoading()
   }
   
   public override class func canInit(with request: URLRequest) -> Bool {
-    // dbgPrintWithFunc(self, "request.url = \(request.url)")
-    
-    // Only handle `url` that is in `mockDataMap`.
+    // Only handle `url` if it's in `mockDataMap`.
     if let url = request.url,
        Self.mockDataMap[url] != nil {
       return true

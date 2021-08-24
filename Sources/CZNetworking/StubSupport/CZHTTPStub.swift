@@ -52,7 +52,7 @@ public class CZHTTPStub {
      - 3 : _NSURLFileProtocol
      - 4 : NSAboutURLProtocol
      */
-    //config.protocolClasses = [URLProtocolMock.self]
+    // config.protocolClasses = [URLProtocolMock.self]
     config.protocolClasses = [URLProtocolMock.self] + (config.protocolClasses ?? [])
     
     // Return config.
