@@ -14,7 +14,7 @@ public class URLProtocolMock: URLProtocol {
   // MARK: - Whether to handle request
   
   public override class func canInit(with request: URLRequest) -> Bool {
-    // Only handle `url` if it's in `mockDataMap`.
+    // Only handle `url` if exists in `mockDataMap`.
     if let url = request.url,
        Self.mockDataMap[url] != nil {
       return true
