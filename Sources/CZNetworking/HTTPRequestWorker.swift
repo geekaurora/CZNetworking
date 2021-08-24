@@ -217,7 +217,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
   public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     defer { finish() }
     
-    if !CZTestHelper.isInUnitTest {
+    if true || !CZTestHelper.isInUnitTest {
       guard self.response == task.response else { return }
       
       guard error == nil,

@@ -30,11 +30,11 @@ public class URLProtocolMock: URLProtocol {
     if let url = request.url,
        let data = Self.mockDataMap[url] {
       
+      let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+      self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+      
       // Return mockData for `url`.
       self.client?.urlProtocol(self, didLoad: data)
-      
-      // let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-      // self.client?.urlProtocol(self, didReceive: response)
       
       // Mark as finished.
       self.client?.urlProtocolDidFinishLoading(self)
