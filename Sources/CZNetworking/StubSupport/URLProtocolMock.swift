@@ -4,8 +4,7 @@ import CZUtils
 /**
  Mock that be used to inject data into default`URLSession` with `URLSessionConfiguration`.
  
- - Note: All fetchings will use`URLProtocolMock`, instead of normal `URLProtocol`.
- If no mockData is for `url`, response data will be nil.
+ - Note: Return mockData for `url` if exists,  otherwise will let other URLProtocols to handle.
  */
 public class URLProtocolMock: URLProtocol {
   // TestData for url - [testURL: testData].
@@ -25,7 +24,7 @@ public class URLProtocolMock: URLProtocol {
   
   // MARK: - Load data
   
-  /** Return mockData for `url` if exists,  otherwise call `super.startLoading()`. */
+  /** Return mockData for `url` if exists,  otherwise call `super.startLoading()`.  */
   public override func startLoading() {
     // Return mockData for `url` if exists.
     if let url = request.url,
