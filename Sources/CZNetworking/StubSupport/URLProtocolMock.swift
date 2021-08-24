@@ -41,9 +41,7 @@ public class URLProtocolMock: URLProtocol {
     super.startLoading()
   }
   
-  public override func stopLoading() {
-    super.stopLoading()
-  }
+  public override func stopLoading() {}
     
   public override class func canonicalRequest(for request: URLRequest) -> URLRequest {
     return request
