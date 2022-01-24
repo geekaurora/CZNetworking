@@ -153,7 +153,7 @@ final class CZHTTPManagerTests: XCTestCase {
   /**
    Test GETCodable() method.
    */
-  func testGETCodable() {
+  func testGETCodableModel() {
     let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
     
     // Create mockDataMap.
@@ -164,7 +164,7 @@ final class CZHTTPManagerTests: XCTestCase {
     CZHTTPManager.stubMockData(dict: mockDataMap)
     
     // Verify data.
-    CZHTTPManager.shared.GETCodableModel(MockData.urlForGetCodable.absoluteString, success: { (models: [TestModel]) in
+    CZHTTPManager.shared.GETCodableModel(MockData.urlForGetCodable.absoluteString, success: { (models: [TestModel], _) in
       XCTAssert(
         models.isEqual(toCodable: MockData.models),
         "Actual result = \n\(models) \n\nExpected result = \n\(MockData.models)")

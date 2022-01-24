@@ -85,12 +85,12 @@ open class CZHTTPManager: NSObject {
                                               headers: HTTPRequestWorker.Headers? = nil,
                                               params: HTTPRequestWorker.Params? = nil,
                                               dataKey: String? = nil,
-                                              success: @escaping (Model) -> Void,
+                                              success: @escaping (Model, Data?) -> Void,
                                               failure: HTTPRequestWorker.Failure? = nil,
-                                              cached: ((Model) -> Void)? = nil,
+                                              cached: ((Model, Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
     
-    typealias Completion = (Model) -> Void
+    typealias Completion = (Model, Data?) -> Void
     let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
       let retrievedData: Data? = {
         // With given dataKey, retrieve corresponding field from dictionary
@@ -107,7 +107,7 @@ open class CZHTTPManager: NSObject {
         failure?(task, CZNetError.parse)
         return
       }
-      completion?(model)
+      completion?(model, data)
     }
     
     GET(urlStr,
@@ -141,38 +141,15 @@ open class CZHTTPManager: NSObject {
                                               failure: HTTPRequestWorker.Failure? = nil,
                                               cached: (([Model], Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
-    
-    typealias Completion = ([Model], Data?) -> Void
-    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
-      let retrievedData: Data? = {
-        // With given dataKey, retrieve corresponding field from dictionary
-        if let dataKey = dataKey,
-          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
-          let dataDict = dict[dataKey]  {
-          return CZHTTPJsonSerializer.jsonData(with: dataDict)
-        }
-        // Othewise, return directly as data should be decodable
-        return data
-      }()
-      
-      guard let models: [Model] = CodableHelper.decodeArray(retrievedData).assertIfNil else {
-        failure?(task, CZNetError.parse)
-        return
-      }
-      completion?(models, data)
-    }
-    
-    GET(urlStr,
-        headers: headers,
-        params: params,
-        success: { (task, data) in
-          modelingHandler(success, task, data)
-    },
-        failure: failure,
-        cached: { (task, data) in
-          modelingHandler(cached, task, data)
-    },
-        progress: progress)
+    // Calling `GETCodableModel()` will infer `[Model]` as Model type.
+    GETCodableModel(urlStr,
+                    headers: headers,
+                    params: params,
+                    dataKey: dataKey,
+                    success: success,
+                    failure: failure,
+                    cached: cached,
+                    progress: progress)
   }
   
   /// Get Codable models without `Data` in `success` closure.
