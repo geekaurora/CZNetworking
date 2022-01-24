@@ -92,6 +92,7 @@ open class CZHTTPManager: NSObject {
                   params: HTTPRequestWorker.Params? = nil,
                   shouldSerializeJson: Bool = true,
                   queuePriority: Operation.QueuePriority = .normal,
+                  decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
                   success: HTTPRequestWorker.Success? = nil,
                   failure: HTTPRequestWorker.Failure? = nil,
                   cached: HTTPRequestWorker.Cached? = nil,
@@ -103,6 +104,7 @@ open class CZHTTPManager: NSObject {
       params: params,
       shouldSerializeJson: shouldSerializeJson,
       queuePriority: queuePriority,
+      decodeClosure:decodeClosure,
       success: success,
       failure: failure,
       cached: cached,
@@ -187,6 +189,7 @@ open class CZHTTPManager: NSObject {
     _GET(urlStr,
         headers: headers,
         params: params,
+        decodeClosure: decodeClosure,
         success: { (task, model) in
           //modelingHandler(success, task, data)
           success(model as! Model, nil)
@@ -239,9 +242,7 @@ open class CZHTTPManager: NSObject {
                                                cached: (([Model]) -> Void)? = nil,
                                                progress: HTTPRequestWorker.Progress? = nil) {
     let cachedClosure: (([Model], Data?) -> Void)? = {
-      guard let cached = cached else {
-        return nil
-      }
+      guard let cached = cached else { return nil }
       return { (models, data) in
         cached(models)
       }
@@ -430,6 +431,7 @@ private extension CZHTTPManager {
                       params: HTTPRequestWorker.Params? = nil,
                       shouldSerializeJson: Bool = true,
                       queuePriority: Operation.QueuePriority = .normal,
+                      decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
                       success: HTTPRequestWorker.Success? = nil,
                       failure: HTTPRequestWorker.Failure? = nil,
                       cached: HTTPRequestWorker.Cached? = nil,
@@ -444,6 +446,7 @@ private extension CZHTTPManager {
       headers: headers,
       shouldSerializeJson: shouldSerializeJson,
       httpCache: self.httpCache,
+      decodeClosure:decodeClosure,
       success: success,
       failure: failure,
       cached: cached,

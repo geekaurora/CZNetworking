@@ -72,6 +72,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
     self.httpCache = httpCache
     self.shouldSerializeJson = shouldSerializeJson
+    self.decodeClosure = decodeClosure
     self.progress = progress
     self.cached = cached
     self.success = success
