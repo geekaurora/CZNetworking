@@ -99,7 +99,7 @@ open class CZHTTPManager: NSObject {
     
     typealias Completion = (Model, Data?) -> Void
     let modelingHandler = { [weak self] (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
-      // Decode on the decodeQueue.
+      // Decode on the `decodeQueue`.
       self?.decodeQueue.addOperation {
         let retrievedData: Data? = {
           // With given dataKey, retrieve corresponding field from dictionary
