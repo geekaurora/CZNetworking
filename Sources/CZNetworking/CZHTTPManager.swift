@@ -40,6 +40,7 @@ open class CZHTTPManager: NSObject {
   
   public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
     downloadQueue.maxConcurrentOperationCount = maxConcurrencies
+    decodeQueue.maxConcurrentOperationCount = maxConcurrencies
     return self
   }
   
