@@ -1,256 +1,256 @@
-import Foundation
-import CZUtils
-
-@objc
-open class HTTPGenericRequestWorker: ConcurrentBlockOperation {
-  public typealias Params = [AnyHashable: AnyHashable]
-  public typealias ParamList = [AnyHashable]
-  public typealias Headers = [String: String]
-  private enum config {
-    static let timeOutInterval: TimeInterval = 60
-  }
-  
-  /// Progress closure: (currSize, totalSize, downloadURL)
-  public typealias Progress = (Int64, Int64, URL) -> Void
-  public typealias Success = (URLSessionDataTask?, Data?) -> Void
-  public typealias Failure = (URLSessionDataTask?, Error) -> Void
-  public typealias Cached = (URLSessionDataTask?, Data?) -> Void
-  public typealias DecodeClosure = (Data?) -> Any?
-
-  private var success: Success?
-  private var failure: Failure?
-  private var progress: Progress?
-  private var cached: Cached?
-  private var decodeClosure: DecodeClosure?
-  
-  let url: URL
-  private let shouldSerializeJson: Bool
-  private let requestType: HTTPRequestWorker.RequestType
-  private let params: Params?
-  private let headers: Headers?
-  
-  private var urlSession: URLSession?
-  
-  private static var urlSession: URLSession? = URLSession(
-    configuration: CZHTTPManager.urlSessionConfiguration,
-    delegate: nil,
-    delegateQueue: nil)
-    
-  private(set) var dataTask: URLSessionDataTask?
-  @ThreadSafe private var response: URLResponse?
-  @ThreadSafe private var expectedSize: Int64 = 0
-  @ThreadSafe private var receivedSize: Int64 = 0
-  @ThreadSafe private var receivedData = Data()
-
-  private let httpCache: CZHTTPCache?
-  private var httpCacheKey: String {
-    return CZHTTPCache.cacheKey(url: url, params: params)
-  }
-
-  required public init(_ requestType: HTTPRequestWorker.RequestType,
-                       url: URL,
-                       params: Params? = nil,
-                       headers: Headers? = nil,
-                       shouldSerializeJson: Bool = true,
-                       httpCache: CZHTTPCache? = nil,
-                       decodeClosure: DecodeClosure? = nil,
-                       success: Success? = nil,
-                       failure: Failure? = nil,
-                       cached: Cached? = nil,
-                       progress: Progress? = nil) {
-    self.requestType = requestType
-    self.url = url
-    self.params = params
-    self.headers = headers
-    
-    self.httpCache = httpCache
-    self.shouldSerializeJson = shouldSerializeJson
-    self.progress = progress
-    self.cached = cached
-    self.success = success
-    self.failure = failure
-    super.init()
-    
-    self.props["url"] = url
-    // Build urlSessionTask
-    dataTask = buildUrlSessionTask()
-  }
-  
-  open override func _execute() {
-    // Fetch from cache
-    if  requestType == .GET,
-      let cached = cached,
-      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
-      MainQueueScheduler.async { [weak self] in
-        cached(self?.dataTask, cachedData)
-      }
-    }
-    
-    dbgPrint("url = \(url)")
-    // Fetch from network
-    dataTask?.resume()
-  }
-  
-  open override func cancel() {
-    dataTask?.cancel()
-    super.cancel()
-  }
-  
-  open override func finish() {
-    // Note:
-    // Should invalidate URLSession after task completes, to avoid a retain cycle that causes leaks and crash.
-    // Because URLSession retains strong reference to URLSessionDelegate.
-    urlSession?.finishTasksAndInvalidate()
-    super.finish()
-  }
-  
-  /**
-   Build urlSessionTask based on settings
-   */
-  private func buildUrlSessionTask() -> URLSessionDataTask? {
-        urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
-                                delegate: self,
-                                delegateQueue: nil)
-    
-    let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
-    let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
-    let request = NSMutableURLRequest(url: url)
-    request.httpMethod = requestType.stringValue
-    
-    if let headers = headers {
-      for (key, value) in headers {
-        request.addValue(value, forHTTPHeaderField: key)
-      }
-    }
-    
-    assert(urlSession != nil, "urlSession shouldn't be nil.")
-    var dataTask: URLSessionDataTask? = nil
-    switch requestType {
-    case .GET, .PUT:
-      dataTask = urlSession?.dataTask(with: request as URLRequest)
-          
-//      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
-//       defer {
-//          self.finish()
-//        }
-//        MainQueueScheduler.async {
-//          if let error = error {
-//            self.failure?(nil, error)
-//            return
-//          }
-//          self.success?(nil, data)
-//        }
+//import Foundation
+//import CZUtils
+//
+////@objc
+//open class HTTPGenericRequestWorker<T>: ConcurrentBlockOperation {
+//  public typealias Params = [AnyHashable: AnyHashable]
+//  public typealias ParamList = [AnyHashable]
+//  public typealias Headers = [String: String]
+////  private enum config {
+////    static let timeOutInterval: TimeInterval = 60
+////  }
+//  
+//  /// Progress closure: (currSize, totalSize, downloadURL)
+//  public typealias Progress = (Int64, Int64, URL) -> Void
+//  public typealias Success = (URLSessionDataTask?, Data?) -> Void
+//  public typealias Failure = (URLSessionDataTask?, Error) -> Void
+//  public typealias Cached = (URLSessionDataTask?, Data?) -> Void
+//  public typealias DecodeClosure = (Data?) -> Any?
+//
+//  private var success: Success?
+//  private var failure: Failure?
+//  private var progress: Progress?
+//  private var cached: Cached?
+//  private var decodeClosure: DecodeClosure?
+//  
+//  let url: URL
+//  private let shouldSerializeJson: Bool
+//  private let requestType: HTTPRequestWorker.RequestType
+//  private let params: Params?
+//  private let headers: Headers?
+//  
+//  private var urlSession: URLSession?
+//  
+//  private static var urlSession: URLSession? = URLSession(
+//    configuration: CZHTTPManager.urlSessionConfiguration,
+//    delegate: nil,
+//    delegateQueue: nil)
+//    
+//  private(set) var dataTask: URLSessionDataTask?
+//  @ThreadSafe private var response: URLResponse?
+//  @ThreadSafe private var expectedSize: Int64 = 0
+//  @ThreadSafe private var receivedSize: Int64 = 0
+//  @ThreadSafe private var receivedData = Data()
+//
+//  private let httpCache: CZHTTPCache?
+//  private var httpCacheKey: String {
+//    return CZHTTPCache.cacheKey(url: url, params: params)
+//  }
+//
+//  required public init(_ requestType: HTTPRequestWorker.RequestType,
+//                       url: URL,
+//                       params: Params? = nil,
+//                       headers: Headers? = nil,
+//                       shouldSerializeJson: Bool = true,
+//                       httpCache: CZHTTPCache? = nil,
+//                       decodeClosure: DecodeClosure? = nil,
+//                       success: Success? = nil,
+//                       failure: Failure? = nil,
+//                       cached: Cached? = nil,
+//                       progress: Progress? = nil) {
+//    self.requestType = requestType
+//    self.url = url
+//    self.params = params
+//    self.headers = headers
+//    
+//    self.httpCache = httpCache
+//    self.shouldSerializeJson = shouldSerializeJson
+//    self.progress = progress
+//    self.cached = cached
+//    self.success = success
+//    self.failure = failure
+//    super.init()
+//    
+//    self.props["url"] = url
+//    // Build urlSessionTask
+//    dataTask = buildUrlSessionTask()
+//  }
+//  
+//  open override func _execute() {
+//    // Fetch from cache
+//    if  requestType == .GET,
+//      let cached = cached,
+//      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
+//      MainQueueScheduler.async { [weak self] in
+//        cached(self?.dataTask, cachedData)
 //      }
-      
-    case let .POST(contentType, data):
-      // Set postData as input data if non nil.
-      let postData = data ?? paramsString?.data(using: .utf8)
-      let contentTypeValue: String = {
-        switch contentType {
-        case .formUrlencoded:
-          return "application/x-www-form-urlencoded"
-        case .textPlain:
-          return "text/plain"
-        }
-      }()
-      request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
-      request.addValue("application/json", forHTTPHeaderField: "Accept")
-      let contentLength = postData?.count ?? 0
-      request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
-      request.httpBody = postData
-      dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
-      
-    case .DELETE:
-      dataTask = urlSession?.dataTask(with: request as URLRequest)
-      
-    case let .UPLOAD(fileName, data):
-      do {
-        let request = try Upload.buildRequest(
-          url,
-          params: params,
-          fileName: fileName,
-          data: data)
-        dataTask = urlSession?.dataTask(with: request)
-      } catch {
-        dbgPrint("Failed to build upload request. Error - \(error.localizedDescription)")
-      }
-    default:
-      assertionFailure("Unsupported request type.")
-    }
-    return dataTask
-  }
-}
-
-// MARK: - URLSessionDataDelegate
-
-extension HTTPGenericRequestWorker: URLSessionDataDelegate {
-  public func urlSession(_ session: URLSession,
-                         dataTask: URLSessionDataTask,
-                         didReceive response: URLResponse,
-                         completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-    defer {
-      self.response = response
-      completionHandler(.allow)
-      finish()
-    }
-    guard let response = (response as? HTTPURLResponse).assertIfNil else {
-      return
-    }
-    expectedSize = response.expectedContentLength
-  }
-  
-  public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-    // receivedSize += Int64(data.count)
-    // receivedData.append(data)
-    _receivedSize.threadLock { (_receivedSize) -> Void in
-      _receivedSize += Int64(data.count)
-    }
-    _receivedData.threadLock { (_receivedData) -> Void in
-      _receivedData.append(data)
-    }
-    MainQueueScheduler.async { [weak self] in
-      guard let `self` = self else {return}
-      self.progress?(self.receivedSize, self.expectedSize, self.url)
-    }
-  }
-  
-  public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    defer { finish() }
-    
-    if true || !CZTestHelper.isInUnitTest {
-      guard self.response == task.response else { return }
-      
-      guard error == nil,
-        let httpResponse = response as? HTTPURLResponse,
-        httpResponse.statusCode == 200 else {
-          if error?.retrievedCode != NSURLErrorCancelled {
-            // Failure completion
-            var errorDescription = error?.localizedDescription ?? ""
-            let responseString = "Response: \(String(describing: response))"
-            errorDescription = responseString + "\n"
-            if let receivedDict: Any = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
-              errorDescription += "\nReceivedData: \(receivedDict)"
-            }
-            let errorRes = error ?? CZNetError(errorDescription)
-            dbgPrint("Failure of dataTask, error - \(errorRes)")
-            failure?(nil, errorRes)
-          }
-          return
-      }
-    }
-    
-    // Success completion
-    if cached != nil {
-      httpCache?.saveData(receivedData, forKey: httpCacheKey)
-    }
-    MainQueueScheduler.async { [weak self] in
-      guard let `self` = self else {return}
-      self.success?(task as? URLSessionDataTask, self.receivedData)
-    }
-    
-  }
-}
-
-// MARK: - URLSessionDelegate
-
-extension HTTPGenericRequestWorker: URLSessionDelegate {}
+//    }
+//    
+//    dbgPrint("url = \(url)")
+//    // Fetch from network
+//    dataTask?.resume()
+//  }
+//  
+//  open override func cancel() {
+//    dataTask?.cancel()
+//    super.cancel()
+//  }
+//  
+//  open override func finish() {
+//    // Note:
+//    // Should invalidate URLSession after task completes, to avoid a retain cycle that causes leaks and crash.
+//    // Because URLSession retains strong reference to URLSessionDelegate.
+//    urlSession?.finishTasksAndInvalidate()
+//    super.finish()
+//  }
+//  
+//  /**
+//   Build urlSessionTask based on settings
+//   */
+//  private func buildUrlSessionTask() -> URLSessionDataTask? {
+//        urlSession = URLSession(configuration: CZHTTPManager.urlSessionConfiguration,
+//                                delegate: self,
+//                                delegateQueue: nil)
+//    
+//    let paramsString: String? = CZHTTPJsonSerializer.string(with: params)
+//    let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
+//    let request = NSMutableURLRequest(url: url)
+//    request.httpMethod = requestType.stringValue
+//    
+//    if let headers = headers {
+//      for (key, value) in headers {
+//        request.addValue(value, forHTTPHeaderField: key)
+//      }
+//    }
+//    
+//    assert(urlSession != nil, "urlSession shouldn't be nil.")
+//    var dataTask: URLSessionDataTask? = nil
+//    switch requestType {
+//    case .GET, .PUT:
+//      dataTask = urlSession?.dataTask(with: request as URLRequest)
+//          
+////      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
+////       defer {
+////          self.finish()
+////        }
+////        MainQueueScheduler.async {
+////          if let error = error {
+////            self.failure?(nil, error)
+////            return
+////          }
+////          self.success?(nil, data)
+////        }
+////      }
+//      
+//    case let .POST(contentType, data):
+//      // Set postData as input data if non nil.
+//      let postData = data ?? paramsString?.data(using: .utf8)
+//      let contentTypeValue: String = {
+//        switch contentType {
+//        case .formUrlencoded:
+//          return "application/x-www-form-urlencoded"
+//        case .textPlain:
+//          return "text/plain"
+//        }
+//      }()
+//      request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
+//      request.addValue("application/json", forHTTPHeaderField: "Accept")
+//      let contentLength = postData?.count ?? 0
+//      request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
+//      request.httpBody = postData
+//      dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
+//      
+//    case .DELETE:
+//      dataTask = urlSession?.dataTask(with: request as URLRequest)
+//      
+//    case let .UPLOAD(fileName, data):
+//      do {
+//        let request = try Upload.buildRequest(
+//          url,
+//          params: params,
+//          fileName: fileName,
+//          data: data)
+//        dataTask = urlSession?.dataTask(with: request)
+//      } catch {
+//        dbgPrint("Failed to build upload request. Error - \(error.localizedDescription)")
+//      }
+//    default:
+//      assertionFailure("Unsupported request type.")
+//    }
+//    return dataTask
+//  }
+//}
+//
+//// MARK: - URLSessionDataDelegate
+//
+//extension HTTPGenericRequestWorker: URLSessionDataDelegate {
+//  public func urlSession(_ session: URLSession,
+//                         dataTask: URLSessionDataTask,
+//                         didReceive response: URLResponse,
+//                         completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+//    defer {
+//      self.response = response
+//      completionHandler(.allow)
+//      finish()
+//    }
+//    guard let response = (response as? HTTPURLResponse).assertIfNil else {
+//      return
+//    }
+//    expectedSize = response.expectedContentLength
+//  }
+//  
+//  public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+//    // receivedSize += Int64(data.count)
+//    // receivedData.append(data)
+//    _receivedSize.threadLock { (_receivedSize) -> Void in
+//      _receivedSize += Int64(data.count)
+//    }
+//    _receivedData.threadLock { (_receivedData) -> Void in
+//      _receivedData.append(data)
+//    }
+//    MainQueueScheduler.async { [weak self] in
+//      guard let `self` = self else {return}
+//      self.progress?(self.receivedSize, self.expectedSize, self.url)
+//    }
+//  }
+//  
+//  public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+//    defer { finish() }
+//    
+//    if true || !CZTestHelper.isInUnitTest {
+//      guard self.response == task.response else { return }
+//      
+//      guard error == nil,
+//        let httpResponse = response as? HTTPURLResponse,
+//        httpResponse.statusCode == 200 else {
+//          if error?.retrievedCode != NSURLErrorCancelled {
+//            // Failure completion
+//            var errorDescription = error?.localizedDescription ?? ""
+//            let responseString = "Response: \(String(describing: response))"
+//            errorDescription = responseString + "\n"
+//            if let receivedDict: Any = CZHTTPJsonSerializer.deserializedObject(with: receivedData)  {
+//              errorDescription += "\nReceivedData: \(receivedDict)"
+//            }
+//            let errorRes = error ?? CZNetError(errorDescription)
+//            dbgPrint("Failure of dataTask, error - \(errorRes)")
+//            failure?(nil, errorRes)
+//          }
+//          return
+//      }
+//    }
+//    
+//    // Success completion
+//    if cached != nil {
+//      httpCache?.saveData(receivedData, forKey: httpCacheKey)
+//    }
+//    MainQueueScheduler.async { [weak self] in
+//      guard let `self` = self else {return}
+//      self.success?(task as? URLSessionDataTask, self.receivedData)
+//    }
+//    
+//  }
+//}
+//
+//// MARK: - URLSessionDelegate
+//
+//extension HTTPGenericRequestWorker: URLSessionDelegate {}
