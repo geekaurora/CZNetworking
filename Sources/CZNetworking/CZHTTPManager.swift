@@ -129,7 +129,6 @@ open class CZHTTPManager: NSObject {
                                               failure: HTTPRequestWorker.Failure? = nil,
                                               cached: ((Model, Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
-    
     typealias Completion = (Model, Data?) -> Void
     let completionHandler = { (completion: Completion?, task: URLSessionDataTask?, model: Any?, data: Data?) in
       guard let model = (model as? Model).assertIfNil else {
