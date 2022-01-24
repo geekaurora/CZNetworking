@@ -6,8 +6,6 @@ class DataDecodeHelper {
   static func codableDecodeClosure<Model: Codable>(dataKey: String?,
                                                    tmpModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
     
-    // let a: Model? = nil
-    
     let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
       let retrievedData: Data? = {
         // With given dataKey, retrieve corresponding field from dictionary
