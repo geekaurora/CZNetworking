@@ -241,7 +241,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
             }
             let errorRes = error ?? CZNetError(errorDescription)
             dbgPrint("Failure of dataTask, error - \(errorRes)")
-            failure?(nil, errorRes)
+            failOnMainThreadIfNeeded(error: errorRes)
           }
           return
       }
@@ -256,6 +256,11 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     if self.decodeClosure != nil {
       // Decode data to model if decodeClosure isn't nil.
       dataOrModel = self.decodeClosure?(self.receivedData)
+      
+      guard dataOrModel.assertIfNil != nil else {
+        failOnMainThreadIfNeeded(error: CZNetError.parse)
+        return
+      }
     }
     
     MainQueueScheduler.async { [weak self] in
@@ -269,3 +274,18 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
 // MARK: - URLSessionDelegate
 
 extension HTTPRequestWorker: URLSessionDelegate {}
+
+// MARK: - Private methods
+
+private extension HTTPRequestWorker {
+  
+  func failOnMainThreadIfNeeded(error: Error) {
+    if failure != nil {
+      MainQueueScheduler.async { [weak self] in
+        self?.failure?(nil, error)
+      }
+    }
+  }
+}
+
+
