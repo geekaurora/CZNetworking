@@ -69,8 +69,8 @@ open class CZHTTPManager: NSObject {
                   progress: HTTPRequestWorker.Progress? = nil) {
     let cachedClosure: HTTPRequestWorker.Cached? = {
       guard let cached = cached else { return nil }
-      return { (task, data) in
-        cached(task, data as? Data)
+      return { (task, data, originalData) in
+        cached(task, originalData)
       }
     }()
     
@@ -79,7 +79,7 @@ open class CZHTTPManager: NSObject {
          params: params,
          shouldSerializeJson: shouldSerializeJson,
          queuePriority: queuePriority,
-         success: { (task, data) in
+         success: { (task, data, _) in
           success?(task, data as? Data)
          },
          failure: failure,
@@ -190,14 +190,14 @@ open class CZHTTPManager: NSObject {
         headers: headers,
         params: params,
         decodeClosure: decodeClosure,
-        success: { (task, model) in
+        success: { (task, model, data) in
           //modelingHandler(success, task, data)
-          success(model as! Model, nil)
+          success(model as! Model, data)
     },
         failure: failure,
-        cached: { (task, model) in
+        cached: { (task, model, data) in
           // modelingHandler(cached, task, data)
-          cached?(model as! Model, nil)
+          cached?(model as! Model, data)
     },
         progress: progress)
     
