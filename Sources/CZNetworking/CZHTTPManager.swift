@@ -11,22 +11,29 @@ open class CZHTTPManager: NSObject {
   
   public enum Config {
     public static var maxConcurrencies = 5
-    public static var operationQueueName = "CZHTTPManager.operationQueue"
+    public static var downloadQueueName = "CZHTTPManager.downloadQueue"
+    public static var decodeQueueName = "CZHTTPManager.decodeQueue"
   }
   /// URL session configuration, that can be repaced with test stubing.
   public static var urlSessionConfiguration = URLSessionConfiguration.default
   public static var isUnderUnitTest = false
   
   let downloadQueue: OperationQueue
+  let decodeQueue: OperationQueue
   let httpCache: CZHTTPCache
 
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
     downloadQueue = OperationQueue()
-    downloadQueue.name = Config.operationQueueName
+    downloadQueue.name = Config.downloadQueueName
     downloadQueue.maxConcurrentOperationCount = maxConcurrencies
     // *Updated.
     downloadQueue.qualityOfService = .userInitiated
 
+    decodeQueue = OperationQueue()
+    decodeQueue.name = Config.decodeQueueName
+    decodeQueue.maxConcurrentOperationCount = maxConcurrencies
+    decodeQueue.qualityOfService = .userInitiated
+    
     httpCache = CZHTTPCache()
     super.init()
   }
@@ -91,23 +98,27 @@ open class CZHTTPManager: NSObject {
                                               progress: HTTPRequestWorker.Progress? = nil) {
     
     typealias Completion = (Model, Data?) -> Void
-    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
-      let retrievedData: Data? = {
-        // With given dataKey, retrieve corresponding field from dictionary
-        if let dataKey = dataKey,
-          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
-          let dataDict = dict[dataKey]  {
-          return CZHTTPJsonSerializer.jsonData(with: dataDict)
+    let modelingHandler = { [weak self] (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
+      // Decode on the decodeQueue.
+      self?.decodeQueue.addOperation {
+        let retrievedData: Data? = {
+          // With given dataKey, retrieve corresponding field from dictionary
+          if let dataKey = dataKey,
+            let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
+            let dataDict = dict[dataKey]  {
+            return CZHTTPJsonSerializer.jsonData(with: dataDict)
+          }
+          // Othewise, return directly as data should be decodable
+          return data
+        }()
+        
+        guard let model: Model = CodableHelper.decode(retrievedData).assertIfNil else {
+          failure?(task, CZNetError.parse)
+          return
         }
-        // Othewise, return directly as data should be decodable
-        return data
-      }()
-      
-      guard let model: Model = CodableHelper.decode(retrievedData).assertIfNil else {
-        failure?(task, CZNetError.parse)
-        return
+        completion?(model, data)
       }
-      completion?(model, data)
+      
     }
     
     GET(urlStr,
