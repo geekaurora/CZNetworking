@@ -15,8 +15,8 @@ class DataDecodeHelper {
       let retrievedData: Data? = {
         // With given dataKey, retrieve corresponding field from dictionary
         if let dataKey = dataKey,
-          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
-          let dataDict = dict[dataKey]  {
+           let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
+           let dataDict = dict[dataKey]  {
           return CZHTTPJsonSerializer.jsonData(with: dataDict)
         }
         // Othewise, return directly as data should be decodable
