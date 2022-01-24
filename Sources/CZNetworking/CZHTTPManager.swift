@@ -130,10 +130,19 @@ open class CZHTTPManager: NSObject {
                                               cached: ((Model, Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
     
+    typealias Completion = (Model, Data?) -> Void
+    let completionHandler = { (completion: Completion?, task: URLSessionDataTask?, model: Any?, data: Data?) in
+      guard let model = (model as? Model).assertIfNil else {
+        failure?(nil, CZNetError.parse)
+        return
+      }
+      completion?(model, data)
+    }
+    
     let cachedClosure: ((URLSessionDataTask?, Any?, Data?) -> Void)? = {
       guard let cached = cached else { return nil }
       return { (task, model, data) in
-        cached(model as! Model, data)
+        completionHandler(cached, task, model, data)
       }
     }()
     
@@ -153,7 +162,6 @@ open class CZHTTPManager: NSObject {
         failure?(nil, CZNetError.parse)
         return nil
       }
-      // completion?(model, data)
       return model
     }
     
@@ -162,7 +170,7 @@ open class CZHTTPManager: NSObject {
         params: params,
         decodeClosure: decodeClosure,
         success: { (task, model, data) in
-          success(model as! Model, data)
+          completionHandler(success, task, model, data)
     },
         failure: failure,
         cached: cachedClosure,
