@@ -251,13 +251,15 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
       httpCache?.saveData(receivedData, forKey: httpCacheKey)
     }
     
+    var dataOrModel: Any? = self.receivedData
     if self.decodeClosure != nil {
-        let decodedModel = self.decodeClosure?(self.receivedData)
+      // Decode data to model if decodeClosure isn't nil.
+      dataOrModel = self.decodeClosure?(self.receivedData)
     }
     
     MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
-      self.success?(task as? URLSessionDataTask, self.receivedData)
+      self.success?(task as? URLSessionDataTask, dataOrModel)
     }
     
   }
