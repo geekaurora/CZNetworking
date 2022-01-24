@@ -144,8 +144,7 @@ open class CZHTTPManager: NSObject {
         completionHandler(cached, task, model, data)
       }
     }()
-    
-    
+        
     _GET(urlStr,
         headers: headers,
         params: params,
