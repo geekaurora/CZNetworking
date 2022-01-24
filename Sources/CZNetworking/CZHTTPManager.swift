@@ -158,7 +158,6 @@ open class CZHTTPManager: NSObject {
       }()
       
       guard let model: Model = CodableHelper.decode(retrievedData).assertIfNil else {
-        failure?(nil, CZNetError.parse)
         return nil
       }
       return model
