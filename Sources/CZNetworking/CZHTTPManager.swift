@@ -17,22 +17,22 @@ open class CZHTTPManager: NSObject {
   public static var urlSessionConfiguration = URLSessionConfiguration.default
   public static var isUnderUnitTest = false
   
-  let workQueue: OperationQueue
+  let downloadQueue: OperationQueue
   let httpCache: CZHTTPCache
 
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
-    workQueue = OperationQueue()
-    workQueue.name = Config.operationQueueName
-    workQueue.maxConcurrentOperationCount = maxConcurrencies
+    downloadQueue = OperationQueue()
+    downloadQueue.name = Config.operationQueueName
+    downloadQueue.maxConcurrentOperationCount = maxConcurrencies
     // *Updated.
-    workQueue.qualityOfService = .userInitiated
+    downloadQueue.qualityOfService = .userInitiated
 
     httpCache = CZHTTPCache()
     super.init()
   }
   
   public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
-    workQueue.maxConcurrentOperationCount = maxConcurrencies
+    downloadQueue.maxConcurrentOperationCount = maxConcurrencies
     return self
   }
   
@@ -45,7 +45,7 @@ open class CZHTTPManager: NSObject {
         operation.cancel()
       }
     }
-    workQueue.operations.forEach(cancelIfNeeded)
+    downloadQueue.operations.forEach(cancelIfNeeded)
   }
   
   // MARK: - GET
@@ -372,7 +372,7 @@ private extension CZHTTPManager {
       cached: cached,
       progress: progress)
     reqestWorkerOperation.queuePriority = queuePriority
-    workQueue.addOperation(reqestWorkerOperation)
+    downloadQueue.addOperation(reqestWorkerOperation)
   }
   
 }
