@@ -4,6 +4,8 @@ import CZTestUtils
 @testable import CZNetworking
 
 final class CZHTTPManagerTests: XCTestCase {
+  public typealias GetRequestSuccess = (URLSessionDataTask?, Data?) -> Void
+  
   private enum MockData {
     static let urlForGet = URL(string: "https://www.apple.com/newsroom/rss-feed-GET.rss")!
     static let urlForGetCodable = URL(string: "https://www.apple.com/newsroom/rss-feed-GETCodable.rss")!
@@ -62,12 +64,12 @@ final class CZHTTPManagerTests: XCTestCase {
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    let success: HTTPRequestWorker.Success = { (_, data) in
+    let success: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
-    let cached: HTTPRequestWorker.Success = { (_, data) in
+    let cached: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
@@ -107,12 +109,12 @@ final class CZHTTPManagerTests: XCTestCase {
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    let success: HTTPRequestWorker.Success = { (_, data) in
+    let success: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
-    let cached: HTTPRequestWorker.Success = { (_, data) in
+    let cached: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }

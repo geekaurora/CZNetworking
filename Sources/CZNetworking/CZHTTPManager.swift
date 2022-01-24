@@ -63,10 +63,41 @@ open class CZHTTPManager: NSObject {
                   params: HTTPRequestWorker.Params? = nil,
                   shouldSerializeJson: Bool = true,
                   queuePriority: Operation.QueuePriority = .normal,
+                  success: ((URLSessionDataTask?, Data?) -> Void)? = nil,
+                  failure: HTTPRequestWorker.Failure? = nil,
+                  cached: ((URLSessionDataTask?, Data?) -> Void)? = nil,
+                  progress: HTTPRequestWorker.Progress? = nil) {
+    let cachedClosure: HTTPRequestWorker.Cached? = {
+      guard let cached = cached else {
+        return nil
+      }
+      return { (task, data) in
+        cached(task, data as? Data)
+      }
+    }()
+    
+    _GET(urlStr,
+         headers: headers,
+         params: params,
+         shouldSerializeJson: shouldSerializeJson,
+         queuePriority: queuePriority,
+         success: { (task, data) in
+          success?(task, data as? Data)
+         },
+         failure: failure,
+         cached: cachedClosure,
+         progress: progress)
+  }
+  
+  private func _GET(_ urlStr: String,
+                  headers: HTTPRequestWorker.Headers? = nil,
+                  params: HTTPRequestWorker.Params? = nil,
+                  shouldSerializeJson: Bool = true,
+                  queuePriority: Operation.QueuePriority = .normal,
                   success: HTTPRequestWorker.Success? = nil,
                   failure: HTTPRequestWorker.Failure? = nil,
                   cached: HTTPRequestWorker.Cached? = nil,
-                  progress: HTTPRequestWorker.Progress? = nil) {
+                  progress: HTTPRequestWorker.Progress? = nil) {        
     startOperation(
       .GET,
       urlStr: urlStr,
@@ -79,6 +110,7 @@ open class CZHTTPManager: NSObject {
       cached: cached,
       progress: progress)
   }
+  
   
   // MARK: Codable
   
@@ -98,8 +130,10 @@ open class CZHTTPManager: NSObject {
                                               cached: ((Model, Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
     
+    // typealias Completion = (Model, Data?) -> Void
     typealias Completion = (Model, Data?) -> Void
-    let modelingHandler = { [weak self] (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
+    let modelingHandler = { [weak self] (completion: Completion?, task: URLSessionDataTask?, dataIn: Any?) in
+      let data = dataIn as? Data
       // Decode on the `decodeQueue`.
       self?.decodeQueue.addOperation {
         let retrievedData: Data? = {

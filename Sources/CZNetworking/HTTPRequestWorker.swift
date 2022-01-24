@@ -17,9 +17,11 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   
   /// Progress closure: (currSize, totalSize, downloadURL)
   public typealias Progress = (Int64, Int64, URL) -> Void
-  public typealias Success = (URLSessionDataTask?, Data?) -> Void
+  public typealias Success = (URLSessionDataTask?, Any?) -> Void
+  // public typealias Success = (URLSessionDataTask?, Data?) -> Void
   public typealias Failure = (URLSessionDataTask?, Error) -> Void
-  public typealias Cached = (URLSessionDataTask?, Data?) -> Void
+  public typealias Cached = Success
+  /// Decode closure: return type can't define as generic<T>, because URLSessionDataDelegate requires the conformance to be @objc compatible.
   public typealias DecodeClosure = (Data?) -> Any?
 
   private var success: Success?
@@ -248,6 +250,11 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     if cached != nil {
       httpCache?.saveData(receivedData, forKey: httpCacheKey)
     }
+    
+    if self.decodeClosure != nil {
+        let decodedModel = self.decodeClosure?(self.receivedData)
+    }
+    
     MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
       self.success?(task as? URLSessionDataTask, self.receivedData)
