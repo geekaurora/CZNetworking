@@ -2,17 +2,12 @@ import Foundation
 import CZUtils
 
 @objc
-open class HTTPRequestWorker: ConcurrentBlockOperation {
+open class HTTPGenericRequestWorker: ConcurrentBlockOperation {
   public typealias Params = [AnyHashable: AnyHashable]
   public typealias ParamList = [AnyHashable]
   public typealias Headers = [String: String]
   private enum config {
     static let timeOutInterval: TimeInterval = 60
-  }  
-  
-  public enum ContentType {
-    case textPlain
-    case formUrlencoded
   }
   
   /// Progress closure: (currSize, totalSize, downloadURL)
@@ -30,7 +25,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   
   let url: URL
   private let shouldSerializeJson: Bool
-  private let requestType: RequestType
+  private let requestType: HTTPRequestWorker.RequestType
   private let params: Params?
   private let headers: Headers?
   
@@ -52,7 +47,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     return CZHTTPCache.cacheKey(url: url, params: params)
   }
 
-  required public init(_ requestType: RequestType,
+  required public init(_ requestType: HTTPRequestWorker.RequestType,
                        url: URL,
                        params: Params? = nil,
                        headers: Headers? = nil,
@@ -188,7 +183,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
 
 // MARK: - URLSessionDataDelegate
 
-extension HTTPRequestWorker: URLSessionDataDelegate {
+extension HTTPGenericRequestWorker: URLSessionDataDelegate {
   public func urlSession(_ session: URLSession,
                          dataTask: URLSessionDataTask,
                          didReceive response: URLResponse,
@@ -258,4 +253,4 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
 
 // MARK: - URLSessionDelegate
 
-extension HTTPRequestWorker: URLSessionDelegate {}
+extension HTTPGenericRequestWorker: URLSessionDelegate {}
