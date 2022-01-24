@@ -167,7 +167,7 @@ open class CZHTTPManager: NSObject {
         headers: headers,
         params: params,
         // decodeClosure: decodeClosure,
-        decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, tmpModel: dataKey as? Model),
+        decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferModel: dataKey as? Model),
         
         success: { (task, model, data) in
           completionHandler(success, task, model, data)
