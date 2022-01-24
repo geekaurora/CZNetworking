@@ -145,30 +145,29 @@ open class CZHTTPManager: NSObject {
       }
     }()
     
-    let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
-      let retrievedData: Data? = {
-        // With given dataKey, retrieve corresponding field from dictionary
-        if let dataKey = dataKey,
-          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
-          let dataDict = dict[dataKey]  {
-          return CZHTTPJsonSerializer.jsonData(with: dataDict)
-        }
-        // Othewise, return directly as data should be decodable
-        return data
-      }()
-      
-      guard let model: Model = CodableHelper.decode(retrievedData).assertIfNil else {
-        return nil
-      }
-      return model
-    }
+//    let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
+//      let retrievedData: Data? = {
+//        // With given dataKey, retrieve corresponding field from dictionary
+//        if let dataKey = dataKey,
+//          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
+//          let dataDict = dict[dataKey]  {
+//          return CZHTTPJsonSerializer.jsonData(with: dataDict)
+//        }
+//        // Othewise, return directly as data should be decodable
+//        return data
+//      }()
+//
+//      guard let model: Model = CodableHelper.decode(retrievedData).assertIfNil else {
+//        return nil
+//      }
+//      return model
+//    }
     
     _GET(urlStr,
         headers: headers,
         params: params,
         // decodeClosure: decodeClosure,
-        decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferModel: dataKey as? Model),
-        
+        decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
         success: { (task, model, data) in
           completionHandler(success, task, model, data)
     },

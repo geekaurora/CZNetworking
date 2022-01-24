@@ -7,9 +7,9 @@ class DataDecodeHelper {
   ///
   /// - Parameters:
   ///   - dataKey: The dataKey to retrive value from dictionary. If nil, parse the complete dictionary.
-  ///   - inferModel: A workaround to pass in `Model` type to method signature.
+  ///   - inferringModel: A workaround to pass in `Model` type to method signature.
   static func codableDecodeClosure<Model: Codable>(dataKey: String?,
-                                                   inferModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
+                                                   inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
     
     let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
       let retrievedData: Data? = {
