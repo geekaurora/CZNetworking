@@ -68,9 +68,7 @@ open class CZHTTPManager: NSObject {
                   cached: ((URLSessionDataTask?, Data?) -> Void)? = nil,
                   progress: HTTPRequestWorker.Progress? = nil) {
     let cachedClosure: HTTPRequestWorker.Cached? = {
-      guard let cached = cached else {
-        return nil
-      }
+      guard let cached = cached else { return nil }
       return { (task, data) in
         cached(task, data as? Data)
       }
@@ -156,7 +154,7 @@ open class CZHTTPManager: NSObject {
       
     }
     
-    GET(urlStr,
+    _GET(urlStr,
         headers: headers,
         params: params,
         success: { (task, data) in
