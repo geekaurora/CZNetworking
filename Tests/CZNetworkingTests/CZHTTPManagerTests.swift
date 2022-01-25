@@ -110,7 +110,7 @@ final class CZHTTPManagerTests: XCTestCase {
     waitForExpectatation()
   }
       
-  /// Test read from cache after relaunching App / ColdStart (written by the precious test).
+  /// [Written by the previous test] Test read from cache after relaunching App / ColdStart.
   /// It verifies both DiskCache and MemCache.
   ///
   /// - Note: MUST run `testGETWithCache1` first!
@@ -142,18 +142,6 @@ final class CZHTTPManagerTests: XCTestCase {
         cached(data)
         expectation.fulfill()
       })
-    
-//    // 2. Verify cache: fetch again.
-//    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//      CZHTTPManager.shared.GET(
-//        MockData.urlForGet.absoluteString,
-//        success: success,
-//        cached: { (data) in
-//          cached(data)
-//          // Fullfill the expectatation.
-//          expectation.fulfill()
-//      })
-//    }
     
     // Wait for expectatation.
     waitForExpectatation()
