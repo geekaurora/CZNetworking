@@ -22,11 +22,7 @@ open class CZHTTPCache: NSObject {
   private let folder: URL = {
     var documentPath = try! FileManager.default.url(for:.documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
     let cacheFolder = documentPath.appendingPathComponent("CZHTTPCache")
-    do {
-      try FileManager.default.createDirectory(atPath: cacheFolder.path, withIntermediateDirectories: true, attributes: nil)
-    } catch let error {
-      assertionFailure("Failed to create HTTPCache folder. Error: \(error)")
-    }
+    CZFileHelper.createDirectoryIfNeeded(at: cacheFolder)
     return cacheFolder
   }()
   
@@ -51,7 +47,7 @@ open class CZHTTPCache: NSObject {
         return
       }
       let success = (data as NSData).write(to: url, atomically: true)
-      assert(success, "\(#function) - failed to write file.")
+      assert(success, "\(#function) - failed to write file. key = \(key)")
     }
   }
   
@@ -101,9 +97,10 @@ open class CZHTTPCache: NSObject {
                   completion: CleanCacheCompletion? = nil) {
     let execute = {
       // Delete the cache directory.
-      CZFileHelper.removeDirectory(path: self.folder.absoluteString, createDirectoryAfterDeletion: true)
+      CZFileHelper.removeDirectory(url: self.folder, createDirectoryAfterDeletion: true)
       completion?(true, nil)
     }
+    
     if (shouldAsync) {
       ioQueue.async(execute: execute)
     } else {
