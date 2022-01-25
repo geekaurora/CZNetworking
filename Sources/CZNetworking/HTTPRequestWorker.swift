@@ -23,7 +23,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   /// Decode closure: return type can't define as generic<T>, because URLSessionDataDelegate requires the conformance to be @objc compatible.
   public typealias DecodeClosure = (Data?) -> Any?
   
-  /// - Note: Internal Only!
+  /// - Note: Internal Only! For external usage, please refer to `Success` / `Cached`.
   /// Internal Success closure: (model, data).
   /// `model` is decoded with `decodeClosure` if `decodeClosure` isn't nil.
   public typealias InternalSuccess = (Any?, Data?) -> Void

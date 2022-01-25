@@ -7,7 +7,7 @@ final class CZHTTPManagerTests: XCTestCase {
   public typealias GetRequestSuccess = (Data?) -> Void
   
   private enum Constant {
-    static let timeOut: TimeInterval = 30
+    static let timeOut: TimeInterval = 10
   }
   
   private enum MockData {

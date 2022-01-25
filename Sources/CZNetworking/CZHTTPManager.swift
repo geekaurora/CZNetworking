@@ -95,9 +95,7 @@ open class CZHTTPManager: NSObject {
         headers: headers,
         params: params,
         decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
-        success: { (model, data) in
-          success(model, data)
-        },
+        success: success,
         failure: failure,
         cached: cached == nil ? nil : { (model, data) in
           cached?(model, data)
@@ -219,7 +217,7 @@ open class CZHTTPManager: NSObject {
       urlStr: urlStr,
       headers: headers,
       params: params,
-      success: { (model, data) in
+      success: { (_, data) in
         success?(data)
       },
       failure: failure,
@@ -238,7 +236,7 @@ open class CZHTTPManager: NSObject {
       urlStr: urlStr,
       headers: headers,
       params: params,
-      success: { (model, data) in
+      success: { (_, data) in
         success?(data)
       },
       failure: failure)
