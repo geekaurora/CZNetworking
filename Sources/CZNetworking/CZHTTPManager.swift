@@ -408,14 +408,7 @@ private extension CZHTTPManager {
         return
       }
       completion?(task, model, data)
-    }
-    
-    let cachedClosure: ((URLSessionDataTask?, Any?, Data?) -> Void)? = {
-      guard let cached = cached else { return nil }
-      return { (task, model, data) in
-        completionHandler(cached, task, model, data)
-      }
-    }()
+    }    
 
     startOperation(
       requestType,
@@ -429,7 +422,9 @@ private extension CZHTTPManager {
         completionHandler(success, task, model, data)
       },
       failure: failure,
-      cached: cachedClosure,
+      cached: cached == nil ? nil : { (task, model, data) in
+        completionHandler(cached, task, model, data)
+      },
       progress: progress)
   }
   
