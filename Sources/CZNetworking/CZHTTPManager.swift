@@ -168,13 +168,6 @@ open class CZHTTPManager: NSObject {
                                                failure: HTTPRequestWorker.Failure? = nil,
                                                cached: (([Model]) -> Void)? = nil,
                                                progress: HTTPRequestWorker.Progress? = nil) {
-    let cachedClosure: (([Model], Data?) -> Void)? = {
-      guard let cached = cached else { return nil }
-      return { (models, data) in
-        cached(models)
-      }
-    }()
-    
     GETCodableModels(
       urlStr,
       headers: headers,
@@ -184,7 +177,9 @@ open class CZHTTPManager: NSObject {
         success(models)
     },
       failure: failure,
-      cached: cachedClosure,
+      cached: cached == nil ? nil : { (models, data) in
+        cached?(models)
+      },
       progress: progress)
   }
   

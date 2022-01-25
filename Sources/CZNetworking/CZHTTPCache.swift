@@ -5,7 +5,7 @@ import CZUtils
 open class CZHTTPCache: NSObject {
   public static let shared = CZHTTPCache()
   
-  typealias CleanCacheCompletion = (Bool, Error?) -> Void
+  typealias ClearCacheCompletion = (Bool, Error?) -> Void
   
   private let ioQueue: DispatchQueue
     
@@ -94,7 +94,7 @@ open class CZHTTPCache: NSObject {
   
   /// Force to clear all disk cache.
   func clearCache(shouldAsync: Bool = false,
-                  completion: CleanCacheCompletion? = nil) {
+                  completion: ClearCacheCompletion? = nil) {
     let execute = {
       // Delete the cache directory.
       CZFileHelper.removeDirectory(url: self.folder, createDirectoryAfterDeletion: true)
