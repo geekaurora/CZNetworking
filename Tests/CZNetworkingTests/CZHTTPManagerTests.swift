@@ -268,14 +268,13 @@ final class CZHTTPManagerTests: XCTestCase {
       
       // Create mockDataMap.
       let mockData = CodableHelper.encode(MockData.models)!
-      let mockDataMap = [MockData.urlForGetCodable: mockData] 
+      let mockDataMap = [MockData.urlForGetCodable: mockData]
       
       let success = { (models: [TestModel], data: Data?) in
         XCTAssert(
           models.isEqual(toCodable: MockData.models),
           "Actual result = \n\(models) \n\nExpected result = \n\(MockData.models)")
-      }
-      
+      }      
       let cached = success
       
       // 0. Stub MockData.
