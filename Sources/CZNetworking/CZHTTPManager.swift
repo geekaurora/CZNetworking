@@ -193,7 +193,7 @@ open class CZHTTPManager: NSObject {
     _GET(urlStr,
         headers: headers,
         params: params,
-        decodeClosure: DataDecodeHelper.manyDictionaryablesDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
+        decodeClosure: DataDecodeHelper.manyDictionaryableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
         success: { (task, models, data) in
           success(models)
         },

@@ -59,7 +59,7 @@ class DataDecodeHelper {
   /// - Parameters:
   ///   - dataKey: The dataKey to retrive value from dictionary. If nil, parse the complete dictionary.
   ///   - inferringModel: A workaround to pass in `Model` type to method signature.
-  static func manyDictionaryablesDecodeClosure<Model: CZDictionaryable>(dataKey: String?,
+  static func manyDictionaryableDecodeClosure<Model: CZDictionaryable>(dataKey: String?,
                                                    inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
     
     let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
@@ -80,7 +80,7 @@ class DataDecodeHelper {
 }
 
 
-// MARK: - Utils
+// MARK: - Private methods
 
 private extension DataDecodeHelper {
   
