@@ -192,7 +192,7 @@ open class CZHTTPManager: NSObject {
                                                    success: @escaping (Model) -> Void,
                                                    failure: HTTPRequestWorker.Failure? = nil,
                                                    cached: ((Model) -> Void)? = nil,
-                                                   progress: HTTPRequestWorker.Progress? = nil) {
+                                                   progress: HTTPRequestWorker.Progress? = nil) {    
     _GET(urlStr,
         headers: headers,
         params: params,
@@ -214,7 +214,7 @@ open class CZHTTPManager: NSObject {
                                                      success: @escaping ([Model]) -> Void,
                                                      failure: HTTPRequestWorker.Failure? = nil,
                                                      cached: (([Model]) -> Void)? = nil,
-                                                     progress: HTTPRequestWorker.Progress? = nil) {    
+                                                     progress: HTTPRequestWorker.Progress? = nil) {
     _GET(urlStr,
         headers: headers,
         params: params,

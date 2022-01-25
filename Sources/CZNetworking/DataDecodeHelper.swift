@@ -61,21 +61,7 @@ class DataDecodeHelper {
   ///   - inferringModel: A workaround to pass in `Model` type to method signature.
   static func manyDictionaryablesDecodeClosure<Model: CZDictionaryable>(dataKey: String?,
                                                    inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
-
-//    typealias Completion = ([Model]) -> Void
-//    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Any?) in
-//      guard let data = data as? Data,
-//        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
-//          assertionFailure("Failed to deserialize data to object.")
-//          return
-//      }
-//      guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
-//        failure?(nil, CZNetError.returnType)
-//        return
-//      }
-//      completion?(models)
-//    }
-//
+    
     let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
       guard let data = data,
         let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
