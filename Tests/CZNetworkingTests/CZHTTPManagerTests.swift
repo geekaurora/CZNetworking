@@ -9,7 +9,6 @@ final class CZHTTPManagerTests: XCTestCase {
   private enum Constant {
     static let timeOut: TimeInterval = 10
   }
-  
   private enum MockData {
     static let urlForGet = URL(string: "https://www.apple.com/newsroom/rss-feed-GET.rss")!
     static let urlForGetCodable = URL(string: "https://www.apple.com/newsroom/rss-feed-GETCodable.rss")!
@@ -35,8 +34,10 @@ final class CZHTTPManagerTests: XCTestCase {
   static let queueLable = "com.tests.queue"
   @ThreadSafe
   private var executionSuccessCount = 0
+  private var czHTTPManager: CZHTTPManager!
   
   override func setUp() {
+    czHTTPManager = CZHTTPManager()
     executionSuccessCount = 0
   }
   
@@ -154,7 +155,7 @@ final class CZHTTPManagerTests: XCTestCase {
     let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
     // Clear disk cache.
-    CZHTTPManager.shared.httpCache.clearCache()
+    czHTTPManager.httpCache.clearCache()
 
     // Create mockDataMap.
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
@@ -169,14 +170,14 @@ final class CZHTTPManagerTests: XCTestCase {
     CZHTTPManager.stubMockData(dict: mockDataMap)
     
     // 1. Fetch with stub URLSession: `cached` handler is nil.
-    CZHTTPManager.shared.GET(
+    czHTTPManager.GET(
       MockData.urlForGet.absoluteString,
       success: success,
       cached: nil)
     
     // 2. Verify cache(shouldn't cache): fetch again.
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-      CZHTTPManager.shared.GET(
+      self.czHTTPManager.GET(
         MockData.urlForGet.absoluteString,
         success: { (data) in
           // Fullfill the expectatation.
