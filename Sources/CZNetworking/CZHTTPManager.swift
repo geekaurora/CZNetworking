@@ -79,25 +79,25 @@ open class CZHTTPManager: NSObject {
          params: params,
          shouldSerializeJson: shouldSerializeJson,
          queuePriority: queuePriority,
-         success: { (task, data, _) in
-          success?(task, data as? Data)
+         success: { (task, _, originalData) in
+          success?(task, originalData)
          },
          failure: failure,
          cached: cachedClosure,
          progress: progress)
   }
-  
-  private func _GET(_ urlStr: String,
+    
+  private func _GET<Model>(_ urlStr: String,
                   headers: HTTPRequestWorker.Headers? = nil,
                   params: HTTPRequestWorker.Params? = nil,
                   shouldSerializeJson: Bool = true,
                   queuePriority: Operation.QueuePriority = .normal,
                   decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
-                  success: HTTPRequestWorker.Success? = nil,
+                  success: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
                   failure: HTTPRequestWorker.Failure? = nil,
-                  cached: HTTPRequestWorker.Cached? = nil,
+                  cached: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
                   progress: HTTPRequestWorker.Progress? = nil) {        
-    startOperation(
+    startOperationGeneric(
       .GET,
       urlStr: urlStr,
       headers: headers,
