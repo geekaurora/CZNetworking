@@ -93,10 +93,8 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     // Fetch from cache
     if  requestType == .GET,
       let cached = cached,
-      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
-      MainQueueScheduler.async { [weak self] in
-        cached(cachedData, cachedData)
-      }
+      let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {      
+      decodeDataAndCallCompletion(data: cachedData, completion: cached)
     }
     
     dbgPrint("url = \(url)")
@@ -257,23 +255,9 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
       httpCache?.saveData(receivedData, forKey: httpCacheKey)
     }
     
-    var dataOrModel: Any? = self.receivedData
-    if self.decodeClosure != nil {
-      // Decode data to model if decodeClosure isn't nil.
-      dataOrModel = self.decodeClosure?(self.receivedData)
-      
-      guard dataOrModel.assertIfNil != nil else {
-        failOnMainThreadIfNeeded(error: CZNetError.parse)
-        return
-      }
-    }
-    
-    MainQueueScheduler.async { [weak self] in
-      guard let `self` = self else {return}
-      self.success?(dataOrModel, self.receivedData)
-    }
-    
+    decodeDataAndCallCompletion(data: self.receivedData, completion: self.success)
   }
+  
 }
 
 // MARK: - URLSessionDelegate
@@ -283,6 +267,22 @@ extension HTTPRequestWorker: URLSessionDelegate {}
 // MARK: - Private methods
 
 private extension HTTPRequestWorker {
+  func decodeDataAndCallCompletion(data metaData: Data, completion: InternalSuccess?) {
+    var dataOrModel: Any? = metaData
+    if self.decodeClosure != nil {
+      // Decode data to model if decodeClosure isn't nil.
+      dataOrModel = self.decodeClosure?(metaData)
+      
+      guard dataOrModel.assertIfNil != nil else {
+        failOnMainThreadIfNeeded(error: CZNetError.parse)
+        return
+      }
+    }
+            
+    MainQueueScheduler.async {
+      completion?(dataOrModel, metaData)
+    }
+  }
   
   func failOnMainThreadIfNeeded(error: Error) {
     guard failure != nil else {
