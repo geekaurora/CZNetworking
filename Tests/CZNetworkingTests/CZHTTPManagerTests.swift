@@ -4,7 +4,7 @@ import CZTestUtils
 @testable import CZNetworking
 
 final class CZHTTPManagerTests: XCTestCase {
-  public typealias GetRequestSuccess = (URLSessionDataTask?, Data?) -> Void
+  public typealias GetRequestSuccess = (Data?) -> Void
   
   private enum Constant {
     static let timeOut: TimeInterval = 30
@@ -58,7 +58,7 @@ final class CZHTTPManagerTests: XCTestCase {
     // Stub MockData.
     CZHTTPManager.stubMockData(dict: mockDataMap)
     
-    CZHTTPManager.shared.GET(MockData.urlForGet.absoluteString, success: { (_, data) in
+    CZHTTPManager.shared.GET(MockData.urlForGet.absoluteString, success: { (data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
       expectation.fulfill()
@@ -78,12 +78,12 @@ final class CZHTTPManagerTests: XCTestCase {
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    let success: GetRequestSuccess = { (_, data) in
+    let success: GetRequestSuccess = { (data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
-    let cached: GetRequestSuccess = { (_, data) in
+    let cached: GetRequestSuccess = { (data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
@@ -102,8 +102,8 @@ final class CZHTTPManagerTests: XCTestCase {
       CZHTTPManager.shared.GET(
         MockData.urlForGet.absoluteString,
         success: success,
-        cached: { (task, data) in
-          cached(task, data)
+        cached: { (data) in
+          cached(data)
           // Fullfill the expectatation.
           expectation.fulfill()
       })
@@ -123,7 +123,7 @@ final class CZHTTPManagerTests: XCTestCase {
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    let success: GetRequestSuccess = { (_, data) in
+    let success: GetRequestSuccess = { (data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
@@ -141,11 +141,11 @@ final class CZHTTPManagerTests: XCTestCase {
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
       CZHTTPManager.shared.GET(
         MockData.urlForGet.absoluteString,
-        success: { (task, data) in
+        success: { (data) in
           // Fullfill the expectatation.
           expectation.fulfill()
         },
-        cached: { (task, data) in
+        cached: { (data) in
           XCTFail("Second time `cached` shouldn't be called - because the first time `cached` wasn't set.")
       })
     }
@@ -164,12 +164,12 @@ final class CZHTTPManagerTests: XCTestCase {
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    let success: GetRequestSuccess = { (_, data) in
+    let success: GetRequestSuccess = { (data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
-    let cached: GetRequestSuccess = { (_, data) in
+    let cached: GetRequestSuccess = { (data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
@@ -184,8 +184,8 @@ final class CZHTTPManagerTests: XCTestCase {
       dispatchGroup.enter()
       CZHTTPManager.shared.GET(
         MockData.urlForGet.absoluteString,
-        success: { (task, data) in
-          success(task, data)
+        success: { (data) in
+          success(data)
           self._executionSuccessCount.threadLock {
             $0 = $0 + 1
             print("Success count = \($0)")
