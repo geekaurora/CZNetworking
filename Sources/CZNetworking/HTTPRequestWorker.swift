@@ -15,8 +15,8 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     case formUrlencoded
   }
 
-  public typealias Success = (URLSessionDataTask?, Data?) -> Void
-  public typealias Failure = (URLSessionDataTask?, Error) -> Void
+  public typealias Success = (Data?) -> Void
+  public typealias Failure = (Error) -> Void
   /// Progress closure: (currSize, totalSize, downloadURL)
   public typealias Progress = (Int64, Int64, URL) -> Void
   public typealias Cached = Success
@@ -24,9 +24,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   public typealias DecodeClosure = (Data?) -> Any?
   
   /// - Note: Internal Only!
-  /// Internal Success closure: (task, model, data).
+  /// Internal Success closure: (model, data).
   /// `model` is decoded with `decodeClosure` if `decodeClosure` isn't nil.
-  public typealias InternalSuccess = (URLSessionDataTask?, Any?, Data?) -> Void
+  public typealias InternalSuccess = (Any?, Data?) -> Void
   public typealias InternalCached = InternalSuccess
   
   private var success: InternalSuccess?
@@ -95,7 +95,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       let cached = cached,
       let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
       MainQueueScheduler.async { [weak self] in
-        cached(self?.dataTask, cachedData, cachedData)
+        cached(cachedData, cachedData)
       }
     }
     
@@ -270,7 +270,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     
     MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
-      self.success?(task as? URLSessionDataTask, dataOrModel, self.receivedData)
+      self.success?(dataOrModel, self.receivedData)
     }
     
   }
@@ -289,9 +289,7 @@ private extension HTTPRequestWorker {
       return
     }
     MainQueueScheduler.async { [weak self] in
-      self?.failure?(nil, error)
+      self?.failure?(error)
     }
   }
 }
-
-
