@@ -11,28 +11,28 @@ open class CZHTTPManager: NSObject {
   
   public enum Config {
     public static var maxConcurrencies = 5
-    public static var operationQueueName = "CZHTTPManager.operationQueue"
+    public static var downloadQueueName = "CZHTTPManager.downloadQueue"
   }
   /// URL session configuration, that can be repaced with test stubing.
   public static var urlSessionConfiguration = URLSessionConfiguration.default
   public static var isUnderUnitTest = false
   
-  let workQueue: OperationQueue
+  let downloadQueue: OperationQueue
   let httpCache: CZHTTPCache
 
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
-    workQueue = OperationQueue()
-    workQueue.name = Config.operationQueueName
-    workQueue.maxConcurrentOperationCount = maxConcurrencies
+    downloadQueue = OperationQueue()
+    downloadQueue.name = Config.downloadQueueName
+    downloadQueue.maxConcurrentOperationCount = maxConcurrencies
     // *Updated.
-    workQueue.qualityOfService = .userInitiated
+    downloadQueue.qualityOfService = .userInitiated
 
     httpCache = CZHTTPCache()
     super.init()
   }
   
   public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
-    workQueue.maxConcurrentOperationCount = maxConcurrencies
+    downloadQueue.maxConcurrentOperationCount = maxConcurrencies
     return self
   }
   
@@ -45,7 +45,7 @@ open class CZHTTPManager: NSObject {
         operation.cancel()
       }
     }
-    workQueue.operations.forEach(cancelIfNeeded)
+    downloadQueue.operations.forEach(cancelIfNeeded)
   }
   
   // MARK: - GET
@@ -55,22 +55,49 @@ open class CZHTTPManager: NSObject {
                   params: HTTPRequestWorker.Params? = nil,
                   shouldSerializeJson: Bool = true,
                   queuePriority: Operation.QueuePriority = .normal,
-                  success: HTTPRequestWorker.Success? = nil,
+                  success: ((URLSessionDataTask?, Data?) -> Void)? = nil,
                   failure: HTTPRequestWorker.Failure? = nil,
-                  cached: HTTPRequestWorker.Cached? = nil,
+                  cached: ((URLSessionDataTask?, Data?) -> Void)? = nil,
                   progress: HTTPRequestWorker.Progress? = nil) {
-    startOperation(
+    _GET(urlStr,
+         headers: headers,
+         params: params,
+         shouldSerializeJson: shouldSerializeJson,
+         queuePriority: queuePriority,
+         success: { (task, _: Data?, metaData) in
+          success?(task, metaData)
+         },
+         failure: failure,
+         cached: cached == nil ? nil : { (task, _, metaData) in
+          cached?(task, metaData)
+         },
+         progress: progress)
+  }
+  
+  private func _GET<Model>(_ urlStr: String,
+                           headers: HTTPRequestWorker.Headers? = nil,
+                           params: HTTPRequestWorker.Params? = nil,
+                           shouldSerializeJson: Bool = true,
+                           queuePriority: Operation.QueuePriority = .normal,
+                           decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
+                           success: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                           failure: HTTPRequestWorker.Failure? = nil,
+                           cached: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                           progress: HTTPRequestWorker.Progress? = nil) {
+    startOperationGeneric(
       .GET,
       urlStr: urlStr,
       headers: headers,
       params: params,
       shouldSerializeJson: shouldSerializeJson,
       queuePriority: queuePriority,
+      decodeClosure:decodeClosure,
       success: success,
       failure: failure,
       cached: cached,
       progress: progress)
   }
+  
   
   // MARK: Codable
   
@@ -85,41 +112,21 @@ open class CZHTTPManager: NSObject {
                                               headers: HTTPRequestWorker.Headers? = nil,
                                               params: HTTPRequestWorker.Params? = nil,
                                               dataKey: String? = nil,
-                                              success: @escaping (Model) -> Void,
+                                              success: @escaping (Model, Data?) -> Void,
                                               failure: HTTPRequestWorker.Failure? = nil,
-                                              cached: ((Model) -> Void)? = nil,
+                                              cached: ((Model, Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
-    
-    typealias Completion = (Model) -> Void
-    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
-      let retrievedData: Data? = {
-        // With given dataKey, retrieve corresponding field from dictionary
-        if let dataKey = dataKey,
-          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
-          let dataDict = dict[dataKey]  {
-          return CZHTTPJsonSerializer.jsonData(with: dataDict)
-        }
-        // Othewise, return directly as data should be decodable
-        return data
-      }()
-      
-      guard let model: Model = CodableHelper.decode(retrievedData).assertIfNil else {
-        failure?(task, CZNetError.parse)
-        return
-      }
-      completion?(model)
-    }
-    
-    GET(urlStr,
+    _GET(urlStr,
         headers: headers,
         params: params,
-        success: { (task, data) in
-          modelingHandler(success, task, data)
-    },
+        decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
+        success: { (task, model, data) in
+          success(model, data)
+        },
         failure: failure,
-        cached: { (task, data) in
-          modelingHandler(cached, task, data)
-    },
+        cached: cached == nil ? nil : { (task, model, data) in
+          cached?(model, data)
+        },
         progress: progress)
   }
   
@@ -141,38 +148,15 @@ open class CZHTTPManager: NSObject {
                                               failure: HTTPRequestWorker.Failure? = nil,
                                               cached: (([Model], Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
-    
-    typealias Completion = ([Model], Data?) -> Void
-    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Data?) in
-      let retrievedData: Data? = {
-        // With given dataKey, retrieve corresponding field from dictionary
-        if let dataKey = dataKey,
-          let dict: [AnyHashable : Any] = CZHTTPJsonSerializer.deserializedObject(with: data),
-          let dataDict = dict[dataKey]  {
-          return CZHTTPJsonSerializer.jsonData(with: dataDict)
-        }
-        // Othewise, return directly as data should be decodable
-        return data
-      }()
-      
-      guard let models: [Model] = CodableHelper.decodeArray(retrievedData).assertIfNil else {
-        failure?(task, CZNetError.parse)
-        return
-      }
-      completion?(models, data)
-    }
-    
-    GET(urlStr,
-        headers: headers,
-        params: params,
-        success: { (task, data) in
-          modelingHandler(success, task, data)
-    },
-        failure: failure,
-        cached: { (task, data) in
-          modelingHandler(cached, task, data)
-    },
-        progress: progress)
+    // Calling `GETCodableModel()` will infer `[Model]` as Model type.
+    GETCodableModel(urlStr,
+                    headers: headers,
+                    params: params,
+                    dataKey: dataKey,
+                    success: success,
+                    failure: failure,
+                    cached: cached,
+                    progress: progress)
   }
   
   /// Get Codable models without `Data` in `success` closure.
@@ -184,15 +168,6 @@ open class CZHTTPManager: NSObject {
                                                failure: HTTPRequestWorker.Failure? = nil,
                                                cached: (([Model]) -> Void)? = nil,
                                                progress: HTTPRequestWorker.Progress? = nil) {
-    let cachedClosure: (([Model], Data?) -> Void)? = {
-      guard let cached = cached else {
-        return nil
-      }
-      return { (models, data) in
-        cached(models)
-      }
-    }()
-    
     GETCodableModels(
       urlStr,
       headers: headers,
@@ -202,7 +177,9 @@ open class CZHTTPManager: NSObject {
         success(models)
     },
       failure: failure,
-      cached: cachedClosure,
+      cached: cached == nil ? nil : { (models, data) in
+        cached?(models)
+      },
       progress: progress)
   }
   
@@ -376,6 +353,7 @@ private extension CZHTTPManager {
                       params: HTTPRequestWorker.Params? = nil,
                       shouldSerializeJson: Bool = true,
                       queuePriority: Operation.QueuePriority = .normal,
+                      decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
                       success: HTTPRequestWorker.Success? = nil,
                       failure: HTTPRequestWorker.Failure? = nil,
                       cached: HTTPRequestWorker.Cached? = nil,
@@ -390,12 +368,51 @@ private extension CZHTTPManager {
       headers: headers,
       shouldSerializeJson: shouldSerializeJson,
       httpCache: self.httpCache,
+      decodeClosure:decodeClosure,
       success: success,
       failure: failure,
       cached: cached,
       progress: progress)
     reqestWorkerOperation.queuePriority = queuePriority
-    workQueue.addOperation(reqestWorkerOperation)
+    downloadQueue.addOperation(reqestWorkerOperation)
+  }
+  
+  func startOperationGeneric<Model>(_ requestType: HTTPRequestWorker.RequestType,
+                                    urlStr: String,
+                                    headers: HTTPRequestWorker.Headers? = nil,
+                                    params: HTTPRequestWorker.Params? = nil,
+                                    shouldSerializeJson: Bool = true,
+                                    queuePriority: Operation.QueuePriority = .normal,
+                                    decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
+                                    success: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                                    failure: HTTPRequestWorker.Failure? = nil,
+                                    cached: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                                    progress: HTTPRequestWorker.Progress? = nil) {
+    typealias Completion = (URLSessionDataTask?, Model, Data?) -> Void
+    let completionHandler = { (completion: Completion?, task: URLSessionDataTask?, model: Any?, data: Data?) in
+      guard let model = (model as? Model).assertIfNil else {
+        failure?(nil, CZNetError.parse)
+        return
+      }
+      completion?(task, model, data)
+    }
+
+    startOperation(
+      requestType,
+      urlStr: urlStr,
+      headers: headers,
+      params: params,
+      shouldSerializeJson: shouldSerializeJson,
+      queuePriority: queuePriority,
+      decodeClosure:decodeClosure,
+      success: { (task, model, data) in
+        completionHandler(success, task, model, data)
+      },
+      failure: failure,
+      cached: cached == nil ? nil : { (task, model, data) in
+        completionHandler(cached, task, model, data)
+      },
+      progress: progress)
   }
   
 }

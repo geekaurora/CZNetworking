@@ -4,9 +4,18 @@ import CZTestUtils
 @testable import CZNetworking
 
 final class CZHTTPManagerTests: XCTestCase {
+  public typealias GetRequestSuccess = (URLSessionDataTask?, Data?) -> Void
+  
+  private enum Constant {
+    static let timeOut: TimeInterval = 30
+  }
+  
   private enum MockData {
     static let urlForGet = URL(string: "https://www.apple.com/newsroom/rss-feed-GET.rss")!
     static let urlForGetCodable = URL(string: "https://www.apple.com/newsroom/rss-feed-GETCodable.rss")!
+    static let urlForGetDictionaryable = URL(string: "https://www.apple.com/newsroom/rss-feed-GetDictionaryable.rss")!
+    static let urlForGetDictionaryableOneModel = URL(string: "https://www.apple.com/newsroom/rss-feed-GetDictionaryableOneModel.rss")!
+    
     static let dictionary: [String: AnyHashable] = [
       "a": "sdlfjas",
       "c": "sdlksdf",
@@ -20,20 +29,27 @@ final class CZHTTPManagerTests: XCTestCase {
       189298723,
     ]
     static let models = (0..<10).map { TestModel(id: $0, name: "Model\($0)") }
+    static let oneModel = TestModel(id: 1, name: "Model1")
   }
+  
   static let queueLable = "com.tests.queue"
   @ThreadSafe
   private var executionSuccessCount = 0
   
   override func setUp() {
+    // Clear disk cache.
+    CZHTTPManager.shared.httpCache.clearCache()
+    
     executionSuccessCount = 0
   }
+  
+  // MARK: - GETCodable
   
   /**
    Test GET() method.
    */
   func testGET() {
-    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
     // Create mockDataMap.
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
@@ -56,18 +72,18 @@ final class CZHTTPManagerTests: XCTestCase {
    Test GET() method with `cached` handler.
    */
   func testGETWithCache() {
-    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
     // Create mockDataMap.
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    let success: HTTPRequestWorker.Success = { (_, data) in
+    let success: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
-    let cached: HTTPRequestWorker.Success = { (_, data) in
+    let cached: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
@@ -98,21 +114,62 @@ final class CZHTTPManagerTests: XCTestCase {
   }
     
   /**
-   Test GET() method with `cached` handler on multi threads.
+   Verify GET() method: without `cached` handler, it shouldn't cache data to disk.
    */
-  func testGETWithCacheMultiThreads() {
-    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+  func testGETWithoutCache() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
     // Create mockDataMap.
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
     
-    let success: HTTPRequestWorker.Success = { (_, data) in
+    let success: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
     
-    let cached: HTTPRequestWorker.Success = { (_, data) in
+    // 0. Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
+    // 1. Fetch with stub URLSession: `cached` handler is nil.
+    CZHTTPManager.shared.GET(
+      MockData.urlForGet.absoluteString,
+      success: success,
+      cached: nil)
+    
+    // 2. Verify cache(shouldn't cache): fetch again.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      CZHTTPManager.shared.GET(
+        MockData.urlForGet.absoluteString,
+        success: { (task, data) in
+          // Fullfill the expectatation.
+          expectation.fulfill()
+        },
+        cached: { (task, data) in
+          XCTFail("Second time `cached` shouldn't be called - because the first time `cached` wasn't set.")
+      })
+    }
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
+    
+  /**
+   Test GET() method with `cached` handler on multi threads.
+   */
+  func testGETWithCacheMultiThreads() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+    let mockDataMap = [MockData.urlForGet: mockData]
+    
+    let success: GetRequestSuccess = { (_, data) in
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+    }
+    
+    let cached: GetRequestSuccess = { (_, data) in
       let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
       XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
     }
@@ -129,7 +186,8 @@ final class CZHTTPManagerTests: XCTestCase {
         MockData.urlForGet.absoluteString,
         success: { (task, data) in
           success(task, data)
-          self._executionSuccessCount.threadLock { $0 = $0 + 1
+          self._executionSuccessCount.threadLock {
+            $0 = $0 + 1
             print("Success count = \($0)")
           }
           dispatchGroup.leave()
@@ -150,11 +208,13 @@ final class CZHTTPManagerTests: XCTestCase {
     waitForExpectatation()
   }
   
+  // MARK: - GETCodable
+  
   /**
    Test GETCodable() method.
    */
-  func testGETCodable() {
-    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+  func testGETCodableModel() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
     // Create mockDataMap.
     let mockData = CodableHelper.encode(MockData.models)!
@@ -164,7 +224,7 @@ final class CZHTTPManagerTests: XCTestCase {
     CZHTTPManager.stubMockData(dict: mockDataMap)
     
     // Verify data.
-    CZHTTPManager.shared.GETCodableModel(MockData.urlForGetCodable.absoluteString, success: { (models: [TestModel]) in
+    CZHTTPManager.shared.GETCodableModel(MockData.urlForGetCodable.absoluteString, success: { (models: [TestModel], _) in
       XCTAssert(
         models.isEqual(toCodable: MockData.models),
         "Actual result = \n\(models) \n\nExpected result = \n\(MockData.models)")
@@ -179,7 +239,7 @@ final class CZHTTPManagerTests: XCTestCase {
    Test GETCodableModels() method.
    */
   func testGETCodableModels() {
-    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
     // Create mockDataMap.
     let mockData = CodableHelper.encode(MockData.models)!
@@ -200,9 +260,71 @@ final class CZHTTPManagerTests: XCTestCase {
     waitForExpectatation()
   }  
   
+  // MARK: - GetDictionaryable
+  
+  /**
+   Test GetOneModel() method.
+   */
+  func testGetOneModel() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CodableHelper.encode(MockData.oneModel)!
+    let mockDataMap = [MockData.urlForGetDictionaryableOneModel: mockData]
+    
+    // Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
+    // Verify data.
+    CZHTTPManager.shared.GetOneModel(MockData.urlForGetDictionaryableOneModel.absoluteString, success: { (model: TestModel) in
+      XCTAssert(
+        model.isEqual(toCodable: MockData.oneModel),
+        "Actual result = \n\(model) \n\nExpected result = \n\(MockData.oneModel)")
+      expectation.fulfill()
+    })
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
+  
+  /**
+   Test GetManyModels() method.
+   */
+  func testGetManyModels() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CodableHelper.encode(MockData.models)!
+    let mockDataMap = [MockData.urlForGetDictionaryable: mockData]
+    
+    // Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
+    // Verify data.
+    CZHTTPManager.shared.GetManyModels(MockData.urlForGetDictionaryable.absoluteString, success: { (models: [TestModel]) in
+      XCTAssert(
+        models.isEqual(toCodable: MockData.models),
+        "Actual result = \n\(models) \n\nExpected result = \n\(MockData.models)")
+      expectation.fulfill()
+    })
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
+  
 }
 
-struct TestModel: Codable {
+struct TestModel: Codable, CZDictionaryable {
   let id: Int
   let name: String
+  
+  init(id: Int, name: String) {
+    self.id = id
+    self.name = name
+  }
+  
+  init(dictionary: CZDictionary) {
+    self.id = dictionary["id"] as! Int
+    self.name = dictionary["name"] as! String
+  }
 }

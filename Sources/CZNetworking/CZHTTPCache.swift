@@ -4,8 +4,11 @@ import CZUtils
 /// Thread safe local cache for HTTP response.
 open class CZHTTPCache: NSObject {
   public static let shared = CZHTTPCache()
-  private let ioQueue: DispatchQueue
   
+  typealias ClearCacheCompletion = (Bool, Error?) -> Void
+  
+  private let ioQueue: DispatchQueue
+    
   override init() {
     ioQueue = DispatchQueue(
       label: "com.czhttpCache.ioQueue",
@@ -19,11 +22,7 @@ open class CZHTTPCache: NSObject {
   private let folder: URL = {
     var documentPath = try! FileManager.default.url(for:.documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
     let cacheFolder = documentPath.appendingPathComponent("CZHTTPCache")
-    do {
-      try FileManager.default.createDirectory(atPath: cacheFolder.path, withIntermediateDirectories: true, attributes: nil)
-    } catch let error {
-      assertionFailure("Failed to create HTTPCache folder. Error: \(error)")
-    }
+    CZFileHelper.createDirectoryIfNeeded(at: cacheFolder)
     return cacheFolder
   }()
   
@@ -48,7 +47,7 @@ open class CZHTTPCache: NSObject {
         return
       }
       let success = (data as NSData).write(to: url, atomically: true)
-      assert(success, "\(#function) - failed to write file.")
+      assert(success, "\(#function) - failed to write file. key = \(key)")
     }
   }
   
@@ -90,6 +89,22 @@ open class CZHTTPCache: NSObject {
       guard let `self` = self else { return }
       let path = self.fileURL(forKey: key)
       CZFileHelper.removeFile(path)
+    }
+  }
+  
+  /// Force to clear all disk cache.
+  func clearCache(shouldAsync: Bool = false,
+                  completion: ClearCacheCompletion? = nil) {
+    let execute = {
+      // Delete the cache directory.
+      CZFileHelper.removeDirectory(url: self.folder, createDirectoryAfterDeletion: true)
+      completion?(true, nil)
+    }
+    
+    if (shouldAsync) {
+      ioQueue.async(execute: execute)
+    } else {
+      ioQueue.sync(execute: execute)
     }
   }
 }

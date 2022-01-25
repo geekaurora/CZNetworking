@@ -15,16 +15,24 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     case formUrlencoded
   }
   
+  /// Success closure: (task, model, data).
+  /// `model` is decoded with `decodeClosure` if `decodeClosure` isn't nil.
+  public typealias Success = (URLSessionDataTask?, Any?, Data?) -> Void
+  // public typealias Success = (URLSessionDataTask?, Data?) -> Void
+  public typealias Failure = (URLSessionDataTask?, Error) -> Void
   /// Progress closure: (currSize, totalSize, downloadURL)
   public typealias Progress = (Int64, Int64, URL) -> Void
-  public typealias Success = (URLSessionDataTask?, Data?) -> Void
-  public typealias Failure = (URLSessionDataTask?, Error) -> Void
-  public typealias Cached = (URLSessionDataTask?, Data?) -> Void
-  let url: URL
+  public typealias Cached = Success
+  /// Decode closure: return type can't define as generic<T>, because URLSessionDataDelegate requires the conformance to be @objc compatible.
+  public typealias DecodeClosure = (Data?) -> Any?
+  
   private var success: Success?
   private var failure: Failure?
   private var progress: Progress?
   private var cached: Cached?
+  private var decodeClosure: DecodeClosure?
+  
+  let url: URL
   private let shouldSerializeJson: Bool
   private let requestType: RequestType
   private let params: Params?
@@ -54,6 +62,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
                        headers: Headers? = nil,
                        shouldSerializeJson: Bool = true,
                        httpCache: CZHTTPCache? = nil,
+                       decodeClosure: DecodeClosure? = nil,
                        success: Success? = nil,
                        failure: Failure? = nil,
                        cached: Cached? = nil,
@@ -65,6 +74,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
     self.httpCache = httpCache
     self.shouldSerializeJson = shouldSerializeJson
+    self.decodeClosure = decodeClosure
     self.progress = progress
     self.cached = cached
     self.success = success
@@ -82,7 +92,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       let cached = cached,
       let cachedData = httpCache?.readData(forKey: httpCacheKey, shouldDeserializeJsonData: false) as? Data {
       MainQueueScheduler.async { [weak self] in
-        cached(self?.dataTask, cachedData)
+        cached(self?.dataTask, cachedData, cachedData)
       }
     }
     
@@ -233,7 +243,7 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
             }
             let errorRes = error ?? CZNetError(errorDescription)
             dbgPrint("Failure of dataTask, error - \(errorRes)")
-            failure?(nil, errorRes)
+            failOnMainThreadIfNeeded(error: errorRes)
           }
           return
       }
@@ -243,9 +253,21 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     if cached != nil {
       httpCache?.saveData(receivedData, forKey: httpCacheKey)
     }
+    
+    var dataOrModel: Any? = self.receivedData
+    if self.decodeClosure != nil {
+      // Decode data to model if decodeClosure isn't nil.
+      dataOrModel = self.decodeClosure?(self.receivedData)
+      
+      guard dataOrModel.assertIfNil != nil else {
+        failOnMainThreadIfNeeded(error: CZNetError.parse)
+        return
+      }
+    }
+    
     MainQueueScheduler.async { [weak self] in
       guard let `self` = self else {return}
-      self.success?(task as? URLSessionDataTask, self.receivedData)
+      self.success?(task as? URLSessionDataTask, dataOrModel, self.receivedData)
     }
     
   }
@@ -254,3 +276,19 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
 // MARK: - URLSessionDelegate
 
 extension HTTPRequestWorker: URLSessionDelegate {}
+
+// MARK: - Private methods
+
+private extension HTTPRequestWorker {
+  
+  func failOnMainThreadIfNeeded(error: Error) {
+    guard failure != nil else {
+      return
+    }
+    MainQueueScheduler.async { [weak self] in
+      self?.failure?(nil, error)
+    }
+  }
+}
+
+
