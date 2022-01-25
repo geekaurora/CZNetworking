@@ -14,6 +14,7 @@ final class CZHTTPManagerTests: XCTestCase {
     static let urlForGet = URL(string: "https://www.apple.com/newsroom/rss-feed-GET.rss")!
     static let urlForGetCodable = URL(string: "https://www.apple.com/newsroom/rss-feed-GETCodable.rss")!
     static let urlForGetDictionaryable = URL(string: "https://www.apple.com/newsroom/rss-feed-GetDictionaryable.rss")!
+    static let urlForGetDictionaryableOneModel = URL(string: "https://www.apple.com/newsroom/rss-feed-GetDictionaryableOneModel.rss")!
     
     static let dictionary: [String: AnyHashable] = [
       "a": "sdlfjas",
@@ -28,6 +29,7 @@ final class CZHTTPManagerTests: XCTestCase {
       189298723,
     ]
     static let models = (0..<10).map { TestModel(id: $0, name: "Model\($0)") }
+    static let oneModel = TestModel(id: 1, name: "Model1")
   }
   
   static let queueLable = "com.tests.queue"
@@ -259,6 +261,31 @@ final class CZHTTPManagerTests: XCTestCase {
   }  
   
   // MARK: - GetDictionaryable
+  
+  /**
+   Test GetOneModel() method.
+   */
+  func testGetOneModel() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
+    
+    // Create mockDataMap.
+    let mockData = CodableHelper.encode(MockData.oneModel)!
+    let mockDataMap = [MockData.urlForGetDictionaryableOneModel: mockData]
+    
+    // Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
+    // Verify data.
+    CZHTTPManager.shared.GetOneModel(MockData.urlForGetDictionaryableOneModel.absoluteString, success: { (model: TestModel) in
+      XCTAssert(
+        model.isEqual(toCodable: MockData.oneModel),
+        "Actual result = \n\(model) \n\nExpected result = \n\(MockData.oneModel)")
+      expectation.fulfill()
+    })
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
   
   /**
    Test GetManyModels() method.
