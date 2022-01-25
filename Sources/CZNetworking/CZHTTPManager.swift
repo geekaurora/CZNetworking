@@ -69,8 +69,8 @@ open class CZHTTPManager: NSObject {
                   progress: HTTPRequestWorker.Progress? = nil) {
     let cachedClosure: HTTPRequestWorker.Cached? = {
       guard let cached = cached else { return nil }
-      return { (task, data, originalData) in
-        cached(task, originalData)
+      return { (task, _, metaData) in
+        cached(task, metaData)
       }
     }()
     
@@ -79,8 +79,8 @@ open class CZHTTPManager: NSObject {
          params: params,
          shouldSerializeJson: shouldSerializeJson,
          queuePriority: queuePriority,
-         success: { (task, _, originalData) in
-          success?(task, originalData)
+         success: { (task, _, metaData) in
+          success?(task, metaData)
          },
          failure: failure,
          cached: cachedClosure,
@@ -130,15 +130,11 @@ open class CZHTTPManager: NSObject {
                                               cached: ((Model, Data?) -> Void)? = nil,
                                               progress: HTTPRequestWorker.Progress? = nil) {
     typealias Completion = (Model, Data?) -> Void
-    let completionHandler = { (completion: Completion?, task: URLSessionDataTask?, model: Any?, data: Data?) in
-      guard let model = (model as? Model).assertIfNil else {
-        failure?(nil, CZNetError.parse)
-        return
-      }
+    let completionHandler = { (completion: Completion?, task: URLSessionDataTask?, model: Model, data: Data?) in
       completion?(model, data)
     }
     
-    let cachedClosure: ((URLSessionDataTask?, Any?, Data?) -> Void)? = {
+    let cachedClosure: ((URLSessionDataTask?, Model, Data?) -> Void)? = {
       guard let cached = cached else { return nil }
       return { (task, model, data) in
         completionHandler(cached, task, model, data)
