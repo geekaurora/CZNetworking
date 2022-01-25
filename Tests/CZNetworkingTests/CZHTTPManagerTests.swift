@@ -37,9 +37,6 @@ final class CZHTTPManagerTests: XCTestCase {
   private var executionSuccessCount = 0
   
   override func setUp() {
-    // Clear disk cache.
-    CZHTTPManager.shared.httpCache.clearCache()
-    
     executionSuccessCount = 0
   }
   
@@ -71,7 +68,7 @@ final class CZHTTPManagerTests: XCTestCase {
   /**
    Test GET() method with `cached` handler.
    */
-  func testGETWithCache() {
+  func testGETWithCache1() {
     let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
     // Create mockDataMap.
@@ -113,12 +110,49 @@ final class CZHTTPManagerTests: XCTestCase {
     waitForExpectatation()
   }
     
+  
+  /// Test read from cache after relaunching App / ColdStart (written by the precious test).
+  /// It verifies both DiskCache and MemCache.
+  ///
+  /// - Note: Should run `testGETWithCache1` first!
+  ///
+  /// As Swift doesn't support `testInvocations` override, so can only order tests by alphabet names
+  /// to simulate relaunching App.
+//  func testGETWithCache2AfterRelaunchingApp() {
+//    // 1. Intialize the async expectation.
+//    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+//    
+//    let data = CZHTTPJsonSerializer.jsonData(with: MockData.dict)!
+//    //httpFileCache.setCacheFile(withUrl: MockData.testUrl, data: data)
+//    let (_, cacheKey) = self.httpFileCache.getCacheFileInfo(forURL: MockData.testUrl)
+//    
+//    Thread.sleep(forTimeInterval: 0.1)
+//        
+//    // 2-1. Verify DiskCache - file exists in with `cachedFileURL(:)`.
+//    httpFileCache.getCachedFile(withUrl: MockData.testUrl) { (readData: NSData?) in
+//      let readData = readData as Data?
+//      XCTAssert(data == readData, "Actual result = \(readData), Expected result = \(data)")
+//
+//      // 2-2. Verify MemCache.
+//      let dataFromMemCache = self.httpFileCache.getMemCache(forKey: cacheKey) as Data?
+//      XCTAssert(dataFromMemCache == readData, "MemCache failed! Actual result = \(readData), Expected result = \(data)")
+//
+//      // 3. Fulfill the expectatation.
+//      expectation.fulfill()
+//    }
+//
+//    waitForExpectatation()
+//  }
+//  
   /**
    Verify GET() method: without `cached` handler, it shouldn't cache data to disk.
    */
   func testGETWithoutCache() {
     let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
     
+    // Clear disk cache.
+    CZHTTPManager.shared.httpCache.clearCache()
+
     // Create mockDataMap.
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
     let mockDataMap = [MockData.urlForGet: mockData]
