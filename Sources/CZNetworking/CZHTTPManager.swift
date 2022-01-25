@@ -409,4 +409,47 @@ private extension CZHTTPManager {
     downloadQueue.addOperation(reqestWorkerOperation)
   }
   
+  func startOperationGeneric<Model>(_ requestType: HTTPRequestWorker.RequestType,
+                                    urlStr: String,
+                                    headers: HTTPRequestWorker.Headers? = nil,
+                                    params: HTTPRequestWorker.Params? = nil,
+                                    shouldSerializeJson: Bool = true,
+                                    queuePriority: Operation.QueuePriority = .normal,
+                                    decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
+                                    success: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                                    failure: HTTPRequestWorker.Failure? = nil,
+                                    cached: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                                    progress: HTTPRequestWorker.Progress? = nil) {
+    typealias Completion = (URLSessionDataTask?, Model, Data?) -> Void
+    let completionHandler = { (completion: Completion?, task: URLSessionDataTask?, model: Any?, data: Data?) in
+      guard let model = (model as? Model).assertIfNil else {
+        failure?(nil, CZNetError.parse)
+        return
+      }
+      completion?(task, model, data)
+    }
+    
+    let cachedClosure: ((URLSessionDataTask?, Any?, Data?) -> Void)? = {
+      guard let cached = cached else { return nil }
+      return { (task, model, data) in
+        completionHandler(cached, task, model, data)
+      }
+    }()
+
+    startOperation(
+      requestType,
+      urlStr: urlStr,
+      headers: headers,
+      params: params,
+      shouldSerializeJson: shouldSerializeJson,
+      queuePriority: queuePriority,
+      decodeClosure:decodeClosure,
+      success: { (task, model, data) in
+        completionHandler(success, task, model, data)
+      },
+      failure: failure,
+      cached: cachedClosure,
+      progress: progress)
+  }
+  
 }
