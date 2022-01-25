@@ -14,11 +14,8 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     case textPlain
     case formUrlencoded
   }
-  
-  /// Success closure: (task, model, data).
-  /// `model` is decoded with `decodeClosure` if `decodeClosure` isn't nil.
-  public typealias Success = (URLSessionDataTask?, Any?, Data?) -> Void
-  // public typealias Success = (URLSessionDataTask?, Data?) -> Void
+
+  public typealias Success = (URLSessionDataTask?, Data?) -> Void
   public typealias Failure = (URLSessionDataTask?, Error) -> Void
   /// Progress closure: (currSize, totalSize, downloadURL)
   public typealias Progress = (Int64, Int64, URL) -> Void
@@ -26,10 +23,16 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   /// Decode closure: return type can't define as generic<T>, because URLSessionDataDelegate requires the conformance to be @objc compatible.
   public typealias DecodeClosure = (Data?) -> Any?
   
-  private var success: Success?
+  /// - Note: Internal Only!
+  /// Internal Success closure: (task, model, data).
+  /// `model` is decoded with `decodeClosure` if `decodeClosure` isn't nil.
+  public typealias InternalSuccess = (URLSessionDataTask?, Any?, Data?) -> Void
+  public typealias InternalCached = InternalSuccess
+  
+  private var success: InternalSuccess?
   private var failure: Failure?
   private var progress: Progress?
-  private var cached: Cached?
+  private var cached: InternalCached?
   private var decodeClosure: DecodeClosure?
   
   let url: URL
@@ -63,9 +66,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
                        shouldSerializeJson: Bool = true,
                        httpCache: CZHTTPCache? = nil,
                        decodeClosure: DecodeClosure? = nil,
-                       success: Success? = nil,
+                       success: InternalSuccess? = nil,
                        failure: Failure? = nil,
-                       cached: Cached? = nil,
+                       cached: InternalCached? = nil,
                        progress: Progress? = nil) {
     self.requestType = requestType
     self.url = url

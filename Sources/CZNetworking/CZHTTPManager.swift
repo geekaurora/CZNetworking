@@ -219,7 +219,9 @@ open class CZHTTPManager: NSObject {
       urlStr: urlStr,
       headers: headers,
       params: params,
-      success: success,
+      success: { (task, model, data) in
+        success?(task, data)
+      },
       failure: failure,
       progress: progress)
   }
@@ -236,7 +238,9 @@ open class CZHTTPManager: NSObject {
       urlStr: urlStr,
       headers: headers,
       params: params,
-      success: success,
+      success: { (task, model, data) in
+        success?(task, data)
+      },
       failure: failure)
   }
   
@@ -256,7 +260,9 @@ open class CZHTTPManager: NSObject {
       urlStr: urlStr,
       headers: headers,
       params: params,
-      success: success,
+      success: { (task, model, data) in
+        success?(task, data)
+      },
       failure: failure,
       progress: progress)
   }
@@ -297,9 +303,9 @@ private extension CZHTTPManager {
                       shouldSerializeJson: Bool = true,
                       queuePriority: Operation.QueuePriority = .normal,
                       decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
-                      success: HTTPRequestWorker.Success? = nil,
+                      success: HTTPRequestWorker.InternalSuccess? = nil,
                       failure: HTTPRequestWorker.Failure? = nil,
-                      cached: HTTPRequestWorker.Cached? = nil,
+                      cached: HTTPRequestWorker.InternalSuccess? = nil,
                       progress: HTTPRequestWorker.Progress? = nil) {
     guard let url = URL(string: urlStr).assertIfNil else {
       return
