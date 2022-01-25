@@ -28,8 +28,13 @@ final class CZHTTPManagerTests: XCTestCase {
   private var executionSuccessCount = 0
   
   override func setUp() {
-    executionSuccessCount = 0
+    // Clear disk cache.
+    CZHTTPManager.shared.httpCache.clearCache()
+    
+    executionSuccessCount = 0    
   }
+  
+  // MARK: - GETCodable
   
   /**
    Test GET() method.
@@ -105,8 +110,8 @@ final class CZHTTPManagerTests: XCTestCase {
   func testGETWithoutCache() {
     let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
     
-    // Clear disk cache.
-    CZHTTPManager.shared.httpCache.clearCache()
+//    // Clear disk cache.
+//    CZHTTPManager.shared.httpCache.clearCache()
     
     // Create mockDataMap.
     let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
@@ -196,6 +201,8 @@ final class CZHTTPManagerTests: XCTestCase {
     // 4. Wait for expectatation.
     waitForExpectatation()
   }
+  
+  // MARK: - GETCodable
   
   /**
    Test GETCodable() method.
