@@ -31,7 +31,7 @@ class DataDecodeHelper {
     return decodeClosure
   }
   
-  /// Returns  decodeClosure for CZDictionaryable Model.
+  /// Returns  decodeClosure for one CZDictionaryable Model.
   ///
   /// - Parameters:
   ///   - dataKey: The dataKey to retrive value from dictionary. If nil, parse the complete dictionary.
@@ -49,6 +49,43 @@ class DataDecodeHelper {
         return nil
       }
       return model
+    }
+    
+    return decodeClosure
+  }
+  
+  /// Returns  decodeClosure for many CZDictionaryable Models.
+  ///
+  /// - Parameters:
+  ///   - dataKey: The dataKey to retrive value from dictionary. If nil, parse the complete dictionary.
+  ///   - inferringModel: A workaround to pass in `Model` type to method signature.
+  static func manyDictionaryablesDecodeClosure<Model: CZDictionaryable>(dataKey: String?,
+                                                   inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
+
+//    typealias Completion = ([Model]) -> Void
+//    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Any?) in
+//      guard let data = data as? Data,
+//        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+//          assertionFailure("Failed to deserialize data to object.")
+//          return
+//      }
+//      guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
+//        failure?(nil, CZNetError.returnType)
+//        return
+//      }
+//      completion?(models)
+//    }
+//
+    let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
+      guard let data = data,
+        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+          assertionFailure("Failed to deserialize data to object.")
+          return nil
+      }
+      guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
+        return nil
+      }
+      return models
     }
     
     return decodeClosure

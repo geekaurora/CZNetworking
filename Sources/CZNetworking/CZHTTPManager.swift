@@ -193,33 +193,6 @@ open class CZHTTPManager: NSObject {
                                                    failure: HTTPRequestWorker.Failure? = nil,
                                                    cached: ((Model) -> Void)? = nil,
                                                    progress: HTTPRequestWorker.Progress? = nil) {
-    
-//    typealias Completion = (Model) -> Void
-//    let modelingHandler = { (completion: (Completion)?, task: URLSessionDataTask?, data: Any?) in
-//      guard let data = data as? Data,
-//        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
-//          assertionFailure("Failed to deserialize data to object.")
-//          return
-//      }
-//      guard let model: Model = self.model(with: receivedObject, dataKey: dataKey).assertIfNil else {
-//        failure?(nil, CZNetError.returnType)
-//        return
-//      }
-//      completion?(model)
-//    }
-//
-//    GET(urlStr,
-//        headers: headers,
-//        params: params,
-//        success: { (task, data) in
-//          modelingHandler(success, task, data)
-//    },
-//        failure: failure,
-//        cached: { (task, data) in
-//          modelingHandler(cached, task, data)
-//    },
-//        progress: progress)
-        
     _GET(urlStr,
         headers: headers,
         params: params,
@@ -243,30 +216,43 @@ open class CZHTTPManager: NSObject {
                                                      cached: (([Model]) -> Void)? = nil,
                                                      progress: HTTPRequestWorker.Progress? = nil) {
     
-    typealias Completion = ([Model]) -> Void
-    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Any?) in
-      guard let data = data as? Data,
-        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
-          assertionFailure("Failed to deserialize data to object.")
-          return
-      }
-      guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
-        failure?(nil, CZNetError.returnType)
-        return
-      }
-      completion?(models)
-    }
+//    typealias Completion = ([Model]) -> Void
+//    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Any?) in
+//      guard let data = data as? Data,
+//        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+//          assertionFailure("Failed to deserialize data to object.")
+//          return
+//      }
+//      guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
+//        failure?(nil, CZNetError.returnType)
+//        return
+//      }
+//      completion?(models)
+//    }
     
-    GET(urlStr,
+//    GET(urlStr,
+//        headers: headers,
+//        params: params,
+//        success: { (task, data) in
+//          modelingHandler(success, task, data)
+//    },
+//        failure: failure,
+//        cached: { (task, data) in
+//          modelingHandler(cached, task, data)
+//    },
+//        progress: progress)
+    
+    _GET(urlStr,
         headers: headers,
         params: params,
-        success: { (task, data) in
-          modelingHandler(success, task, data)
-    },
+        decodeClosure: DataDecodeHelper.manyDictionaryablesDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
+        success: { (task, models, data) in
+          success(models)
+        },
         failure: failure,
-        cached: { (task, data) in
-          modelingHandler(cached, task, data)
-    },
+        cached: cached == nil ? nil : { (task, models, data) in
+          cached?(models)
+        },
         progress: progress)
   }
   
