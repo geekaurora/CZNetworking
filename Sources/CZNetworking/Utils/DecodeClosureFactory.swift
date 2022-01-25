@@ -1,15 +1,15 @@
 import Foundation
 import CZUtils
 
-class DataDecodeHelper {
+class DecodeClosureFactory {
   
   /// Returns  decodeClosure for Codable Model.
   ///
   /// - Parameters:
   ///   - dataKey: The dataKey to retrive value from dictionary. If nil, parse the complete dictionary.
   ///   - inferringModel: A workaround to pass in `Model` type to method signature.
-  static func codableDecodeClosure<Model: Codable>(dataKey: String?,
-                                                   inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
+  static func forCodable<Model: Codable>(dataKey: String?,
+                                         inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
     let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
       let retrievedData: Data? = {
         // With given dataKey, retrieve corresponding field from dictionary
@@ -36,14 +36,14 @@ class DataDecodeHelper {
   /// - Parameters:
   ///   - dataKey: The dataKey to retrive value from dictionary. If nil, parse the complete dictionary.
   ///   - inferringModel: A workaround to pass in `Model` type to method signature.
-  static func oneDictionaryableDecodeClosure<Model: CZDictionaryable>(dataKey: String?,
-                                                   inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
-
+  static func forOneDictionaryable<Model: CZDictionaryable>(dataKey: String?,
+                                                            inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
+    
     let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
       guard let data = data,
-        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
-          assertionFailure("Failed to deserialize data to object.")
-          return nil
+            let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+        assertionFailure("Failed to deserialize data to object.")
+        return nil
       }
       guard let model: Model = self.model(with: receivedObject, dataKey: dataKey).assertIfNil else {
         return nil
@@ -59,14 +59,14 @@ class DataDecodeHelper {
   /// - Parameters:
   ///   - dataKey: The dataKey to retrive value from dictionary. If nil, parse the complete dictionary.
   ///   - inferringModel: A workaround to pass in `Model` type to method signature.
-  static func manyDictionaryableDecodeClosure<Model: CZDictionaryable>(dataKey: String?,
-                                                   inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
+  static func forManyDictionaryable<Model: CZDictionaryable>(dataKey: String?,
+                                                             inferringModel: Model? = nil) -> HTTPRequestWorker.DecodeClosure {
     
     let decodeClosure: HTTPRequestWorker.DecodeClosure = { (data) in
       guard let data = data,
-        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
-          assertionFailure("Failed to deserialize data to object.")
-          return nil
+            let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+        assertionFailure("Failed to deserialize data to object.")
+        return nil
       }
       guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
         return nil
@@ -82,7 +82,7 @@ class DataDecodeHelper {
 
 // MARK: - Private methods
 
-private extension DataDecodeHelper {
+private extension DecodeClosureFactory {
   
   static func model<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> Model? {
     guard let dict: CZDictionary = {
@@ -91,8 +91,8 @@ private extension DataDecodeHelper {
       } else {
         return object as? CZDictionary
       }
-      }() else {
-        return nil
+    }() else {
+      return nil
     }
     return Model(dictionary: dict)
   }

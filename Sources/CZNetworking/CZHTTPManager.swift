@@ -94,7 +94,7 @@ open class CZHTTPManager: NSObject {
     _GET(urlStr,
         headers: headers,
         params: params,
-        decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
+        decodeClosure: DecodeClosureFactory.forCodable(dataKey: dataKey, inferringModel: urlStr as? Model),
         success: success,
         failure: failure,
         cached: cached == nil ? nil : { (model, data) in
@@ -169,7 +169,7 @@ open class CZHTTPManager: NSObject {
     _GET(urlStr,
         headers: headers,
         params: params,
-        decodeClosure: DataDecodeHelper.oneDictionaryableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
+        decodeClosure: DecodeClosureFactory.forOneDictionaryable(dataKey: dataKey, inferringModel: urlStr as? Model),
         success: { (model, data) in
           success(model)
         },
@@ -191,7 +191,7 @@ open class CZHTTPManager: NSObject {
     _GET(urlStr,
         headers: headers,
         params: params,
-        decodeClosure: DataDecodeHelper.manyDictionaryableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
+        decodeClosure: DecodeClosureFactory.forManyDictionaryable(dataKey: dataKey, inferringModel: urlStr as? Model),
         success: { (models, data) in
           success(models)
         },
