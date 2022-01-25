@@ -12,14 +12,12 @@ open class CZHTTPManager: NSObject {
   public enum Config {
     public static var maxConcurrencies = 5
     public static var downloadQueueName = "CZHTTPManager.downloadQueue"
-    public static var decodeQueueName = "CZHTTPManager.decodeQueue"
   }
   /// URL session configuration, that can be repaced with test stubing.
   public static var urlSessionConfiguration = URLSessionConfiguration.default
   public static var isUnderUnitTest = false
   
   let downloadQueue: OperationQueue
-  let decodeQueue: OperationQueue
   let httpCache: CZHTTPCache
 
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
@@ -29,18 +27,12 @@ open class CZHTTPManager: NSObject {
     // *Updated.
     downloadQueue.qualityOfService = .userInitiated
 
-    decodeQueue = OperationQueue()
-    decodeQueue.name = Config.decodeQueueName
-    decodeQueue.maxConcurrentOperationCount = maxConcurrencies
-    decodeQueue.qualityOfService = .userInitiated
-    
     httpCache = CZHTTPCache()
     super.init()
   }
   
   public func maxConcurrencies(_ maxConcurrencies: Int) -> Self {
     downloadQueue.maxConcurrentOperationCount = maxConcurrencies
-    decodeQueue.maxConcurrentOperationCount = maxConcurrencies
     return self
   }
   
@@ -408,7 +400,7 @@ private extension CZHTTPManager {
         return
       }
       completion?(task, model, data)
-    }    
+    }
 
     startOperation(
       requestType,
