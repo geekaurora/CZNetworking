@@ -128,16 +128,11 @@ open class CZHTTPManager: NSObject {
                                               success: @escaping (Model, Data?) -> Void,
                                               failure: HTTPRequestWorker.Failure? = nil,
                                               cached: ((Model, Data?) -> Void)? = nil,
-                                              progress: HTTPRequestWorker.Progress? = nil) {
-    typealias Completion = (Model, Data?) -> Void
-    let completionHandler = { (completion: Completion?, task: URLSessionDataTask?, model: Model, data: Data?) in
-      completion?(model, data)
-    }
-    
+                                              progress: HTTPRequestWorker.Progress? = nil) {    
     let cachedClosure: ((URLSessionDataTask?, Model, Data?) -> Void)? = {
       guard let cached = cached else { return nil }
       return { (task, model, data) in
-        completionHandler(cached, task, model, data)
+        cached(model, data)
       }
     }()
         
@@ -145,9 +140,9 @@ open class CZHTTPManager: NSObject {
         headers: headers,
         params: params,
         decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
-        success: { (task, model, data) in
-          completionHandler(success, task, model, data)
-    },
+        success: { (_, model, data) in
+          success(model, data)
+        },
         failure: failure,
         cached: cachedClosure,
         progress: progress)
