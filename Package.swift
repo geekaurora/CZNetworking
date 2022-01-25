@@ -15,7 +15,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/geekaurora/CZUtils.git", from: "4.0.8"),
+        .package(url: "https://github.com/geekaurora/CZUtils.git", from: "4.2.6"),
         .package(url: "https://github.com/geekaurora/CZTestUtils.git", from: "1.0.0")
     ],
     targets: [

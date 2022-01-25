@@ -194,30 +194,43 @@ open class CZHTTPManager: NSObject {
                                                    cached: ((Model) -> Void)? = nil,
                                                    progress: HTTPRequestWorker.Progress? = nil) {
     
-    typealias Completion = (Model) -> Void
-    let modelingHandler = { (completion: (Completion)?, task: URLSessionDataTask?, data: Any?) in
-      guard let data = data as? Data,
-        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
-          assertionFailure("Failed to deserialize data to object.")
-          return
-      }
-      guard let model: Model = self.model(with: receivedObject, dataKey: dataKey).assertIfNil else {
-        failure?(nil, CZNetError.returnType)
-        return
-      }
-      completion?(model)
-    }
-    
-    GET(urlStr,
+//    typealias Completion = (Model) -> Void
+//    let modelingHandler = { (completion: (Completion)?, task: URLSessionDataTask?, data: Any?) in
+//      guard let data = data as? Data,
+//        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
+//          assertionFailure("Failed to deserialize data to object.")
+//          return
+//      }
+//      guard let model: Model = self.model(with: receivedObject, dataKey: dataKey).assertIfNil else {
+//        failure?(nil, CZNetError.returnType)
+//        return
+//      }
+//      completion?(model)
+//    }
+//
+//    GET(urlStr,
+//        headers: headers,
+//        params: params,
+//        success: { (task, data) in
+//          modelingHandler(success, task, data)
+//    },
+//        failure: failure,
+//        cached: { (task, data) in
+//          modelingHandler(cached, task, data)
+//    },
+//        progress: progress)
+        
+    _GET(urlStr,
         headers: headers,
         params: params,
-        success: { (task, data) in
-          modelingHandler(success, task, data)
-    },
+        decodeClosure: DataDecodeHelper.oneDictionaryableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
+        success: { (task, model, data) in
+          success(model)
+        },
         failure: failure,
-        cached: { (task, data) in
-          modelingHandler(cached, task, data)
-    },
+        cached: cached == nil ? nil : { (task, model, data) in
+          cached?(model)
+        },
         progress: progress)
   }
   
