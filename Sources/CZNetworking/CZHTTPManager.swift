@@ -214,34 +214,7 @@ open class CZHTTPManager: NSObject {
                                                      success: @escaping ([Model]) -> Void,
                                                      failure: HTTPRequestWorker.Failure? = nil,
                                                      cached: (([Model]) -> Void)? = nil,
-                                                     progress: HTTPRequestWorker.Progress? = nil) {
-    
-//    typealias Completion = ([Model]) -> Void
-//    let modelingHandler = { (completion: Completion?, task: URLSessionDataTask?, data: Any?) in
-//      guard let data = data as? Data,
-//        let receivedObject: Any = CZHTTPJsonSerializer.deserializedObject(with: data) else {
-//          assertionFailure("Failed to deserialize data to object.")
-//          return
-//      }
-//      guard let models: [Model] = self.models(with: receivedObject, dataKey: dataKey).assertIfNil else {
-//        failure?(nil, CZNetError.returnType)
-//        return
-//      }
-//      completion?(models)
-//    }
-    
-//    GET(urlStr,
-//        headers: headers,
-//        params: params,
-//        success: { (task, data) in
-//          modelingHandler(success, task, data)
-//    },
-//        failure: failure,
-//        cached: { (task, data) in
-//          modelingHandler(cached, task, data)
-//    },
-//        progress: progress)
-    
+                                                     progress: HTTPRequestWorker.Progress? = nil) {    
     _GET(urlStr,
         headers: headers,
         params: params,
