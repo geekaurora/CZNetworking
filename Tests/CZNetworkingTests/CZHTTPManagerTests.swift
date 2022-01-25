@@ -109,41 +109,56 @@ final class CZHTTPManagerTests: XCTestCase {
     // Wait for expectatation.
     waitForExpectatation()
   }
-    
-  
+      
   /// Test read from cache after relaunching App / ColdStart (written by the precious test).
   /// It verifies both DiskCache and MemCache.
   ///
-  /// - Note: Should run `testGETWithCache1` first!
+  /// - Note: MUST run `testGETWithCache1` first!
   ///
   /// As Swift doesn't support `testInvocations` override, so can only order tests by alphabet names
   /// to simulate relaunching App.
-//  func testGETWithCache2AfterRelaunchingApp() {
-//    // 1. Intialize the async expectation.
-//    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
-//    
-//    let data = CZHTTPJsonSerializer.jsonData(with: MockData.dict)!
-//    //httpFileCache.setCacheFile(withUrl: MockData.testUrl, data: data)
-//    let (_, cacheKey) = self.httpFileCache.getCacheFileInfo(forURL: MockData.testUrl)
-//    
-//    Thread.sleep(forTimeInterval: 0.1)
-//        
-//    // 2-1. Verify DiskCache - file exists in with `cachedFileURL(:)`.
-//    httpFileCache.getCachedFile(withUrl: MockData.testUrl) { (readData: NSData?) in
-//      let readData = readData as Data?
-//      XCTAssert(data == readData, "Actual result = \(readData), Expected result = \(data)")
-//
-//      // 2-2. Verify MemCache.
-//      let dataFromMemCache = self.httpFileCache.getMemCache(forKey: cacheKey) as Data?
-//      XCTAssert(dataFromMemCache == readData, "MemCache failed! Actual result = \(readData), Expected result = \(data)")
-//
-//      // 3. Fulfill the expectatation.
-//      expectation.fulfill()
+  func testGETWithCache2AfterRelaunchingApp() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
+        
+    // Create mockDataMap.
+    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+    let mockDataMap = [MockData.urlForGet: mockData]
+    
+    let success: GetRequestSuccess = { (data) in
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+    }
+    let cached = success
+    
+    // 0. Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
+    // 1. Fetch with stub URLSession.
+    CZHTTPManager.shared.GET(
+      MockData.urlForGet.absoluteString,
+      success: success,
+      cached: { (data) in
+        // 2. Verify cache: read from disk after ColdLaunch.
+        cached(data)
+        expectation.fulfill()
+      })
+    
+//    // 2. Verify cache: fetch again.
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//      CZHTTPManager.shared.GET(
+//        MockData.urlForGet.absoluteString,
+//        success: success,
+//        cached: { (data) in
+//          cached(data)
+//          // Fullfill the expectatation.
+//          expectation.fulfill()
+//      })
 //    }
-//
-//    waitForExpectatation()
-//  }
-//  
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
+
   /**
    Verify GET() method: without `cached` handler, it shouldn't cache data to disk.
    */
