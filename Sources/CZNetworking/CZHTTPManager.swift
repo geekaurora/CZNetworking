@@ -128,23 +128,18 @@ open class CZHTTPManager: NSObject {
                                               success: @escaping (Model, Data?) -> Void,
                                               failure: HTTPRequestWorker.Failure? = nil,
                                               cached: ((Model, Data?) -> Void)? = nil,
-                                              progress: HTTPRequestWorker.Progress? = nil) {    
-    let cachedClosure: ((URLSessionDataTask?, Model, Data?) -> Void)? = {
-      guard let cached = cached else { return nil }
-      return { (task, model, data) in
-        cached(model, data)
-      }
-    }()
-        
+                                              progress: HTTPRequestWorker.Progress? = nil) {
     _GET(urlStr,
         headers: headers,
         params: params,
         decodeClosure: DataDecodeHelper.codableDecodeClosure(dataKey: dataKey, inferringModel: urlStr as? Model),
-        success: { (_, model, data) in
+        success: { (task, model, data) in
           success(model, data)
         },
         failure: failure,
-        cached: cachedClosure,
+        cached: cached == nil ? nil : { (task, model, data) in
+          cached?(model, data)
+        },
         progress: progress)
   }
   
