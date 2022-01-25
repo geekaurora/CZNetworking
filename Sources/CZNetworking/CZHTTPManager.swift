@@ -74,31 +74,6 @@ open class CZHTTPManager: NSObject {
          progress: progress)
   }
   
-  private func _GET<Model>(_ urlStr: String,
-                           headers: HTTPRequestWorker.Headers? = nil,
-                           params: HTTPRequestWorker.Params? = nil,
-                           shouldSerializeJson: Bool = true,
-                           queuePriority: Operation.QueuePriority = .normal,
-                           decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
-                           success: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
-                           failure: HTTPRequestWorker.Failure? = nil,
-                           cached: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
-                           progress: HTTPRequestWorker.Progress? = nil) {
-    startOperationGeneric(
-      .GET,
-      urlStr: urlStr,
-      headers: headers,
-      params: params,
-      shouldSerializeJson: shouldSerializeJson,
-      queuePriority: queuePriority,
-      decodeClosure:decodeClosure,
-      success: success,
-      failure: failure,
-      cached: cached,
-      progress: progress)
-  }
-  
-  
   // MARK: Codable
   
   /// Retrieves Codable model with specified paremeters `urlStr`/`params` etc.
@@ -192,7 +167,7 @@ open class CZHTTPManager: NSObject {
                                                    success: @escaping (Model) -> Void,
                                                    failure: HTTPRequestWorker.Failure? = nil,
                                                    cached: ((Model) -> Void)? = nil,
-                                                   progress: HTTPRequestWorker.Progress? = nil) {    
+                                                   progress: HTTPRequestWorker.Progress? = nil) {
     _GET(urlStr,
         headers: headers,
         params: params,
@@ -287,37 +262,33 @@ open class CZHTTPManager: NSObject {
   }
 }
 
-// MARK: - Utils
-
-public extension CZHTTPManager {
-  
-  func model<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> Model? {
-    guard let dict: CZDictionary = {
-      if let dataKey = dataKey {
-        return (object as? CZDictionary)?[dataKey] as? CZDictionary
-      } else {
-        return object as? CZDictionary
-      }
-      }() else {
-        return nil
-    }
-    return Model(dictionary: dict)
-  }
-  
-  func models<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> [Model]? {
-    let dicts: [CZDictionary]? = {
-      if let dataKey = dataKey {
-        return (object as? CZDictionary)?[dataKey] as? [CZDictionary]
-      } else {
-        return object as? [CZDictionary]
-      }
-    }()
-    return dicts?.compactMap { Model(dictionary: $0) }
-  }
-  
-}
+// MARK: - Private methods
 
 private extension CZHTTPManager {
+  
+  func _GET<Model>(_ urlStr: String,
+                           headers: HTTPRequestWorker.Headers? = nil,
+                           params: HTTPRequestWorker.Params? = nil,
+                           shouldSerializeJson: Bool = true,
+                           queuePriority: Operation.QueuePriority = .normal,
+                           decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
+                           success: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                           failure: HTTPRequestWorker.Failure? = nil,
+                           cached: ((URLSessionDataTask?, Model, Data?) -> Void)? = nil,
+                           progress: HTTPRequestWorker.Progress? = nil) {
+    startOperationGeneric(
+      .GET,
+      urlStr: urlStr,
+      headers: headers,
+      params: params,
+      shouldSerializeJson: shouldSerializeJson,
+      queuePriority: queuePriority,
+      decodeClosure:decodeClosure,
+      success: success,
+      failure: failure,
+      cached: cached,
+      progress: progress)
+  }
   
   func startOperation(_ requestType: HTTPRequestWorker.RequestType,
                       urlStr: String,
