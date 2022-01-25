@@ -67,23 +67,18 @@ open class CZHTTPManager: NSObject {
                   failure: HTTPRequestWorker.Failure? = nil,
                   cached: ((URLSessionDataTask?, Data?) -> Void)? = nil,
                   progress: HTTPRequestWorker.Progress? = nil) {
-    let cachedClosure: HTTPRequestWorker.Cached? = {
-      guard let cached = cached else { return nil }
-      return { (task, _, metaData) in
-        cached(task, metaData)
-      }
-    }()
-    
     _GET(urlStr,
          headers: headers,
          params: params,
          shouldSerializeJson: shouldSerializeJson,
          queuePriority: queuePriority,
-         success: { (task, _, metaData) in
+         success: { (task, _: Data?, metaData) in
           success?(task, metaData)
          },
          failure: failure,
-         cached: cachedClosure,
+         cached: cached == nil ? nil : { (task, _, metaData) in
+          cached?(task, metaData)
+         },
          progress: progress)
   }
   
