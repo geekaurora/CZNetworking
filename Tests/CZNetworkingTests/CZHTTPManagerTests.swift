@@ -100,6 +100,50 @@ final class CZHTTPManagerTests: XCTestCase {
   }
     
   /**
+   Verify GET() method: without `cached` handler, it shouldn't cache data to disk.
+   */
+  func testGETWithoutCache() {
+    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(30, testCase: self)
+    
+    // Clear disk cache.
+    CZHTTPManager.shared.httpCache.clearCache()
+    
+    // Create mockDataMap.
+    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+    let mockDataMap = [MockData.urlForGet: mockData]
+    
+    let success: GetRequestSuccess = { (_, data) in
+      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+    }
+    
+    // 0. Stub MockData.
+    CZHTTPManager.stubMockData(dict: mockDataMap)
+    
+    // 1. Fetch with stub URLSession: `cached` handler is nil.
+    CZHTTPManager.shared.GET(
+      MockData.urlForGet.absoluteString,
+      success: success,
+      cached: nil)
+    
+    // 2. Verify cache(shouldn't cache): fetch again.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      CZHTTPManager.shared.GET(
+        MockData.urlForGet.absoluteString,
+        success: { (task, data) in
+          // Fullfill the expectatation.
+          expectation.fulfill()
+        },
+        cached: { (task, data) in
+          XCTFail("Second time `cached` shouldn't be called - because the first time `cached` wasn't set.")
+      })
+    }
+    
+    // Wait for expectatation.
+    waitForExpectatation()
+  }
+    
+  /**
    Test GET() method with `cached` handler on multi threads.
    */
   func testGETWithCacheMultiThreads() {
@@ -131,7 +175,8 @@ final class CZHTTPManagerTests: XCTestCase {
         MockData.urlForGet.absoluteString,
         success: { (task, data) in
           success(task, data)
-          self._executionSuccessCount.threadLock { $0 = $0 + 1
+          self._executionSuccessCount.threadLock {
+            $0 = $0 + 1
             print("Success count = \($0)")
           }
           dispatchGroup.leave()

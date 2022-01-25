@@ -4,8 +4,11 @@ import CZUtils
 /// Thread safe local cache for HTTP response.
 open class CZHTTPCache: NSObject {
   public static let shared = CZHTTPCache()
-  private let ioQueue: DispatchQueue
   
+  typealias CleanCacheCompletion = (Bool, Error?) -> Void
+  
+  private let ioQueue: DispatchQueue
+    
   override init() {
     ioQueue = DispatchQueue(
       label: "com.czhttpCache.ioQueue",
@@ -90,6 +93,21 @@ open class CZHTTPCache: NSObject {
       guard let `self` = self else { return }
       let path = self.fileURL(forKey: key)
       CZFileHelper.removeFile(path)
+    }
+  }
+  
+  /// Force to clear all disk cache.
+  func clearCache(shouldAsync: Bool = false,
+                  completion: CleanCacheCompletion? = nil) {
+    let execute = {
+      // Delete the cache directory.
+      CZFileHelper.removeDirectory(path: self.folder.absoluteString, createDirectoryAfterDeletion: true)
+      completion?(true, nil)
+    }
+    if (shouldAsync) {
+      ioQueue.async(execute: execute)
+    } else {
+      ioQueue.sync(execute: execute)
     }
   }
 }
