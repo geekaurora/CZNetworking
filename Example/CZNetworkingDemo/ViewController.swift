@@ -22,7 +22,7 @@ class ViewController: UIViewController {
   func fetchFeeds() {
     httManager.GETCodableModel(
       Self.endpoint,
-      success: { (feeds: [Feed]) in
+      success: { (feeds: [Feed], data) in
         dbgPrint("Succeed to fetch feeds: \n\(feeds.map { $0.id })")
     }, failure: { (error) in
       assertionFailure("Failed to fetch feeds. Error - \(error)")
