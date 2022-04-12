@@ -313,7 +313,8 @@ private extension CZHTTPManager {
     // Check the cached HTTPRequestWorker in memory and reuse it if exists.
     if CZNetworkingConstants.shouldReuseOperation,
        requestType == .GET,
-       let httpRequestWorker = operationsMap.object(forKey: urlStr as NSString) {
+       let httpRequestWorker = operationsMap.object(forKey: urlStr as NSString),
+       httpRequestWorker.isExecuting {
       assert(Thread.isMainThread, "Should call the method on the main thread to ensure thread safety.")
       httpRequestWorker.success = success
       httpRequestWorker.failure = failure
