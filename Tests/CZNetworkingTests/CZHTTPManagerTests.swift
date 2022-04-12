@@ -37,6 +37,8 @@ final class CZHTTPManagerTests: XCTestCase {
   private var czHTTPManager: CZHTTPManager!
   
   override func setUp() {
+    CZNetworkingConstants.shouldReuseOperation = false
+    
     czHTTPManager = CZHTTPManager()
     executionSuccessCount = 0
   }
