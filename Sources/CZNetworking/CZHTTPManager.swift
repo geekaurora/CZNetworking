@@ -19,7 +19,9 @@ open class CZHTTPManager: NSObject {
   
   let downloadQueue: OperationQueue
   let httpCache: CZHTTPCache
-
+  /// Dictionary that maps requestUrl with HTTPRequestWorker - currently only supports .GET request. HTTPRequestWorker is only held weak reference.
+  let operationsMap = NSMapTable<NSString, HTTPRequestWorker>(keyOptions: .strongMemory, valueOptions: .weakMemory)
+  
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
     downloadQueue = OperationQueue()
     downloadQueue.name = Config.downloadQueueName
@@ -308,6 +310,19 @@ private extension CZHTTPManager {
     guard let url = URL(string: urlStr).assertIfNil else {
       return
     }
+    // Check the cached HTTPRequestWorker in memory and reuse it if exists.
+    if CZNetworkingConstants.shouldReuseOperation,
+       requestType == .GET,
+       let httpRequestWorker = operationsMap.object(forKey: urlStr as NSString) {
+      httpRequestWorker.success = success
+      httpRequestWorker.failure = failure
+      httpRequestWorker.progress = progress
+      httpRequestWorker.cached = cached
+      httpRequestWorker.success = success
+      httpRequestWorker.decodeClosure = decodeClosure
+      return
+    }
+    
     let reqestWorkerOperation = HTTPRequestWorker(
       requestType,
       url: url,
@@ -322,6 +337,12 @@ private extension CZHTTPManager {
       progress: progress)
     reqestWorkerOperation.queuePriority = queuePriority
     downloadQueue.addOperation(reqestWorkerOperation)
+    
+    // Cache the HTTPRequestWorker in memory - it's only held weak reference.
+    if CZNetworkingConstants.shouldReuseOperation,
+       requestType == .GET {
+      operationsMap.setObject(reqestWorkerOperation, forKey: urlStr as NSString)
+    }
   }
   
   func startOperationGeneric<Model>(_ requestType: HTTPRequestWorker.RequestType,

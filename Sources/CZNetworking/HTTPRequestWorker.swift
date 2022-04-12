@@ -29,11 +29,11 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   public typealias InternalSuccess = (Any?, Data?) -> Void
   public typealias InternalCached = InternalSuccess
   
-  private var success: InternalSuccess?
-  private var failure: Failure?
-  private var progress: Progress?
-  private var cached: InternalCached?
-  private var decodeClosure: DecodeClosure?
+  internal var success: InternalSuccess?
+  internal var failure: Failure?
+  internal var progress: Progress?
+  internal var cached: InternalCached?
+  internal var decodeClosure: DecodeClosure?
   
   let url: URL
   private let shouldSerializeJson: Bool
@@ -269,6 +269,7 @@ extension HTTPRequestWorker: URLSessionDelegate {}
 private extension HTTPRequestWorker {
   func decodeDataAndCallCompletion(data metaData: Data, completion: InternalSuccess?) {
     var dataOrModel: Any? = metaData
+    
     if self.decodeClosure != nil {
       // Decode data to model if decodeClosure isn't nil.
       dataOrModel = self.decodeClosure?(metaData)
