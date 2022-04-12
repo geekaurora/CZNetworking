@@ -314,6 +314,7 @@ private extension CZHTTPManager {
     if CZNetworkingConstants.shouldReuseOperation,
        requestType == .GET,
        let httpRequestWorker = operationsMap.object(forKey: urlStr as NSString) {
+      assert(Thread.isMainThread, "Should call the method on the main thread to ensure thread safety.")
       httpRequestWorker.success = success
       httpRequestWorker.failure = failure
       httpRequestWorker.progress = progress
@@ -341,6 +342,7 @@ private extension CZHTTPManager {
     // Cache the HTTPRequestWorker in memory - it's only held weak reference.
     if CZNetworkingConstants.shouldReuseOperation,
        requestType == .GET {
+      assert(Thread.isMainThread, "Should call the method on the main thread to ensure thread safety.")
       operationsMap.setObject(reqestWorkerOperation, forKey: urlStr as NSString)
     }
   }
