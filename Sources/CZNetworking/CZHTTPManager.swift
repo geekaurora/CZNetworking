@@ -386,7 +386,7 @@ private extension CZHTTPManager {
       progress: progress)
   }
   
-  // MARK: - Reuse HTTPRequestWorker
+  // MARK: - Join on-flight HTTPRequestWorker
     
   func joinHTTPRequestWorkerIfPossible(_ requestType: HTTPRequestWorker.RequestType,
                                        urlStr: String,
@@ -403,6 +403,7 @@ private extension CZHTTPManager {
        let httpRequestWorker = operationsMap.object(forKey: urlStr as NSString),
        !httpRequestWorker.isFinished && !httpRequestWorker.isCancelled {
       assert(Thread.isMainThread, "Should call the method on the main thread to ensure thread safety.")
+      
       httpRequestWorker.success = success
       httpRequestWorker.failure = failure
       httpRequestWorker.progress = progress
