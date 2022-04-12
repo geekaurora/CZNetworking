@@ -57,11 +57,13 @@ final class CZHTTPManagerTests: XCTestCase {
     CZHTTPManager.stubMockData(dict: mockDataMap)
     
     // Get the data with `MockData.urlForGet`.
-    CZHTTPManager.shared.GET(MockData.urlForGet.absoluteString, success: { (data) in
-      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
-      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
-      expectation.fulfill()
-    })
+    CZHTTPManager.shared.GET(
+      MockData.urlForGet.absoluteString,
+      success: { (data) in
+        let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+        XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+        expectation.fulfill()
+      })
     
     // Wait for expectatation.
     waitForExpectatation()
