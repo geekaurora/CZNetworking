@@ -37,6 +37,8 @@ final class CZHTTPManagerTests: XCTestCase {
   private var czHTTPManager: CZHTTPManager!
   
   override func setUp() {
+    CZNetworkingConstants.shouldJoinOnFlightOperation = false
+    
     czHTTPManager = CZHTTPManager()
     executionSuccessCount = 0
   }
@@ -56,15 +58,48 @@ final class CZHTTPManagerTests: XCTestCase {
     // Stub MockData.
     CZHTTPManager.stubMockData(dict: mockDataMap)
     
-    CZHTTPManager.shared.GET(MockData.urlForGet.absoluteString, success: { (data) in
-      let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
-      XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
-      expectation.fulfill()
-    })
+    // Get the data with `MockData.urlForGet`.
+    CZHTTPManager.shared.GET(
+      MockData.urlForGet.absoluteString,
+      success: { (data) in
+        let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+        XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+        expectation.fulfill()
+      })
     
     // Wait for expectatation.
     waitForExpectatation()
   }
+  
+//  func testGETByJoinOnFlightOperation() {
+//    let (waitForExpectatation, expectation) = CZTestUtils.waitWithInterval(Constant.timeOut, testCase: self)
+//    
+//    // Create mockDataMap.
+//    let mockData = CZHTTPJsonSerializer.jsonData(with: MockData.dictionary)!
+//    let mockDataMap = [MockData.urlForGet: mockData]
+//    
+//    // Stub MockData.
+//    CZHTTPManager.stubMockData(dict: mockDataMap)
+//    
+//    // 1-1. Get the data with `MockData.urlForGet`.
+//    CZHTTPManager.shared.GET(
+//      MockData.urlForGet.absoluteString,
+//      success: { (data) in
+//        // XCTFail()
+//      })
+//    
+//    // 1-2. Get the data with `MockData.urlForGet`.
+//    CZHTTPManager.shared.GET(
+//      MockData.urlForGet.absoluteString,
+//      success: { (data) in
+//        let res: [String: AnyHashable]? = CZHTTPJsonSerializer.deserializedObject(with: data)
+//        XCTAssert(res == MockData.dictionary, "Actual result = \(res), Expected result = \(MockData.dictionary)")
+//        expectation.fulfill()
+//      })
+//    
+//    // Wait for expectatation.
+//    waitForExpectatation()
+//  }
   
   /**
    Test GET() method with `cached` handler.

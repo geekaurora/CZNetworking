@@ -8,7 +8,9 @@ class ViewController: UIViewController {
   private let httManager: CZHTTPManager = CZHTTPManager.shared.maxConcurrencies(1)
   
   override func viewDidLoad() {
-    super.viewDidLoad()    
+    super.viewDidLoad()
+    
+    CZNetworkingConstants.shouldJoinOnFlightOperation = true
     testFetch()
   }
   
@@ -24,15 +26,8 @@ class ViewController: UIViewController {
       Self.endpoint,
       success: { (feeds: [Feed], data) in
         dbgPrint("Succeed to fetch feeds: \n\(feeds.map { $0.id })")
-    }, failure: { (error) in
-      assertionFailure("Failed to fetch feeds. Error - \(error)")
-    })
-  }  
-}
-
-struct Feed: Codable {
-  let userId: Int
-  let id: Int
-  let title: String
-  let body: String
+      }, failure: { (error) in
+        assertionFailure("Failed to fetch feeds. Error - \(error)")
+      })
+  }
 }

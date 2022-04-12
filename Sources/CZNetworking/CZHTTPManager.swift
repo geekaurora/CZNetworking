@@ -19,7 +19,9 @@ open class CZHTTPManager: NSObject {
   
   let downloadQueue: OperationQueue
   let httpCache: CZHTTPCache
-
+  /// Dictionary that maps requestUrl with HTTPRequestWorker - currently only supports .GET request. HTTPRequestWorker is only held weak reference.
+  let operationsMap = NSMapTable<NSString, HTTPRequestWorker>(keyOptions: .strongMemory, valueOptions: .weakMemory)
+  
   public init(maxConcurrencies: Int = Config.maxConcurrencies) {
     downloadQueue = OperationQueue()
     downloadQueue.name = Config.downloadQueueName
@@ -293,7 +295,7 @@ private extension CZHTTPManager {
       cached: cached,
       progress: progress)
   }
-  
+    
   func startOperation(_ requestType: HTTPRequestWorker.RequestType,
                       urlStr: String,
                       headers: HTTPRequestWorker.Headers? = nil,
@@ -308,6 +310,23 @@ private extension CZHTTPManager {
     guard let url = URL(string: urlStr).assertIfNil else {
       return
     }
+    // Join the on-flight GET operation if exists.
+    if CZNetworkingConstants.shouldJoinOnFlightOperation,
+       joinHTTPRequestWorkerIfPossible(
+        requestType,
+        urlStr: urlStr,
+        headers: headers,
+        params: params,
+        shouldSerializeJson: shouldSerializeJson,
+        queuePriority: queuePriority,
+        decodeClosure: decodeClosure,
+        success: success,
+        failure: failure,
+        cached: cached,
+        progress: progress) {
+      return
+    }
+    
     let reqestWorkerOperation = HTTPRequestWorker(
       requestType,
       url: url,
@@ -322,6 +341,11 @@ private extension CZHTTPManager {
       progress: progress)
     reqestWorkerOperation.queuePriority = queuePriority
     downloadQueue.addOperation(reqestWorkerOperation)
+    
+    // Cache the on-flight GET operation in memory - it's only held weak reference.
+    if CZNetworkingConstants.shouldJoinOnFlightOperation {
+      cacheHTTPRequestWorkerIfNeeded(requestType, urlStr: urlStr, reqestWorkerOperation: reqestWorkerOperation)
+    }
   }
   
   func startOperationGeneric<Model>(_ requestType: HTTPRequestWorker.RequestType,
@@ -360,6 +384,44 @@ private extension CZHTTPManager {
         completionHandler(cached, model, data)
       },
       progress: progress)
+  }
+  
+  // MARK: - Join on-flight HTTPRequestWorker
+    
+  func joinHTTPRequestWorkerIfPossible(_ requestType: HTTPRequestWorker.RequestType,
+                                       urlStr: String,
+                                       headers: HTTPRequestWorker.Headers? = nil,
+                                       params: HTTPRequestWorker.Params? = nil,
+                                       shouldSerializeJson: Bool = true,
+                                       queuePriority: Operation.QueuePriority = .normal,
+                                       decodeClosure: HTTPRequestWorker.DecodeClosure? = nil,
+                                       success: HTTPRequestWorker.InternalSuccess? = nil,
+                                       failure: HTTPRequestWorker.Failure? = nil,
+                                       cached: HTTPRequestWorker.InternalSuccess? = nil,
+                                       progress: HTTPRequestWorker.Progress? = nil) -> Bool {
+    if requestType == .GET,
+       let httpRequestWorker = operationsMap.object(forKey: urlStr as NSString),
+       !httpRequestWorker.isFinished && !httpRequestWorker.isCancelled {
+      assert(Thread.isMainThread, "Should call the method on the main thread to ensure thread safety.")
+      
+      httpRequestWorker.success = success
+      httpRequestWorker.failure = failure
+      httpRequestWorker.progress = progress
+      httpRequestWorker.cached = cached
+      httpRequestWorker.success = success
+      httpRequestWorker.decodeClosure = decodeClosure
+      return true
+    }
+    return false
+  }
+  
+  func cacheHTTPRequestWorkerIfNeeded(_ requestType: HTTPRequestWorker.RequestType,
+                                      urlStr: String,
+                                      reqestWorkerOperation: HTTPRequestWorker) {
+    if requestType == .GET {
+      assert(Thread.isMainThread, "Should call the method on the main thread to ensure thread safety.")
+      operationsMap.setObject(reqestWorkerOperation, forKey: urlStr as NSString)
+    }
   }
   
 }

@@ -16,6 +16,7 @@
 		C316481A27A643C00005B8BF /* CZNetworking in Embed Frameworks */ = {isa = PBXBuildFile; productRef = C316481827A643C00005B8BF /* CZNetworking */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		C3A0B4CE249DD6B7008A23D5 /* CZUtils in Frameworks */ = {isa = PBXBuildFile; productRef = C3A0B4CD249DD6B7008A23D5 /* CZUtils */; };
 		C3A0B4D0249DD6B7008A23D5 /* CZUtils in Embed Frameworks */ = {isa = PBXBuildFile; productRef = C3A0B4CD249DD6B7008A23D5 /* CZUtils */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		C3BADE7E2805C2AD007CC7F6 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BADE7D2805C2AD007CC7F6 /* Feed.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,7 @@
 		2AB659F01FF03F49001A8835 /* CZNetworkingDemo-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CZNetworkingDemo-bridging-header.h"; sourceTree = "<group>"; };
 		8254FC640A9956CA723CA547 /* Pods_CZNetworkingDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CZNetworkingDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C316481727A643BA0005B8BF /* CZNetworking */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CZNetworking; path = ..; sourceTree = "<group>"; };
+		C3BADE7D2805C2AD007CC7F6 /* Feed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 			children = (
 				2AB659D51FF02BA5001A8835 /* AppDelegate.swift */,
 				2AB659D71FF02BA5001A8835 /* ViewController.swift */,
+				C3BADE7D2805C2AD007CC7F6 /* Feed.swift */,
 				2AB659D91FF02BA5001A8835 /* Main.storyboard */,
 				2AB659DC1FF02BA5001A8835 /* Assets.xcassets */,
 				2AB659DE1FF02BA5001A8835 /* LaunchScreen.storyboard */,
@@ -179,6 +182,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2AB659D81FF02BA5001A8835 /* ViewController.swift in Sources */,
+				C3BADE7E2805C2AD007CC7F6 /* Feed.swift in Sources */,
 				2AB659D61FF02BA5001A8835 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -253,7 +257,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -304,7 +308,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -320,6 +324,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55RDUQ8X48;
 				INFOPLIST_FILE = CZNetworkingDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -339,6 +344,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55RDUQ8X48;
 				INFOPLIST_FILE = CZNetworkingDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
