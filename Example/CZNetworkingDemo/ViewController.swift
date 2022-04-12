@@ -10,7 +10,7 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    CZNetworkingConstants.shouldReuseOperation = false
+    CZNetworkingConstants.shouldJoinOnFlightOperation = true
     testFetch()
   }
   

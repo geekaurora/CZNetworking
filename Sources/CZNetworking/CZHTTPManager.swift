@@ -310,8 +310,8 @@ private extension CZHTTPManager {
     guard let url = URL(string: urlStr).assertIfNil else {
       return
     }
-    // Check the cached HTTPRequestWorker in memory and reuse it if exists.
-    if CZNetworkingConstants.shouldReuseOperation,
+    // Join the on-flight GET operation if exists.
+    if CZNetworkingConstants.shouldJoinOnFlightOperation,
        joinHTTPRequestWorkerIfPossible(
         requestType,
         urlStr: urlStr,
@@ -342,8 +342,8 @@ private extension CZHTTPManager {
     reqestWorkerOperation.queuePriority = queuePriority
     downloadQueue.addOperation(reqestWorkerOperation)
     
-    // Cache the HTTPRequestWorker in memory - it's only held weak reference.
-    if CZNetworkingConstants.shouldReuseOperation{
+    // Cache the on-flight GET operation in memory - it's only held weak reference.
+    if CZNetworkingConstants.shouldJoinOnFlightOperation {
       cacheHTTPRequestWorkerIfNeeded(requestType, urlStr: urlStr, reqestWorkerOperation: reqestWorkerOperation)
     }
   }
