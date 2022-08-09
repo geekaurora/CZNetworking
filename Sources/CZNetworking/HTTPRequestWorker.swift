@@ -97,7 +97,6 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       decodeDataAndCallCompletion(data: cachedData, completion: cached)
     }
     
-    dbgPrint("url = \(url)")
     // Fetch from network
     dataTask?.resume()
   }
