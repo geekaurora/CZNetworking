@@ -388,6 +388,9 @@ private extension CZHTTPManager {
   
   // MARK: - Join on-flight HTTPRequestWorker
     
+  /// Join the on-flight fetch operation with the same `urlStr`.
+  /// - Note: currently it replaces the callback targets with the new request.
+  /// - TODO: support an array of  callback targets, each one will get callback.
   func joinHTTPRequestWorkerIfPossible(_ requestType: HTTPRequestWorker.RequestType,
                                        urlStr: String,
                                        headers: HTTPRequestWorker.Headers? = nil,

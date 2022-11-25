@@ -37,7 +37,8 @@ open class CZHTTPCache: NSObject {
   /// - Parameters:
   ///   - data: NSData or JSONObject to be saved.
   ///   - key: the key for `data`.
-  public func saveData(_ input: Any, forKey key: String) {
+  public func saveData(_ input: Any,
+                       forKey key: String) {
     ioQueue.async(flags: .barrier) { [weak self] in
       guard let `self` = self else { return }
       

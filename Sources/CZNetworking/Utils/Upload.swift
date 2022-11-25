@@ -36,7 +36,8 @@ private extension Upload {
         let data: Data
     }
     
-    static func buildBaseRequest(_ url: URL, boundary: String) -> URLRequest {
+    static func buildBaseRequest(_ url: URL,
+                                 boundary: String) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")

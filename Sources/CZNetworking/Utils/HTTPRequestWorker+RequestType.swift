@@ -38,7 +38,8 @@ public extension HTTPRequestWorker {
       }
     }
     
-    public static func ==(lhs: RequestType, rhs: RequestType) -> Bool {
+    public static func ==(lhs: RequestType,
+                          rhs: RequestType) -> Bool {
       switch (lhs, rhs) {
       case (.GET, .GET):
         return true

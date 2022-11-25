@@ -84,7 +84,8 @@ class DecodeClosureFactory {
 
 private extension DecodeClosureFactory {
   
-  static func model<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> Model? {
+  static func model<Model: CZDictionaryable>(with object: Any,
+                                             dataKey: String? = nil) -> Model? {
     guard let dict: CZDictionary = {
       if let dataKey = dataKey {
         return (object as? CZDictionary)?[dataKey] as? CZDictionary
@@ -97,7 +98,8 @@ private extension DecodeClosureFactory {
     return Model(dictionary: dict)
   }
   
-  static func models<Model: CZDictionaryable>(with object: Any, dataKey: String? = nil) -> [Model]? {
+  static func models<Model: CZDictionaryable>(with object: Any,
+                                              dataKey: String? = nil) -> [Model]? {
     let dicts: [CZDictionary]? = {
       if let dataKey = dataKey {
         return (object as? CZDictionary)?[dataKey] as? [CZDictionary]

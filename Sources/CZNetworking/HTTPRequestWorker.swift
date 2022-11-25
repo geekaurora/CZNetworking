@@ -138,19 +138,6 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     switch requestType {
     case .GET, .PUT:
       dataTask = urlSession?.dataTask(with: request as URLRequest)
-          
-//      return URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
-//       defer {
-//          self.finish()
-//        }
-//        MainQueueScheduler.async {
-//          if let error = error {
-//            self.failure?(nil, error)
-//            return
-//          }
-//          self.success?(nil, data)
-//        }
-//      }
       
     case let .POST(contentType, data):
       // Set postData as input data if non nil.
@@ -224,7 +211,9 @@ extension HTTPRequestWorker: URLSessionDataDelegate {
     }
   }
   
-  public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+  public func urlSession(_ session: URLSession,
+                         task: URLSessionTask,
+                         didCompleteWithError error: Error?) {
     defer { finish() }
     
     if true || !CZTestHelper.isInUnitTest {
@@ -266,7 +255,8 @@ extension HTTPRequestWorker: URLSessionDelegate {}
 // MARK: - Private methods
 
 private extension HTTPRequestWorker {
-  func decodeDataAndCallCompletion(data metaData: Data, completion: InternalSuccess?) {
+  func decodeDataAndCallCompletion(data metaData: Data,
+                                   completion: InternalSuccess?) {
     var dataOrModel: Any? = metaData
     
     if self.decodeClosure != nil {
