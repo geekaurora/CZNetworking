@@ -17,6 +17,7 @@
 		C3A0B4CE249DD6B7008A23D5 /* CZUtils in Frameworks */ = {isa = PBXBuildFile; productRef = C3A0B4CD249DD6B7008A23D5 /* CZUtils */; };
 		C3A0B4D0249DD6B7008A23D5 /* CZUtils in Embed Frameworks */ = {isa = PBXBuildFile; productRef = C3A0B4CD249DD6B7008A23D5 /* CZUtils */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		C3BADE7E2805C2AD007CC7F6 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BADE7D2805C2AD007CC7F6 /* Feed.swift */; };
+		DF39AE0529DE573F0039EBE6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF39AE0429DE573F0039EBE6 /* NetworkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +47,7 @@
 		8254FC640A9956CA723CA547 /* Pods_CZNetworkingDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CZNetworkingDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C316481727A643BA0005B8BF /* CZNetworking */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CZNetworking; path = ..; sourceTree = "<group>"; };
 		C3BADE7D2805C2AD007CC7F6 /* Feed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
+		DF39AE0429DE573F0039EBE6 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 			children = (
 				2AB659D51FF02BA5001A8835 /* AppDelegate.swift */,
 				2AB659D71FF02BA5001A8835 /* ViewController.swift */,
+				DF39AE0429DE573F0039EBE6 /* NetworkManager.swift */,
 				C3BADE7D2805C2AD007CC7F6 /* Feed.swift */,
 				2AB659D91FF02BA5001A8835 /* Main.storyboard */,
 				2AB659DC1FF02BA5001A8835 /* Assets.xcassets */,
@@ -181,6 +184,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF39AE0529DE573F0039EBE6 /* NetworkManager.swift in Sources */,
 				2AB659D81FF02BA5001A8835 /* ViewController.swift in Sources */,
 				C3BADE7E2805C2AD007CC7F6 /* Feed.swift in Sources */,
 				2AB659D61FF02BA5001A8835 /* AppDelegate.swift in Sources */,

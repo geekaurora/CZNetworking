@@ -126,6 +126,11 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     let url = requestType.hasSerializableUrl ? CZHTTPJsonSerializer.url(baseURL: self.url, params: params) : self.url
     let request = NSMutableURLRequest(url: url)
     request.httpMethod = requestType.stringValue
+
+    // Enable HTTP3
+    if #available(iOS 15, *) {
+      request.assumesHTTP3Capable = true
+    }
     
     if let headers = headers {
       for (key, value) in headers {
