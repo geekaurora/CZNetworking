@@ -14,6 +14,7 @@ class NetworkManager: NSObject, URLSessionDataDelegate {
       self.session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
     }
 
+    // Device: H3
     let urlStr = "https://google.com"
     // Device: H3
     // let urlStr = "https://cloudflare-quic.com"
