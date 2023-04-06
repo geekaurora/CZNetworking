@@ -9,9 +9,11 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    NetworkManager().testHTTP3Request()
     
-    CZNetworkingConstants.shouldJoinOnFlightOperation = true
-    testFetch()
+//    CZNetworkingConstants.shouldJoinOnFlightOperation = true
+//    testFetch()
   }
   
   func testFetch() {
