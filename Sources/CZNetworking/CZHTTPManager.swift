@@ -14,7 +14,12 @@ open class CZHTTPManager: NSObject {
     public static var downloadQueueName = "CZHTTPManager.downloadQueue"
   }
   /// URL session configuration, that can be repaced with test stubing.
-  public static var urlSessionConfiguration = URLSessionConfiguration.default
+  public static var urlSessionConfiguration = {
+    let configuration = URLSessionConfiguration.default
+    // Setting .handover to `multipathServiceType` will preserve the connection when switching between Wi-Fi and cellular.
+    configuration.multipathServiceType = .handover
+    return configuration;
+  }()
   public static var isUnderUnitTest = false
   
   let downloadQueue: OperationQueue
