@@ -17,7 +17,8 @@ open class CZHTTPManager: NSObject {
   public static var urlSessionConfiguration = {
     let configuration = URLSessionConfiguration.default
     // Setting .handover to `multipathServiceType` will preserve the connection when switching between Wi-Fi and cellular.
-    configuration.multipathServiceType = .handover
+    // - Note: Shouldn't set `multipathServiceType` if the server doesn't support multipath TCP.
+    // configuration.multipathServiceType = .handover
     return configuration;
   }()
   public static var isUnderUnitTest = false
