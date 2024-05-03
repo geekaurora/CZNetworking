@@ -3,7 +3,7 @@ import CZUtils
 
 @objc
 open class HTTPRequestWorker: ConcurrentBlockOperation {
-  public typealias Params = [AnyHashable: AnyHashable]
+  public typealias Params = [AnyHashable: Any]
   public typealias ParamList = [AnyHashable]
   public typealias Headers = [String: String]
   private enum config {
