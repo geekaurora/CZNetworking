@@ -129,7 +129,7 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
     if let headers = headers {
       for (key, value) in headers {
-        request.addValue(value, forHTTPHeaderField: key)
+        request.setValue(value, forHTTPHeaderField: key)
       }
     }
     
@@ -141,7 +141,9 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       
     case let .POST(contentType, data):
       // Set postData as input data if non nil.
-      let postData = data ?? paramsString?.data(using: .utf8)
+      guard let postData = (data ?? paramsString?.data(using: .utf8)).assertIfNil else {
+        return nil
+      }
       let contentTypeValue: String = {
         switch contentType {
         case .formUrlencoded:
@@ -150,13 +152,20 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
           return "text/plain"
         }
       }()
-      request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
-      request.addValue("application/json", forHTTPHeaderField: "Accept")
-      let contentLength = postData?.count ?? 0
-      request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
-      request.httpBody = postData
-      dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
-      
+      request.httpMethod = "POST"
+
+      // request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
+      request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+      // request.addValue("application/json", forHTTPHeaderField: "Accept")
+      // request.addValue("*/*", forHTTPHeaderField: "Accept")
+//      let contentLength = postData.count
+//      request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
+      // request.httpBody = postData
+
+      //dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
+      // dataTask = urlSession?.uploadTask(with: request as URLRequest, from: postData)
+      dataTask = urlSession?.dataTask(with: request as URLRequest)
+
     case .DELETE:
       dataTask = urlSession?.dataTask(with: request as URLRequest)
       
