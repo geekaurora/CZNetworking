@@ -6,13 +6,20 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
   public typealias Params = [AnyHashable: Any]
   public typealias ParamList = [AnyHashable]
   public typealias Headers = [String: String]
+
+  /// The content-type for the request.
+  public enum ContentType {
+    case textPlain
+    case json
+    case formUrlencoded
+  }
+
   private enum config {
     static let timeOutInterval: TimeInterval = 60
   }  
-  
-  public enum ContentType {
-    case textPlain
-    case formUrlencoded
+
+  private enum Constant {
+    static let kContentType = "Content-Type"
   }
 
   public typealias Success = (Data?) -> Void
@@ -129,7 +136,8 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
     
     if let headers = headers {
       for (key, value) in headers {
-        request.addValue(value, forHTTPHeaderField: key)
+        assert(key != Constant.kContentType, "`\(Constant.kContentType)` should only be set with `.POST(contentType, data)`")
+        request.setValue(value, forHTTPHeaderField: key)
       }
     }
     
@@ -144,16 +152,20 @@ open class HTTPRequestWorker: ConcurrentBlockOperation {
       let postData = data ?? paramsString?.data(using: .utf8)
       let contentTypeValue: String = {
         switch contentType {
-        case .formUrlencoded:
-          return "application/x-www-form-urlencoded"
         case .textPlain:
           return "text/plain"
+        case .json:
+          return "application/json"
+        case .formUrlencoded:
+          return "application/x-www-form-urlencoded"
         }
       }()
-      request.addValue(contentTypeValue, forHTTPHeaderField: "Content-Type")
-      request.addValue("application/json", forHTTPHeaderField: "Accept")
+      // Set the content-type of the request.
+      request.setValue(contentTypeValue, forHTTPHeaderField: Constant.kContentType)
+      // Set the content-type of the response.
+      request.setValue("application/json", forHTTPHeaderField: "Accept")
       let contentLength = postData?.count ?? 0
-      request.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
+      request.setValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
       request.httpBody = postData
       dataTask = urlSession?.uploadTask(withStreamedRequest: request as URLRequest)
       
