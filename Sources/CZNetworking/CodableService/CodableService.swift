@@ -44,8 +44,8 @@ public class CodableService {
       dataKey: dataKey,
       success: innerCompletion,
       failure: { (error) in
-//        assertionFailure("\(#function) - failed to fetch models. Error - \(error). \nendPoint = \(endPoint)")
-//        completion(nil, nil, error, false)
+        assertionFailure("\(#function) - failed to fetch models. Error - \(error). \nendPoint = \(endPoint)")
+        completion(nil, nil, error, false)
       }, cached: cachedCompletion)
   }
 
